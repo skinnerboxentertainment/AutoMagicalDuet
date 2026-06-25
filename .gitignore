@@ -9,88 +9,31 @@
 Thumbs.db
 Desktop.ini
 
-# === Claude Code Local ===
-.claude/settings.local.json
-CLAUDE.local.md
-production/session-logs/
-
 # === OpenCode Local ===
 opencode.local.json
 .opencode/settings.local.json
+CLAUDE.local.md
 production/session-state/
+production/session-logs/
 */.opencode/plugins/
 
-# === Internal Planning (not for public) ===
-
-expansions/
-
-# === Marrow (eval tooling — never commit) ===
-marrow/
-
-# === Runtime Artifacts (auto-generated, start empty on fresh clone) ===
-# Created on first use by /consistency-check and /architecture-review
+# === Runtime Artifacts ===
 docs/consistency-failures.md
 
 # === Build Output ===
+node_modules/
+.npm/
+dist/
 build/
 builds/
 bin/
 obj/
 out/
-dist/
 *.exe
 *.dll
 *.so
 *.dylib
 *.app
-
-# === Engine: Godot ===
-.godot/
-*.translation
-export_presets.cfg
-# Uncomment if using Godot:
-# *.import
-
-# === Engine: Unity ===
-[Ll]ibrary/
-[Tt]emp/
-[Oo]bj/
-[Bb]uild/
-[Bb]uilds/
-[Ll]ogs/
-[Uu]ser[Ss]ettings/
-*.csproj
-*.unityproj
-*.sln
-*.suo
-*.tmp
-*.user
-*.userprefs
-*.pidb
-*.booproj
-*.svd
-*.pdb
-*.mdb
-*.opendb
-*.VC.db
-crashlytics-buildid.txt
-sysinfo.txt
-# Uncomment if using Unity:
-# [Aa]ssets/[Aa]sset[Ss]tore[Tt]ools/
-
-# === Engine: Unreal ===
-Binaries/
-DerivedDataCache/
-Intermediate/
-Saved/
-*.VC.opendb
-*.opensdf
-*.sdf
-*.cachefile
-*.VC.db
-# Uncomment if using Unreal:
-# *.uasset
-# *.umap
 
 # === Compiled Shaders ===
 *.spv
@@ -104,8 +47,6 @@ Saved/
 *.log
 __pycache__/
 *.pyc
-node_modules/
-.npm/
 
 # === Archives ===
 *.zip
@@ -123,19 +64,13 @@ credentials.json
 secrets.json
 
 # === Large Binary Assets (use Git LFS instead) ===
-# Uncomment and configure with Git LFS for your project:
 # *.png
 # *.jpg
-# *.jpeg
 # *.wav
 # *.mp3
 # *.ogg
 # *.fbx
 # *.blend
-# *.psd
-# *.tga
-# *.exr
-# *.hdr
 
 # === OS Generated ===
 ehthumbs.db

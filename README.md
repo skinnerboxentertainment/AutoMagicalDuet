@@ -137,24 +137,30 @@ Type `/` in OpenCode to access all 73 commands:
 
 ### Setup
 
-1. **Clone this template**:
-   ```bash
-   git clone <repo-url> my-game
-   cd my-game
-   ```
+```bash
+# Clone and install
+git clone <repo-url> my-game
+cd my-game
+npm install                                    # installs PixiJS, Vite, TS + MCP server
 
-2. **Open OpenCode** and start a session:
-   ```bash
-   opencode
-   ```
+# Launch the dev server (browser game)
+npm run dev                                    # http://localhost:5173
 
-3.    **Run `/start`** — the system asks where you are (no idea, vague concept,
-   clear design, existing work) and guides you to the right workflow. No assumptions.
+# Or launch the AI studio
+opencode                                       # then run /start to begin
+```
 
-   Or jump directly to a specific command if you already know what you need:
-   - `/brainstorm` — explore game ideas from scratch
-   - `/setup-engine` — configure PixiJS and web project setup
-   - `/project-stage-detect` — analyze an existing project
+Requires [Node.js](https://nodejs.org/) 18+ and [OpenCode](https://opencode.ai) (`npm install -g opencode-ai`).
+
+### Quick Start
+
+Once you're in the OpenCode session:
+
+1. **`/start`** — onboarding flow, asks where you are
+2. **`/brainstorm`** — explore game ideas from scratch
+3. **`/project-stage-detect`** — if you already have existing work
+4. **`/design-system`** — write a game design document for a specific system
+5. **`/dev-story`** — implement a story from your sprint
 
 ## Upgrading
 
