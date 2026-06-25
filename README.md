@@ -1,21 +1,21 @@
 <p align="center">
-  <h1 align="center">Claude Code Game Studios</h1>
+  <h1 align="center">OpenCode Game Studios</h1>
   <p align="center">
-    Turn a single Claude Code session into a full game development studio.
+    <em>Port of <a href="https://github.com/Donchitos/Claude-Code-Game-Studios">Claude Code Game Studios</a> for OpenCode</em>
     <br />
-    49 agents. 73 skills. One coordinated AI team.
+    Turn a single OpenCode session into a full game development studio.
+    <br />
+    49 agents. 73 commands. One coordinated AI team.
   </p>
 </p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
-  <a href=".claude/agents"><img src="https://img.shields.io/badge/agents-49-blueviolet" alt="49 Agents"></a>
-  <a href=".claude/skills"><img src="https://img.shields.io/badge/skills-73-green" alt="73 Skills"></a>
-  <a href=".claude/hooks"><img src="https://img.shields.io/badge/hooks-12-orange" alt="12 Hooks"></a>
-  <a href=".claude/rules"><img src="https://img.shields.io/badge/rules-11-red" alt="11 Rules"></a>
-  <a href="https://docs.anthropic.com/en/docs/claude-code"><img src="https://img.shields.io/badge/built%20for-Claude%20Code-f5f5f5?logo=anthropic" alt="Built for Claude Code"></a>
-  <a href="https://www.buymeacoffee.com/donchitos3"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support%20this%20project-FFDD00?logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee"></a>
-  <a href="https://github.com/sponsors/Donchitos"><img src="https://img.shields.io/badge/GitHub%20Sponsors-Support%20this%20project-ea4aaa?logo=githubsponsors&logoColor=white" alt="GitHub Sponsors"></a>
+  <a href=".opencode/agents"><img src="https://img.shields.io/badge/agents-49-blueviolet" alt="49 Agents"></a>
+  <a href=".opencode/commands"><img src="https://img.shields.io/badge/commands-73-green" alt="73 Commands"></a>
+  <a href=".opencode/rules"><img src="https://img.shields.io/badge/rules-11-red" alt="11 Rules"></a>
+  <a href="https://opencode.ai"><img src="https://img.shields.io/badge/built%20for-OpenCode-f5f5f5" alt="Built for OpenCode"></a>
+  <a href="https://github.com/Donchitos/Claude-Code-Game-Studios"><img src="https://img.shields.io/badge/original-CCGS-blue" alt="Original: CCGS"></a>
 </p>
 
 ---
@@ -24,9 +24,11 @@
 
 Building a game solo with AI is powerful — but a single chat session has no structure. No one stops you from hardcoding magic numbers, skipping design docs, or writing spaghetti code. There's no QA pass, no design review, no one asking "does this actually fit the game's vision?"
 
-**Claude Code Game Studios** solves this by giving your AI session the structure of a real studio. Instead of one general-purpose assistant, you get 49 specialized agents organized into a studio hierarchy — directors who guard the vision, department leads who own their domains, and specialists who do the hands-on work. Each agent has defined responsibilities, escalation paths, and quality gates.
+**OpenCode Game Studios** solves this by giving your AI session the structure of a real studio. Instead of one general-purpose assistant, you get 49 specialized agents organized into a studio hierarchy — directors who guard the vision, department leads who own their domains, and specialists who do the hands-on work. Each agent has defined responsibilities, escalation paths, and quality gates.
 
 The result: you still make every decision, but now you have a team that asks the right questions, catches mistakes early, and keeps your project organized from first brainstorm to launch.
+
+> This is an experimental port of [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) (CCGS) by Donchitos, adapted from `.claude/` to `.opencode/` format. All credit for the original architecture, agents, skills, and design goes to the CCGS project.
 
 ---
 
@@ -53,9 +55,8 @@ The result: you still make every decision, but now you have a team that asks the
 | Category | Count | Description |
 |----------|-------|-------------|
 | **Agents** | 49 | Specialized subagents across design, programming, art, audio, narrative, QA, and production |
-| **Skills** | 73 | Slash commands for every workflow phase (`/start`, `/design-system`, `/create-epics`, `/create-stories`, `/dev-story`, `/story-done`, etc.) |
-| **Hooks** | 12 | Automated validation on commits, pushes, asset changes, session lifecycle, agent audit trail, and gap detection |
-| **Rules** | 11 | Path-scoped coding standards enforced when editing gameplay, engine, AI, UI, network code, and more |
+| **Commands** | 73 | Commands for every workflow phase (`/start`, `/design-system`, `/create-epics`, `/create-stories`, `/dev-story`, `/story-done`, etc.) |
+| **Rules** | 11 | Path-scoped coding standards enforced per file path |
 | **Templates** | 41 | Document templates for GDDs, UX specs, ADRs, sprint plans, HUD design, accessibility, and more |
 
 ## Studio Hierarchy
@@ -92,9 +93,9 @@ The template includes agent sets for all three major engines. Use the set that m
 | **Unity** | `unity-specialist` | DOTS/ECS, Shaders/VFX, Addressables, UI Toolkit |
 | **Unreal Engine 5** | `unreal-specialist` | GAS, Blueprints, Replication, UMG/CommonUI |
 
-## Slash Commands
+## Commands
 
-Type `/` in Claude Code to access all 73 skills:
+Type `/` in OpenCode to access all 73 commands:
 
 **Onboarding & Navigation**
 `/start` `/help` `/project-stage-detect` `/setup-engine` `/adopt`
@@ -137,28 +138,26 @@ Type `/` in Claude Code to access all 73 skills:
 ### Prerequisites
 
 - [Git](https://git-scm.com/)
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) (`npm install -g @anthropic-ai/claude-code`)
-- **Recommended**: [jq](https://jqlang.github.io/jq/) (for hook validation) and Python 3 (for JSON validation)
-
-All hooks fail gracefully if optional tools are missing — nothing breaks, you just lose validation.
+- [OpenCode](https://opencode.ai) (`npm install -g opencode-ai`)
+- Python 3 (for JSON validation)
 
 ### Setup
 
-1. **Clone or use as template**:
+1. **Clone this template**:
    ```bash
-   git clone https://github.com/Donchitos/Claude-Code-Game-Studios.git my-game
+   git clone <repo-url> my-game
    cd my-game
    ```
 
-2. **Open Claude Code** and start a session:
+2. **Open OpenCode** and start a session:
    ```bash
-   claude
+   opencode
    ```
 
 3. **Run `/start`** — the system asks where you are (no idea, vague concept,
    clear design, existing work) and guides you to the right workflow. No assumptions.
 
-   Or jump directly to a specific skill if you already know what you need:
+   Or jump directly to a specific command if you already know what you need:
    - `/brainstorm` — explore game ideas from scratch
    - `/setup-engine godot 4.6` — configure your engine if you already know
    - `/project-stage-detect` — analyze an existing project
@@ -172,14 +171,12 @@ versions, and which files are safe to overwrite vs. which need a manual merge.
 ## Project Structure
 
 ```
-CLAUDE.md                           # Master configuration
-.claude/
-  settings.json                     # Hooks, permissions, safety rules
+AGENTS.md                           # Master configuration
+opencode.json                       # OpenCode config (permissions, models, etc.)
+.opencode/
   agents/                           # 49 agent definitions (markdown + YAML frontmatter)
-  skills/                           # 73 slash commands (subdirectory per skill)
-  hooks/                            # 12 hook scripts (bash, cross-platform)
+  commands/                         # 73 commands (one .md per command)
   rules/                            # 11 path-scoped coding standards
-  statusline.sh                     # Status line script (context%, model, stage, epic breadcrumb)
   docs/
     workflow-catalog.yaml           # 7-phase pipeline definition (read by /help)
     templates/                      # 41 document templates
@@ -217,28 +214,15 @@ This is **not** an auto-pilot system. Every agent follows a strict collaboration
 
 You stay in control. The agents provide structure and expertise, not autonomy.
 
-### Automated Safety
+### Safety via Permissions
 
-**Hooks** run automatically on every session:
+**Permission rules** in `opencode.json` auto-allow safe operations (git status, test runs, reads) and require approval for dangerous ones (force push, `rm -rf`, editing files). This replaces CCGS's hook system.
 
-| Hook | Trigger | What It Does |
-|------|---------|--------------|
-| `validate-commit.sh` | PreToolUse (Bash) | Checks for hardcoded values, TODO format, JSON validity, design doc sections — exits early if the command is not `git commit` |
-| `validate-push.sh` | PreToolUse (Bash) | Warns on pushes to protected branches — exits early if the command is not `git push` |
-| `validate-assets.sh` | PostToolUse (Write/Edit) | Validates naming conventions and JSON structure — exits early if the file is not in `assets/` |
-| `session-start.sh` | Session open | Shows current branch and recent commits for orientation |
-| `detect-gaps.sh` | Session open | Detects fresh projects (suggests `/start`) and missing design docs when code or prototypes exist |
-| `pre-compact.sh` | Before compaction | Preserves session progress notes |
-| `post-compact.sh` | After compaction | Reminds Claude to restore session state from `active.md` |
-| `notify.sh` | Notification event | Shows Windows toast notification via PowerShell |
-| `session-stop.sh` | Session close | Archives `active.md` to session log and records git activity |
-| `log-agent.sh` | Agent spawned | Audit trail start — logs subagent invocation |
-| `log-agent-stop.sh` | Agent stops | Audit trail stop — completes subagent record |
-| `validate-skill-change.sh` | PostToolUse (Write/Edit) | Advises running `/skill-test` after any `.claude/skills/` change |
-
-> **Note**: `validate-commit.sh`, `validate-assets.sh`, and `validate-skill-change.sh` fire on every Bash/Write tool call and exit immediately (exit 0) when the command or file path is not relevant. This is normal hook behavior — not a performance concern.
-
-**Permission rules** in `settings.json` auto-allow safe operations (git status, test runs) and block dangerous ones (force push, `rm -rf`, reading `.env` files).
+The following practices are documented in `AGENTS.md` as manual validation steps:
+- **Pre-commit validation**: Run `/validate-commit` (check hardcoded values, TODO format)
+- **Asset validation**: Run `/validate-assets` after changing asset files
+- **Pre-push check**: Run `/validate-push` before pushing to protected branches
+- **Session state**: Update `production/session-state/active.md` when starting/stopping work
 
 ### Path-Scoped Rules
 
@@ -273,13 +257,12 @@ This is a **template**, not a locked framework. Everything is meant to be custom
 - **Edit agent prompts** — tune agent behavior, add project-specific knowledge
 - **Modify skills** — adjust workflows to match your team's process
 - **Add rules** — create new path-scoped rules for your project's directory structure
-- **Tune hooks** — adjust validation strictness, add new checks
 - **Pick your engine** — use the Godot, Unity, or Unreal agent set (or none)
-- **Set review intensity** — `full` (all director gates), `lean` (phase gates only), or `solo` (none). Set during `/start` or edit `production/review-mode.txt`. Override per-run with `--review solo` on any skill.
+- **Set review intensity** — `full` (all director gates), `lean` (phase gates only), or `solo` (none). Set during `/start` or edit `production/review-mode.txt`.
 
 ## Platform Support
 
-Primary development and testing on **Windows 10** with Git Bash. All hooks use POSIX-compatible patterns (`grep -E`, not `grep -P`) and include fallbacks for missing tools, so they should run on macOS and Linux. The `notify.sh` hook uses PowerShell for Windows toast notifications and is a no-op elsewhere — desktop notifications on macOS/Linux are not yet wired. Cross-platform testing is ongoing; please file issues for any platform-specific breakage.
+Primary development and testing on **Windows 11** with PowerShell 7+. OpenCode itself is cross-platform (Windows, macOS, Linux). This template should work on any platform OpenCode supports.
 
 ## Community
 
@@ -305,7 +288,7 @@ Sponsorships help fund time spent maintaining skills, adding new agents, keeping
 
 ---
 
-*Built for Claude Code. Maintained and extended — contributions welcome via [GitHub Discussions](https://github.com/Donchitos/Claude-Code-Game-Studios/discussions).*
+*Ported from [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) by Donchitos. Built for OpenCode.*
 
 ## License
 
