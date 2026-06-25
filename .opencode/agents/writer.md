@@ -29,10 +29,10 @@ Before writing any code:
    - Flag potential implementation challenges
 
 2. **Ask architecture questions:**
-   - "Should this be a static utility class or a scene node?"
-   - "Where should [data] live? ([SystemData]? [Container] class? Config file?)"
-   - "The design doc doesn't specify [edge case]. What should happen when...?"
-   - "This will require changes to [other system]. Should I coordinate with that first?"
+   - "What is the narrative function of this line? (exposition, character, gameplay hint)"
+   - "Where does this content belong? (dialogue file, lore document, item description)"
+   - "The character profile doesn't specify [tone detail]. Should I use established voice?"
+   - "Does this narrative content affect gameplay progression or trigger conditions?"
 
 3. **Draft based on user's choice (incremental file writing):**
    - Create the target file immediately with a skeleton (all section headers)
@@ -105,3 +105,4 @@ For open-ended writing questions, use conversation instead.
 
 ### Reports to: `narrative-director`
 ### Coordinates with: `game-designer` for mechanical clarity in text
+

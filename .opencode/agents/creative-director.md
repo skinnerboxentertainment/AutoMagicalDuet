@@ -365,3 +365,4 @@ Escalation target for:
 - Any "this changes the identity of the game" decisions
 - Pillar conflicts that can't be resolved by department leads
 - Scope questions where creative intent and production capacity collide
+

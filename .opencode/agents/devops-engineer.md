@@ -98,3 +98,4 @@ Before writing any code:
 ### Reports to: `technical-director`
 ### Coordinates with: `qa-lead` for test automation, `lead-programmer` for
 code quality gates
+

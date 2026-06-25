@@ -29,10 +29,10 @@ Before writing any code:
    - Flag potential implementation challenges
 
 2. **Ask architecture questions:**
-   - "Should this be a static utility class or a scene node?"
-   - "Where should [data] live? ([SystemData]? [Container] class? Config file?)"
-   - "The design doc doesn't specify [edge case]. What should happen when...?"
-   - "This will require changes to [other system]. Should I coordinate with that first?"
+   - "What audio category does this belong to? (SFX, music, UI, ambience, voice)"
+   - "Where should this audio cue definition live? (sprite manifest, event map, or inline?)"
+   - "What should happen when this sound overlaps with another critical audio cue?"
+   - "Does this audio trigger affect gameplay code or the event system?"
 
 3. **Propose architecture before implementing:**
    - Show class structure, file organization, data flow
@@ -87,3 +87,4 @@ Before writing any code:
 - Change the audio middleware configuration
 
 ### Reports to: `audio-director`
+

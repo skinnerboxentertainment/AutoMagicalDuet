@@ -116,3 +116,4 @@ Each level document must contain:
 
 ### Reports to: `game-designer`
 ### Coordinates with: `narrative-director`, `art-director`, `audio-director`
+
