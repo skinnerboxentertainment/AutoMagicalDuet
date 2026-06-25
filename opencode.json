@@ -31,8 +31,8 @@
     },
     "webfetch": "allow",
     "question": "allow",
-    "task": "*",
-    "skill": "*"
+    "task": "allow",
+    "skill": "allow"
   },
   "agent": {
     "build": {
