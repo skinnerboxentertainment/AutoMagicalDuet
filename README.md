@@ -1,19 +1,19 @@
 <p align="center">
-  <h1 align="center">OpenCode Game Studios</h1>
+  <h1 align="center">OpenCode PixiJS Game Studio</h1>
   <p align="center">
-    <em>Port of <a href="https://github.com/Donchitos/Claude-Code-Game-Studios">Claude Code Game Studios</a> for OpenCode</em>
+    <em>PixiJS v8 + TypeScript derivative of <a href="https://github.com/Donchitos/Claude-Code-Game-Studios">Claude Code Game Studios</a></em>
     <br />
-    Turn a single OpenCode session into a full game development studio.
+    Turn a single OpenCode session into a browser game development studio.
     <br />
-    49 agents. 73 commands. One coordinated AI team.
+    35 agents. 73 commands. PixiJS v8 rendering.
   </p>
 </p>
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
-  <a href=".opencode/agents"><img src="https://img.shields.io/badge/agents-49-blueviolet" alt="49 Agents"></a>
+  <a href=".opencode/agents"><img src="https://img.shields.io/badge/agents-35-blueviolet" alt="35 Agents"></a>
   <a href=".opencode/commands"><img src="https://img.shields.io/badge/commands-73-green" alt="73 Commands"></a>
-  <a href=".opencode/rules"><img src="https://img.shields.io/badge/rules-11-red" alt="11 Rules"></a>
+  <a href=".opencode/rules"><img src="https://img.shields.io/badge/rules-12-red" alt="12 Rules"></a>
   <a href="https://opencode.ai"><img src="https://img.shields.io/badge/built%20for-OpenCode-f5f5f5" alt="Built for OpenCode"></a>
   <a href="https://github.com/Donchitos/Claude-Code-Game-Studios"><img src="https://img.shields.io/badge/original-CCGS-blue" alt="Original: CCGS"></a>
 </p>
@@ -24,11 +24,11 @@
 
 Building a game solo with AI is powerful — but a single chat session has no structure. No one stops you from hardcoding magic numbers, skipping design docs, or writing spaghetti code. There's no QA pass, no design review, no one asking "does this actually fit the game's vision?"
 
-**OpenCode Game Studios** solves this by giving your AI session the structure of a real studio. Instead of one general-purpose assistant, you get 49 specialized agents organized into a studio hierarchy — directors who guard the vision, department leads who own their domains, and specialists who do the hands-on work. Each agent has defined responsibilities, escalation paths, and quality gates.
+**OpenCode PixiJS Game Studio** solves this by giving your AI session the structure of a real studio. Instead of one general-purpose assistant, you get 35 specialized agents organized into a studio hierarchy — directors who guard the vision, department leads who own their domains, and specialists who do the hands-on work. Each agent has defined responsibilities, escalation paths, and quality gates. All running on PixiJS v8 + TypeScript for web browser delivery.
 
 The result: you still make every decision, but now you have a team that asks the right questions, catches mistakes early, and keeps your project organized from first brainstorm to launch.
 
-> This is an experimental port of [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) (CCGS) by Donchitos, adapted from `.claude/` to `.opencode/` format. All credit for the original architecture, agents, skills, and design goes to the CCGS project.
+> This is a PixiJS v8 + TypeScript derivative of [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) (CCGS) by Donchitos, adapted from `.claude/` to `.opencode/` format. All credit for the original architecture, agents, skills, and design goes to the CCGS project.
 
 ---
 
@@ -54,9 +54,9 @@ The result: you still make every decision, but now you have a team that asks the
 
 | Category | Count | Description |
 |----------|-------|-------------|
-| **Agents** | 49 | Specialized subagents across design, programming, art, audio, narrative, QA, and production |
+| **Agents** | 35 | Specialized agents across design, programming, art, audio, narrative, QA, and production |
 | **Commands** | 73 | Commands for every workflow phase (`/start`, `/design-system`, `/create-epics`, `/create-stories`, `/dev-story`, `/story-done`, etc.) |
-| **Rules** | 11 | Path-scoped coding standards enforced per file path |
+| **Rules** | 12 | Path-scoped coding standards enforced per file path |
 | **Templates** | 41 | Document templates for GDDs, UX specs, ADRs, sprint plans, HUD design, accessibility, and more |
 
 ## Studio Hierarchy
@@ -83,15 +83,9 @@ Tier 3 — Specialists (Sonnet/Haiku)
   live-ops-designer    community-manager
 ```
 
-### Engine Specialists
+### PixiJS Specialist
 
-The template includes agent sets for all three major engines. Use the set that matches your project:
-
-| Engine | Lead Agent | Sub-Specialists |
-|--------|-----------|-----------------|
-| **Godot 4** | `godot-specialist` | GDScript, Shaders, GDExtension |
-| **Unity** | `unity-specialist` | DOTS/ECS, Shaders/VFX, Addressables, UI Toolkit |
-| **Unreal Engine 5** | `unreal-specialist` | GAS, Blueprints, Replication, UMG/CommonUI |
+A dedicated `pixijs-specialist` agent covers PixiJS v8 rendering, scene graph, shaders, performance optimization, and cross-browser WebGL/WebGPU/Canvas.
 
 ## Commands
 
@@ -154,12 +148,12 @@ Type `/` in OpenCode to access all 73 commands:
    opencode
    ```
 
-3. **Run `/start`** — the system asks where you are (no idea, vague concept,
+3.    **Run `/start`** — the system asks where you are (no idea, vague concept,
    clear design, existing work) and guides you to the right workflow. No assumptions.
 
    Or jump directly to a specific command if you already know what you need:
    - `/brainstorm` — explore game ideas from scratch
-   - `/setup-engine godot 4.6` — configure your engine if you already know
+   - `/setup-engine` — configure PixiJS and web project setup
    - `/project-stage-detect` — analyze an existing project
 
 ## Upgrading
@@ -174,20 +168,21 @@ versions, and which files are safe to overwrite vs. which need a manual merge.
 AGENTS.md                           # Master configuration
 opencode.json                       # OpenCode config (permissions, models, etc.)
 .opencode/
-  agents/                           # 49 agent definitions (markdown + YAML frontmatter)
+  agents/                           # 35 agent definitions (markdown + YAML frontmatter)
   commands/                         # 73 commands (one .md per command)
-  rules/                            # 11 path-scoped coding standards
+  rules/                            # 12 path-scoped coding standards
   docs/
+    pixijs-reference/               # PixiJS v8 version reference
     workflow-catalog.yaml           # 7-phase pipeline definition (read by /help)
     templates/                      # 41 document templates
-src/                                # Game source code
+src/                                # Game source code (TypeScript)
 assets/                             # Art, audio, VFX, shaders, data files
 design/                             # GDDs, narrative docs, level designs
 docs/                               # Technical documentation and ADRs
 tests/                              # Test suites (unit, integration, performance, playtest)
-tools/                              # Build and pipeline tools
 prototypes/                         # Throwaway prototypes (isolated from src/)
 production/                         # Sprint plans, milestones, release tracking
+public/                             # Static assets (HTML, favicon, etc.)
 ```
 
 ## How It Works
@@ -257,7 +252,7 @@ This is a **template**, not a locked framework. Everything is meant to be custom
 - **Edit agent prompts** — tune agent behavior, add project-specific knowledge
 - **Modify skills** — adjust workflows to match your team's process
 - **Add rules** — create new path-scoped rules for your project's directory structure
-- **Pick your engine** — use the Godot, Unity, or Unreal agent set (or none)
+- **Pick your tech stack** — PixiJS v8 is pre-configured; add Matter.js, Howler.js as needed
 - **Set review intensity** — `full` (all director gates), `lean` (phase gates only), or `solo` (none). Set during `/start` or edit `production/review-mode.txt`.
 
 ## Platform Support
@@ -288,7 +283,7 @@ Sponsorships help fund time spent maintaining skills, adding new agents, keeping
 
 ---
 
-*Ported from [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) by Donchitos. Built for OpenCode.*
+*PixiJS Game Studio derivative of [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) by Donchitos. Built for OpenCode.*
 
 ## License
 

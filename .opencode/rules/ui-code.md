@@ -13,3 +13,7 @@ paths:
 - UI must never block the game thread
 - Scalable text and colorblind modes are mandatory, not optional
 - Test all screens at minimum and maximum supported resolutions
+- Use PixiJS Container-based hierarchy for in-game UI (HUD, damage numbers, indicators)
+- DOM overlays allowed for menus, settings, and complex screens — keep consistent with canvas UI
+- Never render UI elements outside the game canvas unless using a DOM overlay
+- All interactive UI containers must have explicit `hitArea` set

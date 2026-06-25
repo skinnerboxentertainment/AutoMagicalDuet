@@ -5,54 +5,54 @@
 
 ## Engine & Language
 
-- **Engine**: [TO BE CONFIGURED — run /setup-engine]
-- **Language**: [TO BE CONFIGURED]
-- **Rendering**: [TO BE CONFIGURED]
-- **Physics**: [TO BE CONFIGURED]
+- **Renderer**: PixiJS v8 (WebGL2/WebGPU/Canvas)
+- **Language**: TypeScript (strict)
+- **Rendering**: PixiJS scene graph, sprites, graphics, text, filters
+- **Physics**: Matter.js (optional — add when needed)
 
 ## Input & Platform
 
-<!-- Written by /setup-engine. Read by /ux-design, /ux-review, /test-setup, /team-ui, and /dev-story -->
-<!-- to scope interaction specs, test helpers, and implementation to the correct input methods. -->
-
-- **Target Platforms**: [TO BE CONFIGURED — e.g., PC, Console, Mobile, Web]
-- **Input Methods**: [TO BE CONFIGURED — e.g., Keyboard/Mouse, Gamepad, Touch, Mixed]
-- **Primary Input**: [TO BE CONFIGURED — the dominant input for this game]
-- **Gamepad Support**: [TO BE CONFIGURED — Full / Partial / None]
-- **Touch Support**: [TO BE CONFIGURED — Full / Partial / None]
-- **Platform Notes**: [TO BE CONFIGURED — any platform-specific UX constraints]
+- **Target Platforms**: Web (browser)
+- **Input Methods**: Keyboard/Mouse, Gamepad, Touch
+- **Primary Input**: [TO BE CONFIGURED — depends on game genre]
+- **Gamepad Support**: Partial (via Gamepad API)
+- **Touch Support**: Partial (via Pointer Events)
+- **Platform Notes**: Canvas-based rendering with DOM overlay for UI when needed. Support Chrome, Firefox, Safari, Edge.
 
 ## Naming Conventions
 
-- **Classes**: [TO BE CONFIGURED]
-- **Variables**: [TO BE CONFIGURED]
-- **Signals/Events**: [TO BE CONFIGURED]
-- **Files**: [TO BE CONFIGURED]
-- **Scenes/Prefabs**: [TO BE CONFIGURED]
-- **Constants**: [TO BE CONFIGURED]
+- **Classes**: PascalCase (e.g., `PlayerController`)
+- **Variables/functions**: camelCase (e.g., `moveSpeed`, `takeDamage()`)
+- **Files**: kebab-case matching export (e.g., `player-controller.ts`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `MAX_HEALTH`)
+- **Events**: camelCase past tense (e.g., `healthChanged`, `playerDied`)
+- **Interfaces**: PascalCase with `I` prefix (e.g., `IDamageable`)
+- **Types**: PascalCase (e.g., `DamageResult`)
 
 ## Performance Budgets
 
-- **Target Framerate**: [TO BE CONFIGURED]
-- **Frame Budget**: [TO BE CONFIGURED]
-- **Draw Calls**: [TO BE CONFIGURED]
-- **Memory Ceiling**: [TO BE CONFIGURED]
+- **Target Framerate**: 60fps (16.6ms frame budget)
+- **Frame Budget**: 8ms rendering, 4ms gameplay, 2ms physics, 2.6ms overhead
+- **Draw Calls**: < 100 per frame (batching preferred)
+- **Memory Ceiling**: 200MB heap
 
 ## Testing
 
-- **Framework**: [TO BE CONFIGURED]
-- **Minimum Coverage**: [TO BE CONFIGURED]
-- **Required Tests**: Balance formulas, gameplay systems, networking (if applicable)
+- **Framework**: Vitest
+- **Minimum Coverage**: 80% on gameplay systems
+- **Required Tests**: Balance formulas, gameplay systems, rendering (if applicable)
 
 ## Forbidden Patterns
 
-<!-- Add patterns that should never appear in this project's codebase -->
-- [None configured yet — add as architectural decisions are made]
+- Direct DOM manipulation outside `src/ui/`
+- `any` type (except in type guard functions)
+- Strings in place of `enum` or union types for game state
+- `new Sprite()` in update loops — pool or reuse
 
 ## Allowed Libraries / Addons
 
-<!-- Add approved third-party dependencies here -->
-- [None configured yet — add as dependencies are approved]
+- pixi.js (v8.x)
+- [None yet — add as dependencies are approved]
 
 ## Architecture Decisions Log
 
@@ -61,27 +61,19 @@
 
 ## Engine Specialists
 
-<!-- Written by /setup-engine when engine is configured. -->
-<!-- Read by /code-review, /architecture-decision, /architecture-review, and team skills -->
-<!-- to know which specialist to spawn for engine-specific validation. -->
-
-- **Primary**: [TO BE CONFIGURED — run /setup-engine]
-- **Language/Code Specialist**: [TO BE CONFIGURED]
-- **Shader Specialist**: [TO BE CONFIGURED]
-- **UI Specialist**: [TO BE CONFIGURED]
-- **Additional Specialists**: [TO BE CONFIGURED]
-- **Routing Notes**: [TO BE CONFIGURED]
+- **Primary**: pixijs-specialist
+- **Language/Code Specialist**: lead-programmer (TypeScript review)
+- **Shader Specialist**: pixijs-specialist (GLSL/WGSL filters, Filter.from(), custom shaders)
+- **UI Specialist**: ui-programmer (PixiJS Container-based UI, DOM overlay)
+- **Additional Specialists**: gameplay-programmer, ai-programmer, network-programmer
+- **Routing Notes**: Invoke pixijs-specialist for all rendering, scene graph, shader, and PixiJS performance work. Invoke lead-programmer for TypeScript architecture and code review. Invoke gameplay-programmer for game mechanics implementation.
 
 ### File Extension Routing
 
-<!-- Skills use this table to select the right specialist per file type. -->
-<!-- If a row says [TO BE CONFIGURED], fall back to Primary for that file type. -->
-
 | File Extension / Type | Specialist to Spawn |
 |-----------------------|---------------------|
-| Game code (primary language) | [TO BE CONFIGURED] |
-| Shader / material files | [TO BE CONFIGURED] |
-| UI / screen files | [TO BE CONFIGURED] |
-| Scene / prefab / level files | [TO BE CONFIGURED] |
-| Native extension / plugin files | [TO BE CONFIGURED] |
-| General architecture review | Primary |
+| Game code (.ts files) | lead-programmer |
+| Shader / filter files (.glsl, .wgsl, .ts with Filter) | pixijs-specialist |
+| UI / screen files (.ts in src/ui/) | ui-programmer |
+| Scene / level data (.json) | gameplay-programmer |
+| General architecture review | pixijs-specialist |

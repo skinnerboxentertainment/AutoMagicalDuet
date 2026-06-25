@@ -13,25 +13,27 @@ paths:
 - Changes to public interfaces require a deprecation period and migration guide
 - Use RAII / deterministic cleanup for all resources
 - All engine systems must support graceful degradation
-- Before writing engine API code, consult `docs/engine-reference/` for the current engine version and verify APIs against the reference docs
+- Before writing engine API code, consult `.opencode/docs/pixijs-reference/VERSION.md` for the PixiJS version and verify APIs against the reference docs
 
 ## Examples
 
 **Correct** (zero-alloc hot path):
 
-```gdscript
-# Pre-allocated array reused each frame
-var _nearby_cache: Array[Node3D] = []
+```typescript
+// Pre-allocated array reused each frame
+const nearbyCache: Container[] = []
 
-func _physics_process(delta: float) -> void:
-    _nearby_cache.clear()  # Reuse, don't reallocate
-    _spatial_grid.query_radius(position, radius, _nearby_cache)
+function update(_delta: number): void {
+  nearbyCache.length = 0 // Reuse, don't reallocate
+  spatialGrid.query(position, radius, nearbyCache)
+}
 ```
 
 **Incorrect** (allocating in hot path):
 
-```gdscript
-func _physics_process(delta: float) -> void:
-    var nearby: Array[Node3D] = []  # VIOLATION: allocates every frame
-    nearby = get_tree().get_nodes_in_group("enemies")  # VIOLATION: tree query every frame
+```typescript
+function update(_delta: number): void {
+  const nearby: Container[] = [] // VIOLATION: allocates every frame
+  nearby.push(...app.stage.children.filter(c => c.hitArea !== undefined)) // VIOLATION: filter allocates
+}
 ```

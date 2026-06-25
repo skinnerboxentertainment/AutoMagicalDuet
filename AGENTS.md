@@ -1,15 +1,15 @@
-# OpenCode Game Studios — Game Studio Agent Architecture
+# OpenCode PixiJS Game Studio — Game Studio Agent Architecture
 
-Indie game development managed through 49 coordinated OpenCode agents.
+Indie game development managed through 35 coordinated OpenCode agents.
 Each agent owns a specific domain, enforcing separation of concerns and quality.
 
-This is a port of [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios)
-by Donchitos, adapted for OpenCode.
+This is a PixiJS v8 + TypeScript derivative of [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios)
+by Donchitos, adapted for OpenCode. Targeting the browser as the primary platform.
 
 ## Model Tier Configuration
 
 Configure your actual model IDs below. The tiers abstract agent assignments
-from concrete models so you can switch providers without editing 49 files.
+from concrete models so you can switch providers without editing 35 files.
 
 - **tier:opus** → `anthropic/claude-opus-4-5` (or `openai/gpt-5-codex`, etc.)
 - **tier:sonnet** → `anthropic/claude-sonnet-4-5` (or `openai/gpt-5`, etc.)
@@ -23,12 +23,12 @@ Set in `opencode.json`:
 }
 ```
 
-## Agents (49)
+## Agents (35)
 
 Defined in `.opencode/agents/` as markdown files with YAML frontmatter.
 - **Tier 1 — Directors** (tier:opus): creative-director, technical-director, producer
 - **Tier 2 — Leads** (tier:sonnet): game-designer, lead-programmer, art-director, audio-director, narrative-director, qa-lead, release-manager, localization-lead
-- **Tier 3 — Specialists** (tier:sonnet/haiku): gameplay-programmer, engine-programmer, ai-programmer, etc.
+- **Tier 3 — Specialists** (tier:sonnet/haiku): gameplay-programmer, engine-programmer, ai-programmer, pixijs-specialist, etc.
 
 Invoke agents with `@agent-name` in your message.
 
@@ -44,7 +44,7 @@ Type `/command-name` in the TUI to use them:
 - `/dev-story` — Implement a story
 - etc.
 
-## Rules (11)
+## Rules (12)
 
 Path-scoped coding standards in `.opencode/rules/`. Loaded via `instructions` in `opencode.json`.
 When applying rules, check the file path and apply the matching rule:
@@ -57,6 +57,7 @@ When applying rules, check the file path and apply the matching rule:
 | `src/networking/**` | `.opencode/rules/network-code.md` |
 | `src/ui/**` | `.opencode/rules/ui-code.md` |
 | `src/rendering/**` (shaders) | `.opencode/rules/shader-code.md` |
+| `src/**` (general web) | `.opencode/rules/web-code.md` |
 | `assets/**` | `.opencode/rules/data-files.md` |
 | `design/gdd/**` | `.opencode/rules/design-docs.md` |
 | `design/narrative/**` | `.opencode/rules/narrative.md` |
@@ -75,17 +76,17 @@ Every task follows: **Question -> Options -> Decision -> Draft -> Approval**
 
 See `docs/COLLABORATIVE-DESIGN-PRINCIPLE.md` for full protocol and examples.
 
-## Technology Stack Placeholder
+## Technology Stack
 
-The user should configure their stack in `.opencode/docs/technical-preferences.md`:
-- **Engine**: [CHOOSE: Godot 4 / Unity / Unreal Engine 5]
-- **Language**: [CHOOSE: GDScript / C# / C++ / Blueprint]
-- **Version Control**: Git with trunk-based development
-- **Build System**: [SPECIFY]
-- **Asset Pipeline**: [SPECIFY]
+Configured in `.opencode/docs/technical-preferences.md`:
+- **Renderer**: PixiJS v8 (WebGL2/WebGPU/Canvas)
+- **Language**: TypeScript (strict)
+- **Build**: Vite + tsc
+- **Testing**: Vitest
+- **Physics**: Matter.js (optional)
+- **Audio**: Howler.js (optional)
 
-> Engine-specialist agents exist for Godot, Unity, and Unreal with
-> dedicated sub-specialists. Use the set matching your engine.
+> PixiJS skills available: `npx skills add https://github.com/pixijs/pixijs-skills`
 
 ## Project Structure
 

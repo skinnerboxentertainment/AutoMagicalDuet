@@ -6,39 +6,44 @@ paths:
 # Shader Code Standards
 
 All shader files in `assets/shaders/` must follow these standards to maintain
-visual quality, performance, and cross-platform compatibility.
+visual quality, performance, and cross-platform compatibility. PixiJS uses
+GLSL (WebGL) or WGSL (WebGPU) for custom filters and shaders.
 
 ## Naming Conventions
 - File naming: `[type]_[category]_[name].[ext]`
-  - `spatial_env_water.gdshader` (Godot)
-  - `SG_Env_Water` (Unity Shader Graph)
-  - `M_Env_Water` (Unreal Material)
+  - `filter_blur_glow.glsl` (GLSL filter)
+  - `shader_env_water.wgsl` (WGSL shader)
 - Use descriptive names that indicate the material purpose
-- Prefix with shader type: `spatial_`, `canvas_`, `particles_`, `post_`
+- Prefix with type: `filter_`, `shader_`, `post_`
+
+## PixiJS Patterns
+
+- Use `Filter.from()` for inline filter creation in PixiJS v8
+- Custom shaders extend `Filter` class or use `FilterSystem.from()`
+- Pass uniforms via `filter.uniforms` object
+- Use `sprite.shader` or `container.filterArea` for per-object effects
+- Prefer PixiJS built-in filters where they meet the visual requirement
 
 ## Code Quality
-- All uniforms/parameters must have descriptive names and appropriate hints
-- Group related parameters (Godot: `group_uniforms`, Unity: `[Header]`, Unreal: Category)
+- All uniforms/parameters must have descriptive names
+- Group related parameters in comment blocks
 - Comment non-obvious calculations (especially math-heavy sections)
 - No magic numbers — use named constants or documented uniform values
-- Include authorship and purpose comment at the top of each shader file
 
 ## Performance Requirements
 - Document the target platform and complexity budget for each shader
-- Use appropriate precision: `half`/`mediump` on mobile where full precision isn't needed
-- Minimize texture samples in fragment shaders
-- Avoid dynamic branching in fragment shaders — use `step()`, `mix()`, `smoothstep()`
+- Use appropriate precision: `mediump` on WebGL where full precision isn't needed
+- Minimize texture samples in fragment shaders (WebGL)
+- Avoid dynamic branching in fragment shaders
 - No texture reads inside loops
 - Two-pass approach for blur effects (horizontal then vertical)
 
 ## Cross-Platform
-- Test shaders on minimum spec target hardware
-- Provide fallback/simplified versions for lower quality tiers
-- Document which render pipeline the shader targets (Forward/Deferred, URP/HDRP, Forward+/Mobile/Compatibility)
-- Do not mix shaders from different render pipelines in the same directory
+- Provide fallback if WebGPU is not available (WebGL2 fallback)
+- Test WebGL2 and WebGPU variants where applicable
+- PixiJS handles context fallback — shaders must be re-creatable on context loss
+- Do not use WebGPU-only features without a WebGL2 fallback
 
 ## Variant Management
 - Minimize shader variants — each variant is a separate compiled shader
-- Document all keywords/variants and their purpose
-- Use feature stripping where possible to reduce build size
-- Log and monitor total variant count per shader
+- Log and monitor total filter count per frame

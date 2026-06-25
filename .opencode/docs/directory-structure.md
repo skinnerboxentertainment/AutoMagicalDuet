@@ -2,17 +2,35 @@
 
 ```text
 /
-├── CLAUDE.md                    # Master configuration
-├── .opencode/                     # Agent definitions, skills, hooks, rules, docs
-├── src/                         # Game source code (core, gameplay, ai, networking, ui, tools)
-├── assets/                      # Game assets (art, audio, vfx, shaders, data)
-├── design/                      # Game design documents (gdd, narrative, levels, balance)
-├── docs/                        # Technical documentation (architecture, api, postmortems)
-│   └── engine-reference/        # Curated engine API snapshots (version-pinned)
-├── tests/                       # Test suites (unit, integration, performance, playtest)
-├── tools/                       # Build and pipeline tools (ci, build, asset-pipeline)
+├── AGENTS.md                    # Master configuration
+├── opencode.json                # OpenCode config (permissions, models, etc.)
+├── package.json                 # npm project (Vite + TypeScript + PixiJS)
+├── tsconfig.json                # TypeScript strict config
+├── vite.config.ts               # Vite dev server + build
+├── index.html                   # Entry point HTML
+├── .opencode/                   # Agent definitions, commands, rules, docs
+│   ├── agents/                  # 35 agent definitions
+│   ├── commands/                # 73 commands
+│   ├── rules/                   # 12 path-scoped coding standards
+│   └── docs/
+│       ├── pixijs-reference/    # PixiJS v8 version reference
+│       └── ...
+├── src/                         # Game source code (TypeScript)
+│   ├── main.ts                  # Entry point
+│   ├── core/                    # Engine-layer code (app init, ticker, config)
+│   ├── gameplay/                # Game logic, systems, components
+│   ├── ai/                      # NPC behavior (if applicable)
+│   ├── networking/              # Multiplayer (if applicable)
+│   ├── ui/                      # HUD, menus, overlays
+│   ├── rendering/               # Custom shaders, post-processing
+│   └── tools/                   # Dev tools, debug overlays
+├── public/                      # Static assets served directly
+├── assets/                      # Game assets (sprites, audio, data)
+├── design/                      # GDDs, narrative docs, level designs
+├── docs/                        # Technical documentation and ADRs
+├── tests/                       # Test suites (Vitest)
 ├── prototypes/                  # Throwaway prototypes (isolated from src/)
-└── production/                  # Production management (sprints, milestones, releases)
+└── production/                  # Sprint plans, milestones, release tracking
     ├── session-state/           # Ephemeral session state (active.md — gitignored)
     └── session-logs/            # Session audit trail (gitignored)
 ```

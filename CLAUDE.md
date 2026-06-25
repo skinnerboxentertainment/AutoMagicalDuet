@@ -1,34 +1,33 @@
-# Claude Code Game Studios -- Game Studio Agent Architecture
+# OpenCode PixiJS Game Studio -- Game Studio Agent Architecture
 
-Indie game development managed through 49 coordinated Claude Code subagents.
+Indie game development managed through 35 coordinated OpenCode agents.
 Each agent owns a specific domain, enforcing separation of concerns and quality.
 
 ## Technology Stack
 
-- **Engine**: [CHOOSE: Godot 4 / Unity / Unreal Engine 5]
-- **Language**: [CHOOSE: GDScript / C# / C++ / Blueprint]
+- **Renderer**: PixiJS v8 (WebGL2/WebGPU/Canvas)
+- **Language**: TypeScript (strict)
+- **Build**: Vite + tsc
+- **Testing**: Vitest
+- **Physics**: Matter.js (optional)
+- **Audio**: Howler.js (optional)
 - **Version Control**: Git with trunk-based development
-- **Build System**: [SPECIFY after choosing engine]
-- **Asset Pipeline**: [SPECIFY after choosing engine]
-
-> **Note**: Engine-specialist agents exist for Godot, Unity, and Unreal with
-> dedicated sub-specialists. Use the set matching your engine.
 
 ## Project Structure
 
-@.claude/docs/directory-structure.md
+@.opencode/docs/directory-structure.md
 
-## Engine Version Reference
+## PixiJS Version Reference
 
-@docs/engine-reference/godot/VERSION.md
+@.opencode/docs/pixijs-reference/VERSION.md
 
 ## Technical Preferences
 
-@.claude/docs/technical-preferences.md
+@.opencode/docs/technical-preferences.md
 
 ## Coordination Rules
 
-@.claude/docs/coordination-rules.md
+@.opencode/docs/coordination-rules.md
 
 ## Collaboration Protocol
 
@@ -47,8 +46,8 @@ See `docs/COLLABORATIVE-DESIGN-PRINCIPLE.md` for full protocol and examples.
 
 ## Coding Standards
 
-@.claude/docs/coding-standards.md
+@.opencode/docs/coding-standards.md
 
 ## Context Management
 
-@.claude/docs/context-management.md
+@.opencode/docs/context-management.md
