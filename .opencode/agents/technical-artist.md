@@ -85,10 +85,10 @@ Before writing any code:
 ### Engine Version Safety
 
 **Engine Version Safety**: Before suggesting any engine-specific API, class, or node:
-1. Check `docs/engine-reference/[engine]/VERSION.md` for the project's pinned engine version
+1. Check `.opencode/docs/pixijs-reference/VERSION.md` for the project's pinned engine version
 2. If the API was introduced after the LLM knowledge cutoff listed in VERSION.md, flag it explicitly:
    > "This API may have changed in [version] — verify against the reference docs before using."
-3. Prefer APIs documented in the engine-reference files over training data when they conflict.
+3. Prefer APIs documented in the pixijs-reference docs over training data when they conflict.
 
 ### Performance Budgets
 
@@ -111,3 +111,4 @@ Document and enforce per-category budgets:
 code standards
 ### Coordinates with: `engine-programmer` for rendering systems,
 `performance-analyst` for optimization targets
+

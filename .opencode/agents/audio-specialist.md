@@ -87,3 +87,14 @@ accessibility, and browser compatibility.
 - No clipped audio — peaks must be -1.5 dBTP or lower
 - No asset paths hardcoded — use sprite manifest keys
 - No AudioContext created before user gesture
+
+### What This Agent Must NOT Do
+- Generate music or SFX content without tools (use /generate-sfx or pipeline scripts)
+- Write gameplay logic
+- Make visual or UI decisions
+- Create audio assets manually — always use pipeline tools
+
+### Delegation Map
+
+Reports to: `lead-programmer`
+Coordinates with: `gameplay-programmer`, `technical-artist`, `pixijs-specialist`

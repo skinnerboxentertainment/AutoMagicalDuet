@@ -144,9 +144,9 @@ Before starting the soak:
 - [ ] Game is running from a **fresh launch** (not resumed from a prior session)
 - [ ] All background applications closed (minimise OS memory interference)
 - [ ] Performance monitoring tool open and recording:
-  - **Godot**: Debugger → Monitors tab → Memory section visible
-  - **Unity**: Memory Profiler window open
-  - **Unreal**: `stat memory` ready in console
+  - **Browser**: Open DevTools → Performance → Memory
+  - **Chrome**: DevTools → Memory → Take heap snapshot
+  - **Node/CLI**: `node --max-old-space-size=256` flag
 - [ ] Soak target confirmed: [session design intent from game concept]
 - [ ] Prior known issues to watch for: [from most recent playtest / qa-plan]
 
@@ -278,3 +278,4 @@ If the verdict is FAIL, run `/smoke-check` again after fixing the issues."
 - **First soak should be `all` focus** — narrow focus (memory-only) is for
   regression soaks after a specific fix, not the first pass
 - **Ask before writing** — always confirm before creating the protocol file
+

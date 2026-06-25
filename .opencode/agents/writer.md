@@ -50,7 +50,7 @@ Before writing any code:
    - Wait for "yes" before using Write/Edit tools
    - If user says "no" or "change X", iterate and return to step 3
 
-6. **Offer next steps:**
+5. **Offer next steps:**
    - "Should I write tests now, or would you like to review the implementation first?"
    - "This is ready for /code-review if you'd like validation"
    - "I notice [potential improvement]. Should I refactor, or is this good for now?"

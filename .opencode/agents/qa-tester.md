@@ -71,67 +71,26 @@ Before writing any code:
 
 For Logic and Integration stories, you write the test file (or scaffold it for the developer to complete).
 
-**Test naming convention**: `[system]_[feature]_test.[ext]`
+**Test naming convention**: `tests/[system]/[feature].test.ts`
 **Test function naming**: `test_[scenario]_[expected]`
 
-**Pattern per engine:**
+**Pattern (TypeScript / Vitest):**
 
-#### Godot (GDScript / GdUnit4)
+```typescript
+import { describe, it, expect } from "vitest"
 
-```gdscript
-extends GdUnitTestSuite
+describe("[SystemName]", () => {
+  it("test_[scenario]_[expected]", () => {
+    // Arrange
+    const subject = new [ClassName]()
 
-func test_[scenario]_[expected]() -> void:
-    # Arrange
-    var subject = [ClassName].new()
-
-    # Act
-    var result = subject.[method]([args])
-
-    # Assert
-    assert_that(result).is_equal([expected])
-```
-
-#### Unity (C# / NUnit)
-
-```csharp
-[TestFixture]
-public class [SystemName]Tests
-{
-    [Test]
-    public void [Scenario]_[Expected]()
-    {
-        // Arrange
-        var subject = new [ClassName]();
-
-        // Act
-        var result = subject.[Method]([args]);
-
-        // Assert
-        Assert.AreEqual([expected], result, delta: 0.001f);
-    }
-}
-```
-
-#### Unreal (C++)
-
-```cpp
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-    F[SystemName]Test,
-    "MyGame.[System].[Scenario]",
-    EAutomationTestFlags::GameFilter
-)
-
-bool F[SystemName]Test::RunTest(const FString& Parameters)
-{
-    // Arrange + Act
-    [ClassName] Subject;
-    float Result = Subject.[Method]([args]);
+    // Act
+    const result = subject.[method]([args])
 
     // Assert
-    TestEqual("[description]", Result, [expected]);
-    return true;
-}
+    expect(result).toBe([expected])
+  })
+})
 ```
 
 **What to test for every Logic story formula:**

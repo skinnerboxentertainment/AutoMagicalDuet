@@ -156,15 +156,16 @@ to get the configured primary specialist. Spawn them alongside the primary agent
 when the story involves engine-specific APIs, patterns, or the ADR has HIGH
 engine risk.
 
-| Engine | Specialist agents available |
-|--------|----------------------------|
-| Godot 4 | `godot-specialist`, `godot-gdscript-specialist`, `godot-shader-specialist` |
-| Unity | `unity-specialist`, `unity-ui-specialist`, `unity-shader-specialist` |
-| Unreal Engine | `unreal-specialist`, `ue-gas-specialist`, `ue-blueprint-specialist`, `ue-umg-specialist`, `ue-replication-specialist` |
+| Layer | Specialist agents available |
+|-------|----------------------------|
+| PixiJS rendering | `pixijs-specialist` |
+| TypeScript / architecture | `lead-programmer` |
+| Audio | `audio-specialist` |
+| UI | `ui-programmer` |
 
-**When engine risk is HIGH** (from the ADR or VERSION.md): always spawn the engine
-specialist, even for non-engine-facing stories. High risk means the ADR records
-assumptions about post-cutoff engine APIs that need expert verification.
+**When pixijs risk is HIGH** (from the ADR or VERSION.md): always spawn the
+specialist, even for non-rendering stories. High risk means the ADR records
+assumptions about post-cutoff PixiJS APIs that need expert verification.
 
 ---
 

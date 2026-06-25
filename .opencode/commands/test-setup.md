@@ -29,11 +29,10 @@ A test framework installed at sprint four costs 3 sprints.
    - Glob `tests/` — does the directory exist?
    - Glob `tests/unit/` and `tests/integration/` — do subdirectories exist?
    - Glob `.github/workflows/` — does a CI workflow file exist?
-   - Glob `tests/gdunit4_runner.gd` (Godot) or `tests/EditMode/` (Unity) or
-     `Source/Tests/` (Unreal) for engine-specific artifacts.
+   - Glob `tests/` for existing test files.
 
 3. **Report findings**:
-   - "Engine: [engine]. Test directory: [found / not found]. CI workflow: [found / not found]."
+   - "Test directory: [found / not found]. CI workflow: [found / not found]."
    - If everything already exists AND `force` argument was not passed:
      "Test infrastructure appears to be in place. Re-run with `/test-setup force`
      to regenerate. Proceeding will not overwrite existing test files."
@@ -83,8 +82,8 @@ After approval, create the following files:
 ```markdown
 # Test Infrastructure
 
-**Engine**: [engine name + version]
-**Test Framework**: [GdUnit4 | Unity Test Framework | UE Automation]
+**Engine**: PixiJS v8 + TypeScript
+**Test Framework**: Vitest
 **CI**: `.github/workflows/tests.yml`
 **Setup date**: [date]
 
@@ -100,7 +99,11 @@ tests/
 
 ## Running Tests
 
-[Engine-specific command — see below]
+```bash
+npx vitest run           # run once
+npx vitest --watch       # watch mode
+npx vitest run --reporter=verbose  # verbose output
+```
 
 ## Test Naming
 
@@ -125,89 +128,33 @@ A failed test suite blocks merging.
 ```
 ```
 
-### Engine-specific files
+### Vitest + TypeScript
 
-#### Godot 4 (`Engine: Godot`)
+Vitest is configured in `vite.config.ts` and requires no additional runner files.
+Test files use `.test.ts` extension and the `describe`/`it`/`expect` pattern:
 
-Create `tests/gdunit4_runner.gd`:
+```typescript
+import { describe, it, expect } from "vitest"
+import { HealthComponent } from "../src/gameplay/health-component"
 
-```gdscript
-# GdUnit4 test runner — invoked by CI and /smoke-check
-# Usage: godot --headless --script tests/gdunit4_runner.gd
-extends SceneTree
-
-func _init() -> void:
-    var runner := load("res://addons/gdunit4/GdUnitRunner.gd")
-    if runner == null:
-        push_error("GdUnit4 not found. Install via AssetLib or addons/.")
-        quit(1)
-        return
-    var instance = runner.new()
-    instance.run_tests()
-    quit(0)
-```
-
-Create `tests/unit/.gdignore_placeholder` with content:
-`# Unit tests go here — one subdirectory per system (e.g., tests/unit/combat/)`
-
-Create `tests/integration/.gdignore_placeholder` with content:
-`# Integration tests go here — one subdirectory per system`
-
-Note in the README: **Installing GdUnit4**
-```
-1. Open Godot → AssetLib → search "GdUnit4" → Download & Install
-2. Enable the plugin: Project → Project Settings → Plugins → GdUnit4 ✓
-3. Restart the editor
-4. Verify: res://addons/gdunit4/ exists
-```
-
-#### Unity (`Engine: Unity`)
-
-Create `tests/EditMode/` placeholder file `tests/EditMode/README.md`:
-```markdown
-# Edit Mode Tests
-Unit tests that run without entering Play Mode.
-Use for pure logic: formulas, state machines, data validation.
-Assembly definition required: `tests/EditMode/EditModeTests.asmdef`
-```
-
-Create `tests/PlayMode/README.md`:
-```markdown
-# Play Mode Tests
-Integration tests that run in a real game scene.
-Use for cross-system interactions, physics, and coroutines.
-Assembly definition required: `tests/PlayMode/PlayModeTests.asmdef`
-```
-
-Note in the README: **Enabling Unity Test Framework**
-```
-Window → General → Test Runner
-(Unity Test Framework is included by default in Unity 2019+)
-```
-
-#### Unreal Engine (`Engine: Unreal` or `Engine: UE5`)
-
-Create `Source/Tests/README.md`:
-```markdown
-# Unreal Automation Tests
-Tests use the UE Automation Testing Framework.
-Run via: Session Frontend → Automation → select "MyGame." tests
-Or headlessly: UnrealEditor -nullrhi -ExecCmds="Automation RunTests MyGame.; Quit"
-
-Test class naming: F[SystemName]Test
-Test category naming: "MyGame.[System].[Feature]"
+describe("HealthComponent", () => {
+  it("test_health_takeDamage_reducesHealth", () => {
+    const health = new HealthComponent()
+    health.currentHealth = 100
+    health.takeDamage(25)
+    expect(health.currentHealth).toBe(75)
+  })
+})
 ```
 
 ---
 
 ## Phase 4: Create CI/CD Workflow
 
-### Godot 4
-
 Create `.github/workflows/tests.yml`:
 
 ```yaml
-name: Automated Tests
+name: Tests
 
 on:
   push:
@@ -217,125 +164,17 @@ on:
 
 jobs:
   test:
-    name: Run GdUnit4 Tests
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          lfs: true
-
-      - name: Run GdUnit4 Tests
-        uses: MikeSchulze/gdUnit4-action@v1
-        with:
-          godot-version: '[VERSION FROM docs/engine-reference/godot/VERSION.md]'
-          paths: |
-            tests/unit
-            tests/integration
-          report-name: test-results
-
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: reports/
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx tsc --noEmit
+      - run: npx vitest run --reporter=verbose
 ```
-
-### Unity
-
-Create `.github/workflows/tests.yml`:
-
-```yaml
-name: Automated Tests
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-jobs:
-  test:
-    name: Run Unity Tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-
-      - name: Run Edit Mode Tests
-        uses: game-ci/unity-test-runner@v4
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-        with:
-          testMode: editmode
-          artifactsPath: test-results/editmode
-
-      - name: Run Play Mode Tests
-        uses: game-ci/unity-test-runner@v4
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-        with:
-          testMode: playmode
-          artifactsPath: test-results/playmode
-
-      - name: Upload Test Results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: test-results/
-```
-
-Note: Unity CI requires a `UNITY_LICENSE` secret. Add to GitHub repository
-secrets before the first CI run.
-
-### Unreal Engine
-
-Create `.github/workflows/tests.yml`:
-
-```yaml
-name: Automated Tests
-
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
-jobs:
-  test:
-    name: Run UE Automation Tests
-    runs-on: self-hosted  # UE requires a local runner with the editor installed
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          lfs: true
-
-      - name: Run Automation Tests
-        run: |
-          "$UE_EDITOR_PATH" "${{ github.workspace }}/[ProjectName].uproject" \
-            -nullrhi -nosound \
-            -ExecCmds="Automation RunTests MyGame.; Quit" \
-            -log -unattended
-        shell: bash
-
-      - name: Upload Logs
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-logs
-          path: Saved/Logs/
-```
-
-Note: UE CI requires a self-hosted runner with Unreal Editor installed.
-Set the `UE_EDITOR_PATH` environment variable on the runner.
 
 ---
 
