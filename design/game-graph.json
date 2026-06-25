@@ -1,0 +1,148 @@
+{
+  "metadata": {
+    "id": "automagically-demo",
+    "title": "AutoMagically Demo — Cat Grapple Platformer",
+    "version": "2.0.0",
+    "createdAt": "2026-06-25T00:00:00.000Z",
+    "modifiedAt": "2026-06-25T00:00:00.000Z",
+    "tags": ["demo", "platformer", "pixijs"]
+  },
+  "content": {
+    "scenes": {
+      "sys_movement": {
+        "id": "sys_movement",
+        "title": "Movement & Grapple System",
+        "blocks": [
+          { "id": "b1", "type": "paragraph", "payload": { "text": "Core movement and grapple hook mechanics. Player controls a cat with left/right movement, jump, and a grapple hook that attaches to surfaces." } }
+        ],
+        "summary": "Player movement, grapple physics, swing arc",
+        "isEnding": false
+      },
+      "sys_combat": {
+        "id": "sys_combat",
+        "title": "Combat System",
+        "blocks": [
+          { "id": "b1", "type": "paragraph", "payload": { "text": "Basic melee combat with claw swipe attack. Enemies have health, deal damage on contact." } }
+        ],
+        "summary": "Melee combat, enemy health, damage",
+        "isEnding": false
+      },
+      "sys_health": {
+        "id": "sys_health",
+        "title": "Health & Death System",
+        "blocks": [
+          { "id": "b1", "type": "paragraph", "payload": { "text": "Player health, damage handling, death/respawn. Health pickups for recovery." } }
+        ],
+        "summary": "Health tracking, damage, respawn",
+        "isEnding": false
+      },
+      "sys_levels": {
+        "id": "sys_levels",
+        "title": "Level System",
+        "blocks": [
+          { "id": "b1", "type": "paragraph", "payload": { "text": "Level loading, tilemaps, grapple points, enemy spawns, collectibles." } }
+        ],
+        "summary": "Level data, tilemaps, object placement",
+        "isEnding": false
+      },
+      "sys_camera": {
+        "id": "sys_camera",
+        "title": "Camera System",
+        "blocks": [
+          { "id": "b1", "type": "paragraph", "payload": { "text": "Camera follows player with smooth interpolation. Supports boundaries, zoom, shake effects." } }
+        ],
+        "summary": "Camera follow, bounds, shake",
+        "isEnding": false
+      },
+      "sys_hud": {
+        "id": "sys_hud",
+        "title": "UI/HUD System",
+        "blocks": [
+          { "id": "b1", "type": "paragraph", "payload": { "text": "Health bar, score display, grapple indicator. PixiJS Container-based in-game UI." } }
+        ],
+        "summary": "HUD elements, score, health display",
+        "isEnding": false
+      },
+      "sys_menu": {
+        "id": "sys_menu",
+        "title": "Main Menu & Pause",
+        "blocks": [
+          { "id": "b1", "type": "paragraph", "payload": { "text": "Title screen, pause menu, settings overlay. DOM-based UI." } }
+        ],
+        "summary": "Menus, pause, settings",
+        "isEnding": false
+      }
+    },
+    "arcs": {
+      "arc_core": {
+        "id": "arc_core",
+        "title": "Core Game Loop",
+        "description": "Essential systems for a playable game",
+        "nodeIds": ["sys_movement", "sys_combat", "sys_health", "sys_levels", "sys_camera", "sys_hud"]
+      },
+      "arc_polish": {
+        "id": "arc_polish",
+        "title": "Polish & Menus",
+        "description": "Menu system and visual polish",
+        "nodeIds": ["sys_menu"]
+      }
+    }
+  },
+  "topology": {
+    "nodes": {
+      "sys_movement": { "id": "sys_movement", "sceneId": "sys_movement", "arcId": "arc_core" },
+      "sys_combat": { "id": "sys_combat", "sceneId": "sys_combat", "arcId": "arc_core" },
+      "sys_health": { "id": "sys_health", "sceneId": "sys_health", "arcId": "arc_core" },
+      "sys_levels": { "id": "sys_levels", "sceneId": "sys_levels", "arcId": "arc_core" },
+      "sys_camera": { "id": "sys_camera", "sceneId": "sys_camera", "arcId": "arc_core" },
+      "sys_hud": { "id": "sys_hud", "sceneId": "sys_hud", "arcId": "arc_core" },
+      "sys_menu": { "id": "sys_menu", "sceneId": "sys_menu", "arcId": "arc_polish" }
+    },
+    "transitions": {
+      "t_movement_combat": { "id": "t_movement_combat", "source": "sys_movement", "target": "sys_combat", "label": "depends_on", "conditions": [], "mutations": [], "events": [] },
+      "t_combat_health": { "id": "t_combat_health", "source": "sys_combat", "target": "sys_health", "label": "depends_on", "conditions": [], "mutations": [], "events": [] },
+      "t_movement_camera": { "id": "t_movement_camera", "source": "sys_movement", "target": "sys_camera", "label": "depends_on", "conditions": [], "mutations": [], "events": [] },
+      "t_levels_movement": { "id": "t_levels_movement", "source": "sys_levels", "target": "sys_movement", "label": "depends_on", "conditions": [], "mutations": [], "events": [] },
+      "t_levels_combat": { "id": "t_levels_combat", "source": "sys_levels", "target": "sys_combat", "label": "depends_on", "conditions": [], "mutations": [], "events": [] },
+      "t_health_hud": { "id": "t_health_hud", "source": "sys_health", "target": "sys_hud", "label": "depends_on", "conditions": [], "mutations": [], "events": [] },
+      "t_movement_hud": { "id": "t_movement_hud", "source": "sys_movement", "target": "sys_hud", "label": "depends_on", "conditions": [], "mutations": [], "events": [] }
+    }
+  },
+  "environment": {
+    "variables": {
+      "player_health": { "id": "player_health", "name": "Player Health", "type": "number", "defaultValue": 100, "scope": "session" },
+      "player_score": { "id": "player_score", "name": "Player Score", "type": "number", "defaultValue": 0, "scope": "session" },
+      "current_level": { "id": "current_level", "name": "Current Level", "type": "string", "defaultValue": "level_01", "scope": "session" },
+      "grapple_available": { "id": "grapple_available", "name": "Grapple Unlocked", "type": "boolean", "defaultValue": false, "scope": "global" }
+    },
+    "events": {}
+  },
+  "presentation": {
+    "scenes": {},
+    "characters": {},
+    "themes": {},
+    "cinematics": {}
+  },
+  "runtime": {
+    "config": {
+      "startNodeId": "sys_movement"
+    }
+  },
+  "editor": {
+    "viewport": { "x": 0, "y": 0, "zoom": 1 },
+    "nodePositions": {
+      "sys_movement": { "x": 100, "y": 200 },
+      "sys_combat": { "x": 400, "y": 200 },
+      "sys_health": { "x": 700, "y": 200 },
+      "sys_levels": { "x": 100, "y": 500 },
+      "sys_camera": { "x": 400, "y": 500 },
+      "sys_hud": { "x": 700, "y": 500 },
+      "sys_menu": { "x": 100, "y": 800 }
+    },
+    "groups": {}
+  },
+  "plugins": {
+    "registry": {},
+    "state": {}
+  }
+}

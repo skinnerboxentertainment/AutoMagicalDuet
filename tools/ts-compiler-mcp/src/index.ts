@@ -5,7 +5,9 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js"
 import { Project } from "ts-morph"
+import { NarrativeDocumentV2Schema, analyzeDocument } from "@automagically/narrative-core"
 import path from "node:path"
+import fs from "node:fs"
 
 const projectRoot = process.argv[2] || process.cwd()
 const project = new Project({
@@ -89,6 +91,37 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
         type: "object",
         properties: { filePath: { type: "string", description: "Relative path to the file" } },
         required: ["filePath"],
+      },
+    },
+    {
+      name: "validateNarrative",
+      description: "Validate a NarrativeDocumentV2 JSON file against the schema",
+      inputSchema: {
+        type: "object",
+        properties: { filePath: { type: "string", description: "Path to the JSON file" } },
+        required: ["filePath"],
+      },
+    },
+    {
+      name: "analyzeStory",
+      description: "Run graph analysis on a narrative document (reachability, orphans, dead ends)",
+      inputSchema: {
+        type: "object",
+        properties: { filePath: { type: "string", description: "Path to the JSON file" } },
+        required: ["filePath"],
+      },
+    },
+    {
+      name: "simulatePath",
+      description: "Simulate walking a path through the story graph",
+      inputSchema: {
+        type: "object",
+        properties: {
+          filePath: { type: "string", description: "Path to the JSON file" },
+          fromNode: { type: "string", description: "Starting node ID" },
+          toNode: { type: "string", description: "Target node ID" },
+        },
+        required: ["filePath", "fromNode", "toNode"],
       },
     },
   ],
@@ -267,6 +300,122 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                 layer: currentLayer,
                 violations: violations.length > 0 ? violations : "none",
                 status: violations.length > 0 ? "VIOLATION" : "CLEAN",
+              },
+              null,
+              2
+            ),
+          },
+        ],
+      }
+    }
+
+    case "validateNarrative": {
+      const filePath = String(args?.filePath || "")
+      const fullPath = path.resolve(projectRoot, filePath)
+      const json = JSON.parse(fs.readFileSync(fullPath, "utf-8"))
+      const result = NarrativeDocumentV2Schema.safeParse(json)
+      if (!result.success) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: JSON.stringify(
+                {
+                  file: filePath,
+                  valid: false,
+                  errors: result.error.issues.map((i) => ({
+                    path: i.path.join("."),
+                    message: i.message,
+                  })),
+                },
+                null,
+                2
+              ),
+            },
+          ],
+        }
+      }
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                file: filePath,
+                valid: true,
+                version: result.data.metadata.version,
+                nodes: Object.keys(result.data.topology.nodes).length,
+                transitions: Object.keys(result.data.topology.transitions).length,
+                variables: Object.keys(result.data.environment.variables).length,
+              },
+              null,
+              2
+            ),
+          },
+        ],
+      }
+    }
+
+    case "analyzeStory": {
+      const filePath = String(args?.filePath || "")
+      const fullPath = path.resolve(projectRoot, filePath)
+      const json = JSON.parse(fs.readFileSync(fullPath, "utf-8"))
+      const doc = NarrativeDocumentV2Schema.parse(json) as unknown as import("@automagically/narrative-core").NarrativeDocumentV2
+      const analysis = analyzeDocument(doc)
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(analysis, null, 2),
+          },
+        ],
+      }
+    }
+
+    case "simulatePath": {
+      const filePath = String(args?.filePath || "")
+      const fromNode = String(args?.fromNode || "")
+      const toNode = String(args?.toNode || "")
+      const fullPath = path.resolve(projectRoot, filePath)
+      const json = JSON.parse(fs.readFileSync(fullPath, "utf-8"))
+      const doc = NarrativeDocumentV2Schema.parse(json)
+
+      const visited = new Set<string>()
+      const queue: Array<{ nodeId: string; path: string[] }> = [{ nodeId: fromNode, path: [fromNode] }]
+      let found: string[] | null = null
+
+      while (queue.length > 0) {
+        const current = queue.shift()!
+        if (visited.has(current.nodeId)) continue
+        visited.add(current.nodeId)
+
+        if (current.nodeId === toNode) {
+          found = current.path
+          break
+        }
+
+        const outgoing = Object.values(doc.topology.transitions)
+          .filter((t) => t.source === current.nodeId)
+          .map((t) => t.target)
+
+        for (const target of outgoing) {
+          if (!visited.has(target)) {
+            queue.push({ nodeId: target, path: [...current.path, target] })
+          }
+        }
+      }
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: JSON.stringify(
+              {
+                from: fromNode,
+                to: toNode,
+                reachable: found !== null,
+                path: found || null,
+                nodesSearched: visited.size,
               },
               null,
               2

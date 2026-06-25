@@ -11,6 +11,7 @@
     "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
+    "@automagically/narrative-core": "file:../../packages/narrative-core",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "ts-morph": "^25.0.1"
   },

@@ -1,6 +1,6 @@
 # OpenCode PixiJS Game Studio — Full Project Tour
 
-*Generated 2026-06-25 — reflects commits `32adae1` + `628963f`*
+*Generated 2026-06-25 — reflects commits `32adae1` → `8ef042c`*
 
 ---
 
@@ -23,6 +23,7 @@ agent infrastructure** — the novel part.
 | **Build** | Vite 6 + tsc | Installed |
 | **Testing** | Vitest 3 | Installed |
 | **Models** | DeepSeek V4 Pro (opus), DeepSeek V4 Flash (sonnet/haiku) | Go plan |
+| **Narrative Graph** | `@automagically/narrative-core` workspace package | Imported from Narrative Workbench |
 | **Physics** | Matter.js | Not installed (optional) |
 | **Audio** | Howler.js | Not installed (optional) |
 
@@ -251,11 +252,21 @@ navigation tasks and produces exact results.
 ├── package.json                        # npm: pixi.js, typescript, vite, vitest
 ├── tsconfig.json                       # TypeScript strict config
 ├── vite.config.ts                      # Vite + Vitest config
+├── packages/
+│   └── narrative-core/                 # Workspace: NarrativeDocumentV2 format + engine + analysis
+│       └── src/
+│           ├── schema.ts               # Zod schema (NarrativeDocumentV2)
+│           ├── types.ts                # TS type definitions
+│           ├── engine.ts               # Headless NarrativeEngine
+│           ├── events.ts               # Pub/sub event bus
+│           └── analysis.ts             # Graph analysis (reachability, orphans, dead ends)
 ├── src/
-│   └── main.ts                         # PixiJS Application bootstrap
+│   ├── main.ts                         # PixiJS Application bootstrap
+│   └── gameplay/narrative/             # NarrativeEngine wrapper for PixiJS dialogue
 │
 ├── public/                             # Static assets
-├── tests/                              # Vitest test suites (empty)
+├── tests/
+│   ├── narrative-core.test.ts          # Vitest suite: 5 tests (schema, analysis, engine, events)
 │
 ├── .opencode/
 │   ├── agents/                         # 35 agent definitions
@@ -272,7 +283,7 @@ navigation tasks and produces exact results.
 │
 ├── tools/
 │   └── ts-compiler-mcp/                # MCP server for compiler-backed tools
-│       ├── src/index.ts                # Server with 5 tools
+│       ├── src/index.ts                # Server with 8 tools (5 TS + 3 narrative)
 │       ├── package.json
 │       ├── tsconfig.json
 │       └── README.md
@@ -283,7 +294,9 @@ navigation tasks and produces exact results.
 │   └── registry/                       # Entity/item registry
 │
 ├── assets/                             # Game assets (empty)
-├── design/                             # GDDs, narrative (empty — only CLAUDE.md)
+├── design/
+│   ├── game-graph.json                 # Example NarrativeDocumentV2 — cat grapple platformer
+│   └── gdd/                            # GDD markdown files (empty)
 ├── prototypes/                         # Throwaway experiments (empty)
 └── production/                         # Sprints, milestones, releases
     ├── session-state/                  # Ephemeral session state (gitignored)
@@ -306,12 +319,61 @@ The `/start` command runs the first-time onboarding flow.
 
 ---
 
+---
+
+## Narrative Core — Graph Format for Game Design
+
+**`packages/narrative-core/`** — a workspace package extracted from
+[Narrative Workbench](https://github.com/skinnerboxentertainment/NarrativeDocument),
+MIT licensed. Pure TypeScript, zero UI dependencies.
+
+### What It Is
+
+The `NarrativeDocumentV2` schema is a **typed directed graph with conditional
+edges and state variables**. Originally designed for interactive fiction,
+it generalizes to any game design structure:
+
+| Domain | Nodes | Edges |
+|--------|-------|-------|
+| System dependencies | Gameplay systems | `depends_on` |
+| Feature roadmap | Epics/stories | `blocks`, `requires` |
+| State machines | Game states | `transition` |
+| Agent delegation | Agents | `delegates_to` |
+| Asset pipeline | Assets | `depends_on` |
+
+### Files
+
+| File | Purpose |
+|------|---------|
+| `schema.ts` | Zod schema — validates any `NarrativeDocumentV2` JSON |
+| `types.ts` | Inferred TypeScript types |
+| `engine.ts` | Headless `NarrativeEngine` — walks graph, evaluates conditions, applies mutations, interpolates variables |
+| `events.ts` | Pub/sub event bus for runtime side effects |
+| `analysis.ts` | Graph analysis — reachability, orphan detection, dead ends, broken references |
+
+### Integration Points
+
+| Integration | What | File |
+|-------------|------|------|
+| **Command** | `/narrative-validate` — validates a graph JSON, runs analysis | `.opencode/commands/narrative-validate.md` |
+| **MCP tool** | `validateNarrative`, `analyzeStory`, `simulatePath` | `tools/ts-compiler-mcp/src/index.ts` |
+| **Gameplay** | `NarrativeSystem` — wraps `NarrativeEngine` for PixiJS | `src/gameplay/narrative/narrative-system.ts` |
+| **Seed data** | Example cat grapple platformer graph | `design/game-graph.json` |
+| **Tests** | 5 passing tests (schema, analysis, engine init, conditions, events) | `tests/narrative-core.test.ts` |
+
+### Usage
+
+The format is optional — a sidecar file alongside markdown GDDs.
+Run `/narrative-validate design/game-graph.json` to validate and analyze.
+
+---
+
 ## What's Missing
 
 1. **No game concept** — no GDDs, no brainstorm docs, no idea what we're building
 2. **No game code** — just the PixiJS `Application` bootstrap in `src/main.ts`
 3. **No assets** — `assets/` is empty
-4. **No tests** — `tests/` directory exists but has no suites
+4. **Tests growing** — `tests/narrative-core.test.ts` exists (5 tests passing), but no gameplay tests yet
 5. **No architecture decisions** — `docs/architecture/` is empty
 6. **No sprint plans** — `production/` has no sprint files
 
