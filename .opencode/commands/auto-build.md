@@ -1,21 +1,119 @@
 ---
-description: "Auto-build a game from a spec. Reads a game description, matches the genre to a pattern, generates complete scaffold (core engine + gameplay + tests + audio + assets), verifies with tsc and vitest, then writes to disk on approval. Zero intermediate questions — one gate at the end."
+description: "Auto-build a game from a spec or design document. Reads a game description or document, analyzes it to extract systems, entities, mechanics, and rules. Generates a complete scaffold (core engine + gameplay + tests + audio + assets), verifies with tsc and vitest, then writes to disk on approval. One command to a running build."
 agent: build
 ---
 
 # Auto-Build
 
-This command bypasses the normal collaborative protocol. It reads a game spec,
-generates a complete working build, and asks exactly one question at the end.
+This command bypasses the normal collaborative protocol. It reads a game spec
+or design document, generates a complete working build, and asks exactly
+**one** question at the end (unless the document has gaps — then it batches
+all unknowns into one question first).
 
-**Usage:** `/auto-build <game description>`
-Example: `/auto-build 2D platformer where you collect gems and avoid spikes`
+**Usage:**
+```
+/auto-build "2D platformer where you collect gems"     — inline spec (short)
+/auto-build design/gdd/game-concept.md                  — file path (doc)
+/auto-build <paste multi-line description>              — pasted (auto-detect)
+```
 
 ---
 
-## Phase 1: Parse Spec
+## Phase 0: Ingestion
 
-Parse the user's game description into a structured spec object. Extract:
+Detect the input type:
+
+| Input | Detection | Behavior |
+|-------|-----------|----------|
+| `/auto-build "text..."` | Single line, no newlines, <500 chars | Inline spec — skip doc analysis, go to Phase 1 |
+| `/auto-build path/to/file.md` | Argument is an existing readable file | Read file — go to Phase 0.5 |
+| `/auto-build <pasted block>` | Contains newlines or >500 chars | Treat as pasted document — go to Phase 0.5 |
+
+Supported file formats: `.md`, `.txt`. If no extension, attempt to read as
+markdown anyway.
+
+If file is specified but not found: report error, offer to fall back to
+inline spec parsing with the filename as context.
+
+---
+
+## Phase 0.5: Document Analysis
+
+Read the document and extract a structured spec. For each field, record
+whether it came from the document or is unknown:
+
+| Field | Extract from doc | Unknown if |
+|-------|------------------|------------|
+| Genre | "platformer", "top-down", "shmup", "runner", "puzzle", or custom | No genre indicator found |
+| Core mechanic | Verbs: jump, shoot, collect, match, dodge, dash, grapple, etc. | No action verbs |
+| Player properties | health, speed, abilities, size | No player description |
+| Enemy types | Type names + behavior + health per type | Combat not described |
+| World layout | Tile size, scrolling direction, ground type, grid | No spatial description |
+| Win condition | Score target, reach end, survive, defeat boss | No end state |
+| Progression | Levels, waves, difficulty curve, unlocks | No progression system |
+| UI screens | Health bar, score, inventory, menu, minimap | No UI description |
+| Economy | Currencies, items, prices, sinks/faucets | No economy described |
+| Audio cues | Per-action sound events, music style | No audio description |
+| Rules/formulas | damage = attack - defense, cooldowns, states | No explicit rules |
+| Theme | forest, space, dungeon, city, etc. | No theme described |
+| Tone | dark, moody, bright, casual, horror | No tone described |
+
+Extraction strategy — read the document thoroughly, then:
+1. Identify all explicitly named systems, entities, mechanics
+2. Map each to the field table above
+3. Collect anything that doesn't fit a field as "additional notes"
+4. Mark any field not addressed as **unknown**
+
+---
+
+## Phase 0.75: Coverage Report
+
+After analysis, produce a structured summary:
+
+```
+## Document Analysis Complete
+
+### Captured from document
+[coverage count] of [total] fields populated
+
+- Genre: [genre] (source: explicit / inferred)
+- [field]: [value] (source: explicit / inferred)
+- ...
+
+### Not specified (unknowns)
+- [field]: [question for user]
+- [field]: [question for user]
+- ...
+```
+
+If there are **zero unknowns**, display the summary and proceed to Phase 2.
+
+If there are **unknowns**, batch them all into a single question widget:
+
+```
+[ ] [field]: [option A] / [option B] / [option C]
+[ ] [field]: [option A] / [option B] / [option C]
+[ ] [field]: [option A] / [option B] / [option C]
+
+[A] Apply defaults and build      [B] Answer questions first      [C] Cancel
+```
+
+- **[A]** — use genre pattern defaults for all unknowns, proceed to Phase 2
+- **[B]** — show the question widget with all unknowns, then proceed
+- **[C]** — cancel, no files written
+
+After questions are answered (or defaults applied), write the decision record
+to conversation state. This feeds into the Build Summary at Phase 5.
+
+---
+
+## Phase 1: Resolve Spec
+
+Combine inputs into a final spec object:
+
+### For inline input (Phase 0 skipped)
+
+Parse the user's game description into a structured spec object:
 
 | Field | Extract from text | Default if missing |
 |-------|-------------------|--------------------|
@@ -29,12 +127,24 @@ Parse the user's game description into a structured spec object. Extract:
 
 If the genre is not one of the five named patterns, fall back to `minimal`.
 
+### For document input (Phase 0.5 completed)
+
+Merge three sources in priority order:
+1. **Document fields** (highest priority) — what the spec explicitly stated
+2. **User answers** (medium priority) — what the user selected in Phase 0.75
+3. **Genre defaults** (lowest priority) — what the matched genre pattern provides
+
+The genre pattern provides defaults **only** for fields the document didn't
+address and the user didn't answer. The document's own specs are authoritative
+where they exist.
+
 ---
 
 ## Phase 2: Load Patterns and Rules
 
 1. **Read genre pattern**: `.opencode/templates/genre-patterns/[genre].md`
    - Extract player parameters, world layout, objects, camera, audio, test strategy
+   - These provide **defaults** — document fields override them
    - If genre is unknown, read `minimal.md`
 
 2. **Read architecture rules**: `.opencode/skills/automagically-game-architecture/SKILL.md`
@@ -59,6 +169,13 @@ If the genre is not one of the five named patterns, fall back to `minimal`.
 
 Generate all files in this order. Each file must conform to the architecture,
 testing, audio, and asset rules loaded in Phase 2.
+
+**Document-driven generation:** When generating gameplay code, prefer the
+document's explicit specifications over genre pattern defaults:
+- If the doc says "player health = 5" → generate exactly that
+- If the doc says "enemy has 3 HP and drops a coin" → generate exactly that
+- If the doc says nothing about a field → use genre pattern default
+- If the doc describes a system not in the genre pattern → generate it anyway
 
 ### Core (always generated)
 
@@ -110,14 +227,18 @@ src/scenes/boot-scene.ts
 ```
 src/scenes/game-scene.ts
 ```
-- Creates gameplay objects from genre pattern
+- Creates gameplay objects from resolved spec
 - Delegates update to player, enemies, systems
 - Handles game-over transition
 
-### Gameplay (genre-dependent)
+### Gameplay (spec-dependent)
 
-Generate the files listed in the genre pattern's `## Generated Files` section.
-Each file must:
+Generate files matching the resolved spec's systems. For each system:
+- If the doc specifies exact behavior → implement exactly
+- If the genre pattern defines it and doc is silent → use genre pattern logic
+- If neither covers it → implement minimal working version
+
+Every generated file must:
 - Use the Scene interface and types from `src/core/types.ts`
 - Read input from `InputManager` (never register DOM listeners)
 - Keep state on plain classes (never on Sprite/Container properties)
@@ -173,8 +294,7 @@ tests/unit/core/input-manager.test.ts
 ```
 - Keys captured on keydown, released on keyup, cleared on blur
 
-Generate genre-specific tests from the pattern's `## Generated Files`.
-Each test must:
+Generate spec-specific tests for each gameplay system. Each test must:
 - Use Vitest (`describe`, `it`, `expect`)
 - Use `FakeClock` for time-dependent assertions
 - Use `seeded-rng` for any randomness
@@ -192,7 +312,7 @@ assets/manifest.json
 ```
 - PixiJS v8 manifest format
 - Bundle `core` with shared assets (empty for now — placeholder)
-- Bundle per scene name from genre pattern
+- Bundle per scene name from resolved spec
 
 ---
 
@@ -221,15 +341,20 @@ After generating all file content (but before writing to disk):
 
 ---
 
-## Phase 5: Gate
+## Phase 5: Gate + Build Summary
 
-Present the result with exactly one question:
+Present the result with the gate. If this was a document build, write a
+Build Summary to `docs/build-summary-[YYYY-MM-DD].md`.
+
+### Gate presentation
 
 ```
 ## Build Complete
 
+**Source:** [inline spec / path/to/design-doc.md / pasted document]
 **Genre:** [genre]
 **Files created:** [count]
+**Systems generated:** [list of gameplay systems]
 **tsc:** PASS
 **vitest:** [PASS / SKIPPED]
 
@@ -241,11 +366,55 @@ Present the result with exactly one question:
 If the user picks [B]: show a bullet list of every file with a one-line
 description of its purpose, then re-ask [A]/[B]/[C].
 
-If the user picks [A]: write all files that were verified in Phase 4.
-Do not re-write files that were already written during verification.
+If the user picks [A]: write all files verified in Phase 4. Then write the
+Build Summary to `docs/build-summary-[YYYY-MM-DD].md` (see below).
 
-If the user picks [C]: delete any files that were written during verification.
+If the user picks [C]: delete any files written during verification.
 Clean up completely. No trace.
+
+### Build Summary document
+
+When writing to disk, also create `docs/build-summary-[YYYY-MM-DD].md`:
+
+```markdown
+# Build Summary — [YYYY-MM-DD]
+
+**Generated from:** [path-to-document / inline spec]
+**Genre:** [genre]
+
+## Source Coverage
+
+| Field | Value | Source |
+|-------|-------|--------|
+| Genre | [genre] | [explicit / inferred / default] |
+| [field] | [value] | [explicit / user / default] |
+| ... | ... | ... |
+
+## Files Created
+
+| File | Purpose |
+|------|---------|
+| `src/main.ts` | Rewritten for game boot |
+| ... | ... |
+
+## Decisions Made
+
+[For each field that was answered by the user or filled by default:]
+- **Field:** [field name] → [chosen value]
+- **Rationale:** [answered by user / genre default because doc was silent]
+
+## Verification
+
+- tsc: [PASS / FAIL — errors fixed]
+- vitest: [PASS / FAIL — tests fixed]
+
+## Next Steps
+
+Recommended commands for iteration:
+- `/auto-build "change [specific thing]"` — quick iteration
+- `/dev-story` — implement a structured feature
+- `/design-review` — validate generated game design
+```
 
 ---
 
@@ -257,8 +426,11 @@ This command intentionally breaks the normal collaborative protocol:
 - **No director gates** — no creative-director, technical-director, or producer review
 - **No "May I write?"** — write during verification, gate at the end
 
-The one gate at Phase 5 is the only user interaction after the initial spec.
-This is by design — the entire value of `/auto-build` is speed.
+The only user interactions after the initial input are:
+1. (Optional) Phase 0.75 — one batched question if the document has gaps
+2. Phase 5 — one gate to confirm write
+
+Both are batched. Neither is per-file or per-section.
 
 ---
 
@@ -268,7 +440,9 @@ If any phase fails:
 
 | Phase | Failure | Recovery |
 |-------|---------|----------|
-| 1 (Parse) | Spec unrecognizable | Adopt minimal genre, use spec text as theme name |
+| 0 (Ingest) | File not found | Offer fallback to inline parsing |
+| 0.5 (Analysis) | Document unparseable | Fall back to inline parsing with filename as context |
+| 1 (Resolve) | Spec unrecognizable | Adopt minimal genre, use spec text as theme name |
 | 3 (Generate) | Cannot generate a file | Skip that file, note in summary, continue |
 | 4 (Verify) | tsc fails after 3 retries | Show errors, offer retry/simplify/cancel |
 | 4 (Verify) | vitest fails after 3 retries | Show failures, offer retry/skip/cancel |
