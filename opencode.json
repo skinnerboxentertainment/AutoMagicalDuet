@@ -4,7 +4,11 @@
   "small_model": "opencode-go/deepseek-v4-flash",
   "instructions": [
     ".opencode/rules/*.md",
-    "AGENTS.md"
+    "AGENTS.md",
+    ".opencode/skills/automagically-game-architecture/SKILL.md",
+    ".opencode/skills/automagically-testing/SKILL.md",
+    ".opencode/skills/automagically-audio/SKILL.md",
+    ".opencode/skills/automagically-assets-and-build/SKILL.md"
   ],
   "permission": {
     "read": {

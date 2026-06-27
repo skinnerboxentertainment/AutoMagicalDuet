@@ -3,8 +3,11 @@
 Indie game development managed through 36 coordinated OpenCode agents.
 Each agent owns a specific domain, enforcing separation of concerns and quality.
 
-This is a PixiJS v8 + TypeScript derivative of [OpenCode Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios)
-by Donchitos, adapted for OpenCode. Targeting the browser as the primary platform.
+Forked from [AutoMagically](https://github.com/skinnerboxentertainment/AutoMagically)
+(skinnerboxentertainment), originally derived from
+[Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) by Donchitos.
+Refactored with /auto-build, document analysis, custom architecture skills,
+engine drift cleanup, and tool-agnostic commands. Targeting the browser as the primary platform.
 
 ## Model Tier Configuration
 
