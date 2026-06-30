@@ -74,9 +74,9 @@ clean infrastructure.
 | Category | Count | Description |
 |----------|-------|-------------|
 | **Agents** | 36 | Specialized agents across design, programming, art, audio, narrative, QA, and production |
-| **Commands** | 77 | Commands for every workflow phase (`/auto-build`, `/start`, `/design-system`, `/dev-story`, etc.) |
-| **Rules** | 12 | Path-scoped coding standards enforced per file path |
-| **Templates** | 41 | Document templates for GDDs, UX specs, ADRs, sprint plans, HUD design, accessibility, and more |
+| **Commands** | 81 | Commands for every workflow phase (`/auto-build`, `/start`, `/design-system`, `/dev-story`, etc.) |
+| **Rules** | 13 | Path-scoped coding standards enforced per file path |
+| **Genre patterns** | 6 | Templates for platformer, top-down, shmup, runner, puzzle, and minimal builds |
 | **Skills** | 34 | Installed AI skills: 26 PixiJS v8 reference skills + 4 project architecture skills + 4 process skills |
 
 ## Studio Hierarchy
@@ -144,7 +144,7 @@ Type `/` in OpenCode to access all 77 commands:
 `/prototype` `/onboard` `/localize`
 
 **Team Orchestration**
-`/team-combat` `/team-narrative` `/team-ui` `/team-release` `/team-polish` `/team-audio` `/team-level` `/team-live-ops` `/team-qa`
+_Commands available in the full agent suite_
 
 ## Getting Started
 
@@ -196,8 +196,9 @@ opencode.json                       # OpenCode config (permissions, models, etc.
   docs/
     pixijs-reference/               # PixiJS v8 version reference
     workflow-catalog.yaml           # 7-phase pipeline definition
-    templates/                      # 41 document templates
+    templates/                      # Document templates
     shared-protocols.md             # Canonical error recovery, file write, collaboration
+  templates/
     genre-patterns/                 # 6 genre patterns for /auto-build
 .agents/skills/                     # 34 installed AI skills
 src/                                # Game source code (TypeScript)
@@ -213,7 +214,7 @@ public/                             # Static assets (HTML, favicon, etc.)
 ## Customization
 
 - **Add/remove agents** — delete or create agent files in `.opencode/agents/`
-- **Add genre patterns** — create `.opencode/docs/genre-patterns/[name].md` — `/auto-build` discovers them automatically
+- **Add genre patterns** — create `.opencode/templates/genre-patterns/[name].md` — `/auto-build` discovers them automatically
 - **Add rules** — create path-scoped rule files in `.opencode/rules/`
 - **Pick your tech stack** — PixiJS v8 + Howler.js pre-configured; add Matter.js, etc.
 - **Set review intensity** — `full`, `lean`, or `solo` via `/start` or `production/review-mode.txt`
@@ -222,16 +223,6 @@ public/                             # Static assets (HTML, favicon, etc.)
 
 Primary development and testing on **Windows 11** with PowerShell 7+.
 OpenCode is cross-platform (Windows, macOS, Linux).
-
-## Support My Work
-
-AutoMagically Built Games runs on [OpenCode](https://opencode.ai).
-If you're new to OpenCode, sign up through my referral link —
-you get **$5 credit**, and I earn **$5** too.
-
-👉 **[https://opencode.ai/go?ref=H0NH2RZJS1](https://opencode.ai/go?ref=H0NH2RZJS1)**
-
-Stars, forks, and sharing the project also help tremendously. Thank you.
 
 ## License
 
