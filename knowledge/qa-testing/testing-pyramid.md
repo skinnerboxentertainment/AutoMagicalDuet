@@ -11,10 +11,12 @@ Most coverage should test deterministic logic without a browser or renderer. Bro
 
 ## Patterns
 
+- Mirror `src/` under `tests/` with `unit/`, `integration/`, `browser/`, `visual/`, and `helpers/` directories.
 - Use unit tests for roughly 80% of coverage: state transitions, formulas, collision decisions, spawn logic, save/load, and seeded RNG.
-- Use integration tests for scene lifecycle, input capture, audio routing, resize behavior, and asset failure handling.
-- Use browser tests for startup, canvas rendering, input paths, pause/resume, fullscreen, and focus-loss behavior.
-- Use visual tests only for stable contracts such as main menu, representative gameplay, HUD, and game-over state.
+- Use integration tests for roughly 15% of coverage: scene lifecycle, input capture, audio routing, resize behavior, and asset failure handling.
+- Use browser tests for roughly 4% of coverage: startup, canvas rendering, input paths, pause/resume, fullscreen, and focus-loss behavior.
+- Use visual tests for roughly 1% of coverage, limited to stable contracts such as main menu, representative gameplay, HUD, and game-over state.
+- Keep shared factories, mocks, assertions, fake clocks, and seeded RNG helpers in `tests/helpers/`.
 
 ## Anti-patterns
 

@@ -20,6 +20,26 @@
       "body": "# AI Code Standards\n\nGame AI should be data-driven, debuggable, readable to players, and bounded by a strict frame budget.\n\n## Patterns\n\n- Prefer behavior trees, utility systems, or explicit state machines over hardcoded if/else chains.\n- Keep AI update work within a 2ms per-frame budget and profile to verify.\n- Load perception ranges, weights, timers, formations, and role assignments from data.\n- Telegraph AI intentions so players can learn and react.\n- Log AI state transitions for debugging.\n- Provide visualization hooks for paths, perception cones, decision trees, and current goals.\n- Validate networked AI inputs and commands server-side.\n\n## Anti-patterns\n\n- Perfectly optimal AI that is unreadable or unfair to play against.\n- Hidden AI parameters embedded in code.\n- Group behavior that ignores formation, flanking, or role data.\n- Networked AI accepting client-provided state as trusted.\n\n## References\n\n- `.opencode/rules/ai-code.md`\n- `.opencode/agents/ai-programmer.md`"
     },
     {
+      "id": "deep-module-review",
+      "title": "Deep Module Review",
+      "description": "# Deep Module Review",
+      "tags": [
+        "modules",
+        "review",
+        "seams"
+      ],
+      "triggers": [
+        "src/**",
+        "docs/architecture/adr/**"
+      ],
+      "related": [
+        "architecture/layer-isolation",
+        "workflow/decision-records",
+        "qa-testing/tdd-tracer-bullets"
+      ],
+      "body": "# Deep Module Review\n\nArchitecture review should look for deepening opportunities: refactors that put real complexity behind small, stable interfaces and improve locality, leverage, and testability.\n\n## Patterns\n\n- Use consistent vocabulary: module, interface, depth, seam, adapter, leverage, and locality.\n- Look for concepts that require bouncing across many small modules to understand.\n- Flag shallow modules whose interface is nearly as complex as their implementation.\n- Treat the interface as the test surface; deep modules should let tests verify meaningful behavior without knowing internals.\n- Apply the deletion test to suspected shallow modules: deleting one should concentrate complexity behind a better shape, not merely move code elsewhere.\n- Prefer seams named in the domain language from `CONTEXT.md` or current design docs.\n- Treat one adapter as a hypothetical seam and two adapters as stronger evidence that the seam is real.\n- Surface ADR conflicts only when the current friction is strong enough to justify reopening the decision.\n- When presenting candidates, include files, problem, solution, benefits, before/after shape, and recommendation strength.\n\n## Anti-patterns\n\n- Calling every extraction a module improvement when it only creates more hopping.\n- Extracting pure functions solely for testability while the real bugs live in caller coordination.\n- Proposing interfaces before understanding the domain concept and test surface.\n- Re-litigating ADRs without concrete friction.\n- Using vague architecture labels such as component, service, or API when the review needs module and interface precision.\n\n## References\n\n- `.agents/skills/improve-codebase-architecture/SKILL.md`\n- `knowledge/architecture/layer-isolation.md`"
+    },
+    {
       "id": "engine-code-standards",
       "title": "Engine Code Standards",
       "description": "# Engine Code Standards",
@@ -174,7 +194,7 @@
         "pixijs/scene-management",
         "architecture/layer-isolation"
       ],
-      "body": "# State Ownership\n\nGame simulation state belongs in plain TypeScript classes or serializable records. PixiJS display objects mirror state during render sync; they do not own gameplay facts.\n\n## Patterns\n\n- Store health, position, inventory, timers, flags, and progression on plain state objects.\n- Sync state into `Sprite`, `Container`, `Text`, or `Graphics` during scene update or render sync.\n- Give persistent state `toJSON()` and `fromJSON()` methods when save/load is required.\n- Keep renderer-facing objects disposable. A scene can destroy and recreate visuals without losing simulation state.\n- Use branded IDs, discriminated unions, or typed records for domain entities instead of anonymous strings.\n\n## Anti-patterns\n\n- Adding properties such as `sprite.health`, `container.playerData`, or `text.scoreValue`.\n- Treating PixiJS display object lifetime as gameplay lifetime.\n- Saving by walking the scene graph.\n- Requiring PixiJS in unit tests for core gameplay logic.\n\n## References\n\n- `.opencode/skills/automagically-game-architecture/SKILL.md`\n- `.opencode/agents/lead-programmer.md`\n- `.opencode/rules/gameplay-code.md`"
+      "body": "# State Ownership\n\nGame simulation state belongs in plain TypeScript classes or serializable records. PixiJS display objects mirror state during render sync; they do not own gameplay facts.\n\n## Patterns\n\n- Store health, position, inventory, timers, flags, and progression on plain state objects.\n- Sync state into `Sprite`, `Container`, `Text`, or `Graphics` during scene update or render sync.\n- Give persistent state `toJSON()` and `fromJSON()` methods when save/load is required.\n- Serialize saves as JSON into `localStorage` by default.\n- Skip binary save formats and schema migrations until a project has real breaking save changes.\n- Keep renderer-facing objects disposable. A scene can destroy and recreate visuals without losing simulation state.\n- Use plain classes and composition for entities and systems. Do not start with ECS unless cross-cutting data-driven entities make composition painful.\n- Use branded IDs, discriminated unions, or typed records for domain entities instead of anonymous strings.\n\n## Anti-patterns\n\n- Adding properties such as `sprite.health`, `container.playerData`, or `text.scoreValue`.\n- Treating PixiJS display object lifetime as gameplay lifetime.\n- Saving by walking the scene graph.\n- Starting with ECS by default for a solo or small-team game before plain composition has failed.\n- Requiring PixiJS in unit tests for core gameplay logic.\n\n## References\n\n- `.opencode/skills/automagically-game-architecture/SKILL.md`\n- `.opencode/agents/lead-programmer.md`\n- `.opencode/rules/gameplay-code.md`"
     },
     {
       "id": "typescript-strict-patterns",
@@ -193,7 +213,7 @@
         "architecture/layer-isolation",
         "qa-testing/test-standards"
       ],
-      "body": "# TypeScript Strict Patterns\n\nStrict TypeScript is a design constraint. Public APIs, state machines, and IDs should be typed so illegal states are hard to express.\n\n## Patterns\n\n- Use `unknown` plus type guards instead of `any`.\n- Use discriminated unions for state machines.\n- Use branded types for entity and identifier values.\n- Add explicit return types to public functions.\n- Prefer `Readonly` for immutable state.\n- Add error boundaries to async operations.\n- Use `AbortController` for cancellable async work.\n- Use compiler-backed analysis for symbol lookup, references, import traces, and boundary violations when available.\n\n## Anti-patterns\n\n- `any` outside narrow type guard boundaries.\n- Undocumented `as` assertions.\n- Non-null assertions instead of narrowing.\n- `// @ts-ignore` or `// @ts-expect-error`.\n- Runtime enums where `as const` objects or literal unions are sufficient.\n- Circular module imports.\n\n## References\n\n- `.opencode/skills/typescript-patterns/SKILL.md`\n- `.opencode/agents/lead-programmer.md`"
+      "body": "# TypeScript Strict Patterns\n\nStrict TypeScript is a design constraint. Public APIs, state machines, and IDs should be typed so illegal states are hard to express.\n\n## Patterns\n\n- Use `unknown` plus type guards instead of `any`.\n- Use discriminated unions for state machines.\n- Use branded types for entity and identifier values.\n- Add explicit return types to public functions.\n- Prefer `Readonly` for immutable state.\n- Add error boundaries to async operations.\n- Use `AbortController` for cancellable async work.\n- Review each file for `any`, undocumented `as`, non-null `!`, `@ts-ignore`, `@ts-expect-error`, missing public return types, implicit parameter `any`, runtime enums, wrong-layer imports, and `Function` or `object` types.\n- Report TypeScript reviews with passing checks, warnings, and blocking failures.\n- Use compiler-backed analysis for symbol lookup, references, import traces, and boundary violations when available.\n\n## Anti-patterns\n\n- `any` outside narrow type guard boundaries.\n- Undocumented `as` assertions.\n- Non-null assertions instead of narrowing.\n- `// @ts-ignore` or `// @ts-expect-error`.\n- Runtime enums where `as const` objects or literal unions are sufficient.\n- `Function` or `object` as broad escape-hatch types.\n- Circular module imports.\n- Direct gameplay-to-UI imports or core imports from gameplay, AI, UI, or rendering layers.\n\n## References\n\n- `.opencode/skills/typescript-patterns/SKILL.md`\n- `.opencode/agents/lead-programmer.md`"
     },
     {
       "id": "update-loop",
@@ -615,7 +635,7 @@
         "architecture/resource-cleanup",
         "pixijs/rendering-pipeline"
       ],
-      "body": "# Asset Loading\n\nUse PixiJS v8 `Assets` with scene-level bundles. Load during boot or scene entry, never inside frame updates.\n\n## Patterns\n\n- Initialize `Assets` with a manifest such as `assets/manifest.json`.\n- Load one bundle per scene in `scene.enter()` or during a loading scene.\n- Keep a shared core bundle for fonts and common UI/player assets.\n- Use spritesheet JSON files for multi-frame sprites and variants.\n- Put fixed-URL files such as manifests in `public/`; import Vite-processed textures, fonts, spritesheets, and data from source when bundling is desired.\n\n## Anti-patterns\n\n- `Assets.load` inside `update()`.\n- PixiJS v7 `Loader` or `app.loader`.\n- Loading the entire game asset set at boot by default.\n- Importing hashed runtime assets from `public/`.\n\n## References\n\n- `.opencode/skills/automagically-assets-and-build/SKILL.md`\n- `.opencode/agents/pixijs-specialist.md`"
+      "body": "# Asset Loading\n\nUse PixiJS v8 `Assets` with scene-level bundles. Load during boot or scene entry, never inside frame updates.\n\n## Patterns\n\n- Initialize `Assets` with a manifest such as `assets/manifest.json`.\n- Load one bundle per scene in `scene.enter()` or during a loading scene.\n- Keep a shared core bundle for fonts and common UI/player assets.\n- Organize bundles by scene under `assets/gameplay/`, `assets/ui/`, and `assets/audio/`, with a shared `core` bundle for cross-scene assets.\n- Use spritesheet JSON files for multi-frame sprites and variants, colocated with their atlas image, and load the `.json` path.\n- Store fonts in `assets/ui/fonts/`, prefer `.woff2`, keep `.ttf` as fallback, and preload fonts before the first text scene.\n- Put fixed-URL files such as manifests in `public/`; import Vite-processed textures, fonts, spritesheets, and data from source when bundling is desired.\n- Preserve Vite defaults unless the deployment requires otherwise: `dist/` output, `es2022` target, hashed assets, and `/` base path.\n\n## Anti-patterns\n\n- `Assets.load` inside `update()`.\n- PixiJS v7 `Loader` or `app.loader`.\n- Loading the entire game asset set at boot by default.\n- Importing hashed runtime assets from `public/`.\n- Loading fonts lazily in gameplay scenes that render text immediately.\n- Changing Vite output paths or base path without a deployment requirement.\n\n## References\n\n- `.opencode/skills/automagically-assets-and-build/SKILL.md`\n- `.opencode/agents/pixijs-specialist.md`"
     },
     {
       "id": "audio-integration",
@@ -816,6 +836,27 @@
       "body": "# Browser Smoke Tests\n\nBrowser smoke tests prove that the built game boots and accepts core interaction in a real browser environment.\n\n## Patterns\n\n- Verify the dev server page loads and a visible canvas appears.\n- Exercise one keyboard or pointer input path for the active genre.\n- Check pause/resume and focus-loss handling when available.\n- Keep smoke scenarios to the 10-15 highest-value critical paths.\n- Run smoke checks before manual QA handoff.\n\n## Anti-patterns\n\n- Browser smoke tests that attempt exhaustive gameplay coverage.\n- Depending on frame-perfect visual state for smoke pass/fail.\n- Letting smoke tests mutate persistent local storage without cleanup.\n\n## References\n\n- `.opencode/skills/automagically-testing/SKILL.md`\n- `.opencode/agents/qa-lead.md`"
     },
     {
+      "id": "bug-diagnosis-loop",
+      "title": "Bug Diagnosis Loop",
+      "description": "# Bug Diagnosis Loop",
+      "tags": [
+        "debugging",
+        "regression",
+        "instrumentation"
+      ],
+      "triggers": [
+        "src/**",
+        "tests/**",
+        "production/events.md"
+      ],
+      "related": [
+        "qa-testing/test-standards",
+        "qa-testing/evidence-gates",
+        "workflow/verification-gate"
+      ],
+      "body": "# Bug Diagnosis Loop\n\nHard bugs start with a tight feedback loop. Do not build theories until there is a command that can reproduce the user's exact symptom and later prove it fixed.\n\n## Patterns\n\n- Build a red-capable loop first: failing test, curl script, CLI fixture, browser script, trace replay, throwaway harness, fuzz loop, bisection harness, differential loop, or structured human-in-the-loop script.\n- Tighten the loop until it is fast, deterministic, specific to the symptom, and agent-runnable.\n- For nondeterministic bugs, raise the reproduction rate with repetition, parallel runs, stress, narrowed timing windows, or injected sleeps.\n- Reproduce the failure several times and confirm it matches the user's reported symptom, not a nearby failure.\n- Minimize one factor at a time until every remaining input, caller, config value, data file, and step is load-bearing.\n- Generate three to five ranked hypotheses before testing. Each hypothesis must predict what change will make the bug disappear, move, or worsen.\n- Instrument one variable at a time. Prefer debugger or REPL inspection, then targeted logs at hypothesis boundaries.\n- Tag temporary debug logs with a unique prefix such as `[DEBUG-a4f2]` so cleanup is grep-able.\n- For performance regressions, establish a baseline measurement before changing code.\n- Convert the minimized repro into a regression test at the seam that exercises the real bug pattern, then rerun the original loop after the fix.\n- Before declaring done, remove debug instrumentation, delete throwaway harnesses, and record the hypothesis that proved correct.\n\n## Anti-patterns\n\n- Reading code to form a theory before a red-capable loop exists.\n- Accepting \"does not crash\" as a signal when the bug is a specific wrong result, visual artifact, or timing failure.\n- Minimizing several factors at once and losing which element mattered.\n- Logging everything and searching afterward.\n- Writing a regression test at a seam too shallow to reproduce the real call pattern.\n- Leaving temporary debug logs or harnesses in normal production paths.\n\n## References\n\n- `.agents/skills/diagnosing-bugs/SKILL.md`\n- `knowledge/qa-testing/test-standards.md`"
+    },
+    {
       "id": "evidence-gates",
       "title": "Evidence Gates",
       "description": "# Evidence Gates",
@@ -856,6 +897,26 @@
       "body": "# Performance Budgets\n\nPerformance work starts with measured budgets, not guesses. Track CPU, GPU, memory, loading, and rendering categories over time.\n\n## Patterns\n\n- Define frame-time budgets by category: gameplay logic, rendering, physics, AI, and audio.\n- Track memory by textures, meshes, audio, game state, and UI.\n- Document top bottlenecks with impact, recommendation, and expected implementation cost.\n- Compare builds to detect regressions.\n- Profile before and after optimizations and record measured numbers.\n- Maintain visual budgets for draw calls, vertex count, texture memory, particle count, shader instructions, and overdraw.\n\n## Anti-patterns\n\n- Optimizing without profiling.\n- Changing budgets locally instead of escalating to technical direction.\n- Ignoring load-time and scene-transition regressions.\n- Treating average FPS as enough without frame-time category breakdown.\n\n## References\n\n- `.opencode/agents/performance-analyst.md`\n- `.opencode/agents/technical-artist.md`\n- `.opencode/rules/engine-code.md`"
     },
     {
+      "id": "tdd-tracer-bullets",
+      "title": "TDD Tracer Bullets",
+      "description": "# TDD Tracer Bullets",
+      "tags": [
+        "tdd",
+        "tracer-bullets",
+        "public-interfaces"
+      ],
+      "triggers": [
+        "tests/**",
+        "src/**"
+      ],
+      "related": [
+        "qa-testing/test-standards",
+        "qa-testing/testing-pyramid",
+        "architecture/deep-module-review"
+      ],
+      "body": "# TDD Tracer Bullets\n\nTest-driven work should advance in vertical tracer bullets: one observable behavior, one failing test, one minimal implementation, then repeat.\n\n## Patterns\n\n- Test behavior through public interfaces, not private methods, internal collaborators, or incidental storage.\n- Prefer integration-style tests that read like specifications and survive internal refactors.\n- Before coding, identify the public interface, domain vocabulary, priority behaviors, and any ADRs that constrain the design.\n- Write one test for one behavior, watch it fail, then write only enough implementation to make it pass.\n- Let each cycle teach the next test; adjust the plan as the implementation reveals better seams.\n- Keep tests focused on observable behavior and critical paths rather than every possible internal edge.\n- Refactor only while green. After each refactor step, rerun the relevant tests.\n- Per cycle, verify that the test describes behavior, uses only the public interface, survives refactor, and did not invite speculative code.\n\n## Anti-patterns\n\n- Horizontal slicing: writing all tests first, then all implementation later.\n- Tests that assert imagined data shapes or function signatures before the behavior is understood.\n- Mocking internal collaborators just to reach private implementation.\n- Refactoring while red.\n- Adding future-facing features before a test requires them.\n\n## References\n\n- `.agents/skills/tdd/SKILL.md`\n- `knowledge/qa-testing/test-standards.md`"
+    },
+    {
       "id": "test-doubles",
       "title": "Test Doubles",
       "description": "# Test Doubles",
@@ -890,7 +951,7 @@
         "qa-testing/testing-pyramid",
         "qa-testing/evidence-gates"
       ],
-      "body": "# Test Standards\n\nTests must be deterministic, readable, and tied to the behavior they protect. Every bug fix needs a regression test that would have caught the original failure.\n\n## Patterns\n\n- Name tests with `test_[system]_[scenario]_[expected_result]`.\n- Structure every test as arrange, act, assert.\n- Define test data inside the test or dedicated fixtures.\n- Mock external dependencies.\n- Give performance tests explicit thresholds that fail when exceeded.\n- For formulas, test normal, zero/null, maximum, negative modifier, and documented edge cases.\n\n## Anti-patterns\n\n- Imprecise assertions such as \"less than current value\" when an exact result is required.\n- Shared mutable test state.\n- Integration tests without cleanup.\n- Accepting subjective criteria such as \"feels snappy\" without binary pass criteria.\n\n## References\n\n- `.opencode/rules/test-standards.md`\n- `.opencode/agents/qa-tester.md`"
+      "body": "# Test Standards\n\nTests must be deterministic, readable, and tied to the behavior they protect. Every bug fix needs a regression test that would have caught the original failure.\n\n## Patterns\n\n- Name tests with `test_[system]_[scenario]_[expected_result]`.\n- Structure every test as arrange, act, assert.\n- Define test data inside the test or dedicated fixtures.\n- Mock external dependencies.\n- Target 80% line coverage on `src/gameplay/` and `src/core/` logic.\n- Cover every scene lifetime path so `enter()` and `exit()` can run without leaks or errors.\n- Keep browser coverage to startup smoke plus one representative interaction path.\n- Maintain visual tests manually for stability rather than treating them as a coverage target.\n- Do not enforce coverage on `src/ui/` or `src/audio/`; validate those through browser tests and review.\n- Give performance tests explicit thresholds that fail when exceeded.\n- For formulas, test normal, zero/null, maximum, negative modifier, and documented edge cases.\n\n## Anti-patterns\n\n- Imprecise assertions such as \"less than current value\" when an exact result is required.\n- Shared mutable test state.\n- Integration tests without cleanup.\n- Accepting subjective criteria such as \"feels snappy\" without binary pass criteria.\n\n## References\n\n- `.opencode/rules/test-standards.md`\n- `.opencode/agents/qa-tester.md`"
     },
     {
       "id": "testing-pyramid",
@@ -909,7 +970,7 @@
         "qa-testing/test-standards",
         "qa-testing/browser-smoke-tests"
       ],
-      "body": "# Testing Pyramid\n\nMost coverage should test deterministic logic without a browser or renderer. Browser and visual tests are valuable but intentionally sparse.\n\n## Patterns\n\n- Use unit tests for roughly 80% of coverage: state transitions, formulas, collision decisions, spawn logic, save/load, and seeded RNG.\n- Use integration tests for scene lifecycle, input capture, audio routing, resize behavior, and asset failure handling.\n- Use browser tests for startup, canvas rendering, input paths, pause/resume, fullscreen, and focus-loss behavior.\n- Use visual tests only for stable contracts such as main menu, representative gameplay, HUD, and game-over state.\n\n## Anti-patterns\n\n- Testing gameplay logic through screenshots.\n- Visual regression tests for animations, particles, or nondeterministic content.\n- Unit tests that require PixiJS, a browser, network, or filesystem state.\n- Integration tests that leave listeners, timers, or scene objects alive.\n\n## References\n\n- `.opencode/skills/automagically-testing/SKILL.md`\n- `.opencode/agents/qa-lead.md`"
+      "body": "# Testing Pyramid\n\nMost coverage should test deterministic logic without a browser or renderer. Browser and visual tests are valuable but intentionally sparse.\n\n## Patterns\n\n- Mirror `src/` under `tests/` with `unit/`, `integration/`, `browser/`, `visual/`, and `helpers/` directories.\n- Use unit tests for roughly 80% of coverage: state transitions, formulas, collision decisions, spawn logic, save/load, and seeded RNG.\n- Use integration tests for roughly 15% of coverage: scene lifecycle, input capture, audio routing, resize behavior, and asset failure handling.\n- Use browser tests for roughly 4% of coverage: startup, canvas rendering, input paths, pause/resume, fullscreen, and focus-loss behavior.\n- Use visual tests for roughly 1% of coverage, limited to stable contracts such as main menu, representative gameplay, HUD, and game-over state.\n- Keep shared factories, mocks, assertions, fake clocks, and seeded RNG helpers in `tests/helpers/`.\n\n## Anti-patterns\n\n- Testing gameplay logic through screenshots.\n- Visual regression tests for animations, particles, or nondeterministic content.\n- Unit tests that require PixiJS, a browser, network, or filesystem state.\n- Integration tests that leave listeners, timers, or scene objects alive.\n\n## References\n\n- `.opencode/skills/automagically-testing/SKILL.md`\n- `.opencode/agents/qa-lead.md`"
     }
   ],
   "workflow": [
@@ -1008,6 +1069,27 @@
       "body": "# Design Doc Standards\n\nDesign documents must be implementable, testable, and explicit enough that engineering and QA can work from them without guessing.\n\n## Patterns\n\n- Include Overview, Player Fantasy, Detailed Rules, Formulas, Edge Cases, Dependencies, Tuning Knobs, and Acceptance Criteria.\n- Give formulas variable definitions, ranges, output bounds, and worked examples.\n- State exact edge-case behavior.\n- Document bidirectional dependencies between interacting systems.\n- Make acceptance criteria binary enough for QA to pass or fail.\n- Create skeletons first and fill sections incrementally with approval.\n\n## Anti-patterns\n\n- \"Handle gracefully\" without defining behavior.\n- Balance values without formula, source, or rationale.\n- One system doc naming a dependency that the dependent system doc omits.\n- Subjective acceptance criteria without measurable alternatives.\n\n## References\n\n- `.opencode/rules/design-docs.md`\n- `.opencode/agents/game-designer.md`\n- `.opencode/agents/systems-designer.md`"
     },
     {
+      "id": "handoff-standards",
+      "title": "Handoff Standards",
+      "description": "# Handoff Standards",
+      "tags": [
+        "handoff",
+        "context",
+        "continuity"
+      ],
+      "triggers": [
+        "production/**",
+        "docs/**",
+        ".agents/skills/handoff/**"
+      ],
+      "related": [
+        "workflow/available-skills",
+        "workflow/collaboration-protocol",
+        "workflow/decision-records"
+      ],
+      "body": "# Handoff Standards\n\nA handoff should let a fresh agent resume the work without duplicating durable artifacts or leaking sensitive information.\n\n## Patterns\n\n- Save handoff documents in the user's OS temporary directory, not the workspace.\n- Tailor the document to the next-session focus when the user provides one.\n- Include current goal, relevant state, decisions made, open questions, blockers, next actions, verification status, and suggested skills.\n- Reference durable artifacts by path or URL instead of copying their contents: PRDs, plans, ADRs, issues, commits, diffs, reports, and generated files.\n- Redact secrets, credentials, tokens, API keys, passwords, and personally identifiable information.\n- Keep the handoff concise enough that the next agent can scan it before acting.\n\n## Anti-patterns\n\n- Writing handoff files into the repo when they are not project artifacts.\n- Repeating long design docs, diffs, or issue text that already exists elsewhere.\n- Omitting suggested skills when the next step depends on specialized workflow.\n- Preserving sensitive chat details or environment values verbatim.\n\n## References\n\n- `.agents/skills/handoff/SKILL.md`\n- `knowledge/workflow/available-skills.md`"
+    },
+    {
       "id": "localization",
       "title": "Localization",
       "description": "# Localization",
@@ -1043,7 +1125,7 @@
         "workflow/design-doc-standards",
         "workflow/scope-management"
       ],
-      "body": "# Prototype Standards\n\nPrototype code is disposable. Its durable output is evidence about a falsifiable hypothesis.\n\n## Patterns\n\n- Put each prototype in `prototypes/[name]/` or a mode-specific prototype directory.\n- State the hypothesis, riskiest assumption, run instructions, status, findings, and recommendation.\n- Use HTML prototypes for logic-heavy or turn-based ideas; engine prototypes for action feel; paper prototypes for rules and economy questions.\n- Keep scope to one mechanic, technical question, or validation loop.\n- Preserve findings and rewrite production implementation from scratch.\n\n## Anti-patterns\n\n- Production code importing from `prototypes/`.\n- Prototype code gradually becoming production through cleanup.\n- Polishing menus, audio, or progression when they are unrelated to the hypothesis.\n- Continuing past a timebox without reframing the question.\n\n## References\n\n- `.opencode/rules/prototype-code.md`\n- `.opencode/agents/prototyper.md`"
+      "body": "# Prototype Standards\n\nPrototype code is disposable. Its durable output is evidence about a falsifiable hypothesis.\n\n## Patterns\n\n- Put each prototype in `prototypes/[name]/` or a mode-specific prototype directory.\n- State the hypothesis, riskiest assumption, run instructions, status, findings, and recommendation.\n- Pick the branch from the question: logic or state-model questions get a tiny interactive terminal app; UI questions get several variations switchable from one route.\n- Use HTML prototypes for logic-heavy or turn-based ideas; engine prototypes for action feel; paper prototypes for rules and economy questions.\n- Provide one command that starts the prototype through the project's existing task runner.\n- Keep prototype state in memory by default. Add scratch persistence only when persistence is the hypothesis.\n- Surface the relevant state after each logic action or UI variant switch so the learning is visible.\n- Keep scope to one mechanic, technical question, or validation loop.\n- Preserve findings and rewrite production implementation from scratch, or explicitly absorb the validated decision into production and delete the throwaway artifact.\n\n## Anti-patterns\n\n- Production code importing from `prototypes/`.\n- Prototype code gradually becoming production through cleanup.\n- Polishing menus, audio, or progression when they are unrelated to the hypothesis.\n- Leaving a completed prototype in the repo without deletion, absorption, or a durable finding.\n- Continuing past a timebox without reframing the question.\n\n## References\n\n- `.opencode/rules/prototype-code.md`\n- `.opencode/agents/prototyper.md`\n- `.agents/skills/prototype/SKILL.md`"
     },
     {
       "id": "release-pipeline",
@@ -1083,6 +1165,25 @@
         "workflow/release-pipeline"
       ],
       "body": "# Scope Management\n\nProduction planning should break work into small, owned tasks with explicit dependencies, acceptance criteria, risk, and buffer.\n\n## Patterns\n\n- Keep sprint tasks sized for 1-3 days.\n- Assign each task to one owner.\n- List dependencies explicitly.\n- Reserve roughly 20% sprint capacity for unplanned work and bugs.\n- Identify critical path tasks.\n- Maintain a risk register with probability, impact, owner, and mitigation.\n- Flag milestone risk at least two sprints before delivery.\n\n## Anti-patterns\n\n- Multi-owner tasks with unclear accountability.\n- Hidden dependencies discovered during implementation.\n- Scope changes without documented trade-offs.\n- Removing QA or verification to preserve schedule.\n\n## References\n\n- `.opencode/agents/producer.md`\n- `.opencode/agents/qa-lead.md`"
+    },
+    {
+      "id": "skill-authoring-standards",
+      "title": "Skill Authoring Standards",
+      "description": "# Skill Authoring Standards",
+      "tags": [
+        "skills",
+        "authoring",
+        "maintainability"
+      ],
+      "triggers": [
+        ".agents/skills/**",
+        ".opencode/skills/**"
+      ],
+      "related": [
+        "workflow/available-skills",
+        "workflow/tooling-standards"
+      ],
+      "body": "# Skill Authoring Standards\n\nSkills exist to make agent process predictable. A good skill changes how the agent acts; it does not just restate defaults.\n\n## Patterns\n\n- Choose model-invoked skills only when the agent or another skill must discover them autonomously; otherwise prefer user-invoked skills.\n- Front-load the model-facing description with trigger language and the skill's leading words.\n- Keep one trigger per branch. Collapse synonyms that point to the same branch.\n- Put ordered work in `SKILL.md` as steps with checkable completion criteria.\n- Keep definitions, rules, and caveats co-located so a reader gets the whole concept in one place.\n- Use progressive disclosure for branch-specific reference material that not every run needs.\n- Split skills by invocation when a distinct leading word should trigger independently, or by sequence when later steps cause premature completion.\n- Maintain one source of truth for each rule or concept.\n- Prune sentence by sentence using the no-op test: if a sentence would not change agent behavior, remove it.\n- Use completion criteria that are specific and exhaustive enough to resist premature completion.\n\n## Anti-patterns\n\n- Long descriptions that repeat the body instead of triggering the right situations.\n- Duplicating the same instruction in several skills or reference files.\n- Letting stale sediment accumulate because adding feels safer than removing.\n- Splitting a skill so finely that context load or user memory cost exceeds the value.\n- Vague completion criteria such as \"be thorough\" or \"produce a list\".\n\n## References\n\n- `.agents/skills/writing-great-skills/SKILL.md`\n- `.agents/skills/writing-great-skills/GLOSSARY.md`"
     },
     {
       "id": "tooling-standards",

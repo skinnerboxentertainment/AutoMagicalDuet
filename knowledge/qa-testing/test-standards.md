@@ -15,6 +15,11 @@ Tests must be deterministic, readable, and tied to the behavior they protect. Ev
 - Structure every test as arrange, act, assert.
 - Define test data inside the test or dedicated fixtures.
 - Mock external dependencies.
+- Target 80% line coverage on `src/gameplay/` and `src/core/` logic.
+- Cover every scene lifetime path so `enter()` and `exit()` can run without leaks or errors.
+- Keep browser coverage to startup smoke plus one representative interaction path.
+- Maintain visual tests manually for stability rather than treating them as a coverage target.
+- Do not enforce coverage on `src/ui/` or `src/audio/`; validate those through browser tests and review.
 - Give performance tests explicit thresholds that fail when exceeded.
 - For formulas, test normal, zero/null, maximum, negative modifier, and documented edge cases.
 
