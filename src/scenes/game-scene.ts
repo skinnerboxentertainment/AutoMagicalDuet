@@ -75,13 +75,18 @@ export class GameScene implements Scene {
     this.player = new Player(config, canvasW, canvasH)
 
     this.playerSprite = new Sprite()
+    this.playerSprite.eventMode = "none"
     this.world.addChild(this.playerSprite)
 
+    this.world.eventMode = "none"
     this.root.addChild(this.world)
 
     this.crt = new CrtEffects(canvasW, canvasH)
+    this.crt.container.eventMode = "none"
     this.root.addChild(this.crt.container)
 
+    this.fxLayer.eventMode = "none"
+    this.hudLayer.eventMode = "none"
     this.root.addChild(this.fxLayer)
     this.root.addChild(this.hudLayer)
 
@@ -285,7 +290,8 @@ export class GameScene implements Scene {
         fish: "patrol-fish", armored: "armored-fish", mine: "mine",
         treasure: "treasure", fuel: "fuel-can", boss: "boss-ironclaw",
       }
-      s = new Sprite(this.tex[texMap[key] || "patrol-fish"])
+      s = new Sprite(this.tex?.[texMap[key] || "patrol-fish"])
+      s.eventMode = "none"
       this.world.addChild(s)
       this.enemySprites.set(key, s)
     }
@@ -293,9 +299,11 @@ export class GameScene implements Scene {
   }
 
   private draw(): void {
-    if (this.tex && this.tex.player) {
+    if (this.tex) {
       this.playerSprite.position.set(this.player.x, this.player.y)
       this.playerSprite.visible = this.player.alive && (!this.player.invincible || Math.floor(this.time * 12) % 2 === 0)
+    } else {
+      this.playerSprite.visible = false
     }
 
     let idx = 0
@@ -337,7 +345,7 @@ export class GameScene implements Scene {
 
     for (const p of this.projectiles) {
       let s = this.projSprites.find(s => !s.visible)
-      if (!s) { s = new Sprite(this.tex.torpedo); this.world.addChild(s); this.projSprites.push(s) }
+      if (!s) { s = new Sprite(this.tex.torpedo); s.eventMode = "none"; this.world.addChild(s); this.projSprites.push(s) }
       s.position.set(p.x, p.y)
       s.visible = p.active
       s.width = p.width; s.height = p.height
