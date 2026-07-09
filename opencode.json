@@ -5,6 +5,7 @@
   "instructions": [
     "AGENTS.md",
     "design/lean-consort-model.md",
+    "knowledge/README.md",
     ".opencode/rules/*.md",
     "docs/packs/game-design-pack.md",
     "docs/packs/pixijs-rendering-pack.md",

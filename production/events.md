@@ -18,3 +18,9 @@
 - Visual verification screenshot: production/screenshot-production.png.
 - Dev server: http://127.0.0.1:5173 (dev) / http://127.0.0.1:4173 (production preview).
 - Fixed: JSON import MIME type error — removed custom Vite middleware, moved runtime assets to public/.
+- Fixed: PixiJS asset path resolution — manifest paths changed to absolute (/assets/gameplay/*.png).
+- Game confirmed running at localhost:5173 with textures loaded.
+- Phase 4: RAG Knowledge Base completed. 56 knowledge chunks across 11 domains.
+- Knowledge base structure: architecture(11), game-design(9), pixijs(7), qa-testing(8), workflow(11), genre(5), narrative(2), audio(2), art(1), README.
+- All sources atomized: 36 agents, 12 rules, 5 genre patterns, 4 custom skills.
+- opencode.json updated with knowledge/README.md for discovery.
