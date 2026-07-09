@@ -1,53 +1,36 @@
-# AutoMagically Built Games -- Game Studio Agent Architecture
+# AutoMagically — Quickstart Guide
 
-Indie game development managed through 36 coordinated OpenCode agents.
-Each agent owns a specific domain, enforcing separation of concerns and quality.
+## First Time
 
-## Technology Stack
+```bash
+npm install
+npm run dev        # opens at http://localhost:5173
+npm test           # 20 tests should pass
+npm run build      # production build to dist/
+```
 
-- **Renderer**: PixiJS v8 (WebGL2/WebGPU/Canvas)
-- **Language**: TypeScript (strict)
-- **Build**: Vite + tsc
-- **Testing**: Vitest
-- **Physics**: Matter.js (optional)
-- **Audio**: Howler.js (optional)
-- **Version Control**: Git with trunk-based development
+## Playing the Built Game
 
-## Project Structure
+Arrow keys to move, Space to jump, collect gems, avoid the enemy, reach the exit door. Press R to restart after game over.
 
-@.opencode/docs/directory-structure.md
+## Generating a New Game
 
-## PixiJS Version Reference
+The OpenCode + Codex consort builds games collaboratively using the 7-beat rhythm:
 
-@.opencode/docs/pixijs-reference/VERSION.md
+1. **Explore** — inspect current state and available knowledge
+2. **Frame** — define the game spec
+3. **Expand** — discuss approaches
+4. **Attack** — stress-test the design
+5. **Commit** — lock the design and spec it
+6. **Build** — generate code, art, and tests
+7. **Prove** — verify with tsc, vitest, and Playwright screenshot
 
-## Technical Preferences
+## Knowledge Base
 
-@.opencode/docs/technical-preferences.md
+Domain knowledge lives in `knowledge/` — 56 tagged chunks across architecture, game-design, pixijs, qa-testing, workflow, and genre. Load relevant chunks when starting a new task.
 
-## Coordination Rules
+## Project Brain
 
-@.opencode/docs/coordination-rules.md
-
-## Collaboration Protocol
-
-**User-driven collaboration, not autonomous execution.**
-Every task follows: **Question -> Options -> Decision -> Draft -> Approval**
-
-- Agents MUST ask "May I write this to [filepath]?" before using Write/Edit tools
-- Agents MUST show drafts or summaries before requesting approval
-- Multi-file changes require explicit approval for the full changeset
-- No commits without user instruction
-
-See `docs/COLLABORATIVE-DESIGN-PRINCIPLE.md` for full protocol and examples.
-
-> **First session?** If the project has no engine configured and no game concept,
-> run `/start` to begin the guided onboarding flow.
-
-## Coding Standards
-
-@.opencode/docs/coding-standards.md
-
-## Context Management
-
-@.opencode/docs/context-management.md
+- `production/active.md` — what's happening now
+- `production/events.md` — what's happened before
+- `docs/architecture/adr/` — why decisions were made

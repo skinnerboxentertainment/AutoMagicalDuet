@@ -1,238 +1,132 @@
-<p align="center">
-  <h1 align="center">AutoMagically Game Studio</h1>
-  <p align="center">
-    <em>Stripped game-studio starter — PixiJS v8 + TypeScript for OpenCode</em>
-    <br />
-    Describe a game. Get a running build. Iterate.
-    <br />
-    Infrastructure preserved, game code stripped, ready for /auto-build.
-  </p>
-</p>
+# AutoMagically — Lean Game Studio
 
-<p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License"></a>
-  <a href=".opencode/agents"><img src="https://img.shields.io/badge/agents-36-blueviolet" alt="36 Agents"></a>
-  <a href=".opencode/commands"><img src="https://img.shields.io/badge/commands-77-green" alt="77 Commands"></a>
-  <a href=".opencode/rules"><img src="https://img.shields.io/badge/rules-12-red" alt="12 Rules"></a>
-  <a href="https://opencode.ai"><img src="https://img.shields.io/badge/powered%20by-OpenCode-6a0dad" alt="Powered by OpenCode"></a>
-  <a href=".github/workflows/tests.yml"><img src="https://img.shields.io/github/actions/workflow/status/skinnerboxentertainment/automagically-refactored/tests.yml?branch=master&label=CI" alt="CI"></a>
-</p>
+**Architecture:** OpenCode (orchestrator) + Codex (builder) operating in concert.
+**Stack:** PixiJS v8 + TypeScript strict + Vite + Vitest.
+**Status:** Working game output, art pipeline, RAG knowledge base.
+
+```
+Describe → Generate → Art → Verify → Iterate
+```
 
 ---
 
-## Two Ways to Use
-
-### 🚀 Auto-Build — Fast
-
-Describe your game in a sentence. Get a working build.
+## Quick Start
 
 ```bash
-/auto-build "2D platformer where you collect gems and jump on enemies"
-```
-
-The command:
-1. Parses your spec (genre, mechanics, theme, tone)
-2. Matches it to a genre pattern (platformer, top-down, shmup, runner, puzzle, or minimal)
-3. Generates complete scaffold: core engine, gameplay, scenes, audio, tests, assets
-4. Verifies with `tsc --noEmit` and `vitest run`
-5. Asks once: write to disk?
-
-Zero intermediate questions. One command to a running build.
-
-### 🧭 Guided Setup — Thorough
-
-Start with a question and work through the full production pipeline:
-
-```bash
-/start
-```
-
-Guides you through concept → systems design → architecture → pre-production →
-production → polish → release. 36 specialized agents handle design, art, audio,
-QA, narrative, and production as you go.
-
----
-
-## What's Included
-
-This is a **stripped game-studio starter** — the full opencode agent pipeline,
-commands, rules, and genre templates are preserved, but all game-specific code
-has been removed. Run `/auto-build "your idea"` to scaffold a new game into the
-clean infrastructure.
-
-### Improvements over the base template
-
-- **InputManager**: click detection uses a proper `clickPending` flag (not lost
-  between frames)
-- **AudioManager**: generates retro SFX in-memory via jsfxr at init — no WAV
-  files, no network requests
-- **Tests**: core infrastructure tests (SceneManager, InputManager) + test
-  helpers (FakeClock, seeded-rng)
-
-## What's Included
-
-| Category | Count | Description |
-|----------|-------|-------------|
-| **Agents** | 36 | Specialized agents across design, programming, art, audio, narrative, QA, and production |
-| **Commands** | 81 | Commands for every workflow phase (`/auto-build`, `/start`, `/design-system`, `/dev-story`, etc.) |
-| **Rules** | 13 | Path-scoped coding standards enforced per file path |
-| **Genre patterns** | 6 | Templates for platformer, top-down, shmup, runner, puzzle, and minimal builds |
-| **Skills** | 34 | Installed AI skills: 26 PixiJS v8 reference skills + 4 project architecture skills + 4 process skills |
-
-## Studio Hierarchy
-
-Agents are organized into three tiers:
-
-```
-Tier 1 — Directors
-  creative-director    technical-director    producer
-
-Tier 2 — Department Leads
-  game-designer        lead-programmer       art-director
-  audio-director       narrative-director    qa-lead
-  release-manager      localization-lead
-
-Tier 3 — Specialists
-  gameplay-programmer  engine-programmer     ai-programmer
-  network-programmer   tools-programmer      ui-programmer
-  systems-designer     level-designer        economy-designer
-  technical-artist     sound-designer        writer
-  world-builder        ux-designer           prototyper
-  performance-analyst  devops-engineer       analytics-engineer
-  security-engineer    qa-tester             accessibility-specialist
-  live-ops-designer    community-manager     pixijs-specialist
-```
-
-## Commands
-
-Type `/` in OpenCode to access all 77 commands:
-
-**Auto-Build**
-`/auto-build`
-
-**Onboarding & Navigation**
-`/start` `/help` `/project-stage-detect` `/setup-engine` `/adopt`
-
-**Game Design**
-`/brainstorm` `/map-systems` `/design-system` `/quick-design` `/review-all-gdds` `/propagate-design-change`
-
-**Art & Assets**
-`/art-bible` `/asset-spec` `/asset-audit`
-
-**UX & Interface Design**
-`/ux-design` `/ux-review`
-
-**Architecture**
-`/create-architecture` `/architecture-decision` `/architecture-review` `/create-control-manifest`
-
-**Stories & Sprints**
-`/create-epics` `/create-stories` `/dev-story` `/sprint-plan` `/sprint-status` `/story-readiness` `/story-done` `/estimate`
-
-**Reviews & Analysis**
-`/design-review` `/code-review` `/balance-check` `/content-audit` `/scope-check` `/perf-profile` `/tech-debt` `/gate-check` `/consistency-check` `/security-audit`
-
-**QA & Testing**
-`/qa-plan` `/smoke-check` `/soak-test` `/regression-suite` `/test-setup` `/test-helpers` `/test-evidence-review` `/test-flakiness` `/skill-test` `/skill-improve`
-
-**Production**
-`/milestone-review` `/retrospective` `/bug-report` `/bug-triage` `/reverse-document` `/playtest-report`
-
-**Release**
-`/release-checklist` `/launch-checklist` `/changelog` `/patch-notes` `/hotfix` `/day-one-patch`
-
-**Creative & Content**
-`/prototype` `/onboard` `/localize`
-
-**Team Orchestration**
-_Commands available in the full agent suite_
-
-## Getting Started
-
-### Prerequisites
-
-- [Git](https://git-scm.com/)
-- [OpenCode](https://opencode.ai) (`npm install -g opencode-ai`)
-- [Node.js](https://nodejs.org/) 18+
-
-### Setup
-
-```bash
-git clone <repo-url> automagically-game-studio
-cd automagically-game-studio
 npm install
-npm run dev              # http://localhost:5173
+npm run dev
 ```
 
-OpenCode session:
+Open `http://localhost:5173` in a browser. A platformer game is already built in.
 
-```bash
-opencode
+To generate a new game, the OpenCode + Codex consort follows the 7-beat rhythm:
+
+```
+Explore → Frame → Expand → Attack → Commit → Build → Prove
 ```
 
-### Quick Start
+See `design/lean-consort-model.md` for the full operating model.
 
-**Have an idea?**
-```
-/auto-build "2D top-down survival game where you fight zombies at night"
-```
-One command. Running build. Iterate from there.
+---
 
-**No idea yet?**
-```
-/start
-```
-Guided onboarding. Discovers what you need, routes you to the right workflow.
+## What This Is
+
+A two-agent game development system where **OpenCode** (orchestrator) and **Codex** (builder) collaborate to produce browser games. The system learns from every build via a RAG knowledge base extracted from 36 expert agent definitions.
+
+### Capabilities
+
+| Phase | What | Status |
+|-------|------|--------|
+| 0 | Build pipeline — tsc, vite, vitest all green | ✅ |
+| 1 | Working platformer from spec (20/20 tests) | ✅ |
+| 2 | Lean Consort Model — OpenCode + Codex operating model | ✅ |
+| 3 | Art generation + texture pipeline + Playwright visual verification | ✅ |
+| 4 | RAG knowledge base — 56 chunks across 11 domains | ✅ |
+
+### Test Games Produced
+
+The previous version of this system generated 5 working games across different genres: twin-stick shooter, breakout, submarine shmup, puzzle game, and platformer. See `design/` for architecture docs.
+
+---
+
+## Architecture
+
+### The Consort (2 actors)
+
+| Role | Agent | Domain |
+|------|-------|--------|
+| Orchestrator | OpenCode | Architecture, workflow, integration, final review |
+| Builder | Codex | Implementation, art generation (gpt-image-2), browser verification, testing |
+
+### Knowledge Base (56 chunks)
+
+`knowledge/` directory with tagged, retrievable knowledge across:
+
+| Domain | Chunks | Contents |
+|--------|--------|----------|
+| architecture | 11 | Layer isolation, state ownership, scene lifecycle, engine code standards |
+| game-design | 9 | MDA framework, economy design, core loops, level pacing, balancing |
+| pixijs | 7 | Rendering pipeline, scene management, input handling, asset loading, audio |
+| qa-testing | 8 | Test standards, performance budgets, accessibility, browser smoke tests |
+| workflow | 11 | Collaboration protocol, decision records, release pipeline, localization |
+| genre | 5 | Top-down, shmup, runner, puzzle, minimal |
+| audio, art, narrative | 5 | Sound design, visual identity, worldbuilding, dialogue |
+
+### Durable Memory
+
+- `production/active.md` — current state, next action, active packs
+- `production/events.md` — chronological log of all significant events
+- `docs/architecture/adr/` — numbered architecture decision records
+
+---
 
 ## Project Structure
 
 ```
-AGENTS.md                           # Master configuration
-opencode.json                       # OpenCode config (permissions, models, etc.)
-.opencode/
-  agents/                           # 36 agent definitions
-  commands/                         # 77 commands (one .md per command)
-  rules/                            # 12 path-scoped coding standards
-  skills/                           # 4 project-specific architecture skills
-  docs/
-    pixijs-reference/               # PixiJS v8 version reference
-    workflow-catalog.yaml           # 7-phase pipeline definition
-    templates/                      # Document templates
-    shared-protocols.md             # Canonical error recovery, file write, collaboration
-  templates/
-    genre-patterns/                 # 6 genre patterns for /auto-build
-.agents/skills/                     # 34 installed AI skills
-src/                                # Game source code (TypeScript)
-assets/                             # Art, audio, VFX, shaders, data files
-design/                             # GDDs, narrative docs, level designs
-docs/                               # Technical documentation and ADRs
-tests/                              # Test suites (Vitest)
-prototypes/                         # Throwaway prototypes (isolated from src/)
-production/                         # Sprint plans, milestones, release tracking
-public/                             # Static assets (HTML, favicon, etc.)
+├── AGENTS.md                 # Consort model description
+├── opencode.json             # OpenCode config (permissions, models)
+├── design/
+│   └── lean-consort-model.md # Full operating model specification
+├── knowledge/                # RAG knowledge base (56 chunks)
+├── docs/
+│   ├── architecture/adr/     # Decision records
+│   └── packs/                # Knowledge packs (extracted domain guides)
+├── production/
+│   ├── active.md             # Current session state
+│   └── events.md             # Chronological history
+├── src/
+│   ├── main.ts               # Entry point
+│   ├── core/                 # Engine (scene-manager, input-manager, game-loop)
+│   ├── scenes/               # Game scenes (boot, game)
+│   ├── gameplay/             # Game logic (player, level, enemy, gem, state)
+│   └── audio/                # Howler.js + jsfxr audio
+├── public/
+│   └── assets/               # Runtime assets (sprites, manifest)
+├── assets/data/              # Game data (config, levels)
+├── packages/
+│   └── narrative-core/       # Zod-validated narrative engine
+├── tools/
+│   ├── ts-compiler-mcp/      # TypeScript MCP server
+│   └── audio-pipeline/       # Procedural SFX generation
+└── tests/                    # Vitest test suites
 ```
-
-## Customization
-
-- **Add/remove agents** — delete or create agent files in `.opencode/agents/`
-- **Add genre patterns** — create `.opencode/templates/genre-patterns/[name].md` — `/auto-build` discovers them automatically
-- **Add rules** — create path-scoped rule files in `.opencode/rules/`
-- **Pick your tech stack** — PixiJS v8 + Howler.js pre-configured; add Matter.js, etc.
-- **Set review intensity** — `full`, `lean`, or `solo` via `/start` or `production/review-mode.txt`
-
-## Platform Support
-
-Primary development and testing on **Windows 11** with PowerShell 7+.
-OpenCode is cross-platform (Windows, macOS, Linux).
-
-## License
-
-MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-*Built with [OpenCode](https://opencode.ai) — the AI coding platform that
-orchestrates the studio agents, generates builds, and powers `/auto-build`.*
+## Tech Stack
 
-A stripped fork of [AutoMagically Built Games](https://github.com/skinnerboxentertainment/automagically-built-games)
-— game code removed, infrastructure improvements preserved. The original was
-itself derived from [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) by Donchitos.
+| Layer | Technology |
+|-------|-----------|
+| Renderer | PixiJS v8 (WebGL2/WebGPU/Canvas) |
+| Language | TypeScript 5.9 (strict) |
+| Build | Vite 6 |
+| Testing | Vitest 3 (20 tests, all passing) |
+| Audio | Howler.js + jsfxr (procedural SFX) |
+| Validation | Zod 4 |
+| CI | GitHub Actions (tsc + test + build) |
+
+---
+
+## License
+
+MIT. See [LICENSE](LICENSE).
