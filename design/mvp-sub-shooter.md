@@ -1,234 +1,187 @@
-# MVP: Sub Shooter — Side-Scrolling Submarine Game
+# Sub Shooter — Full Game Spec
 
-**Genre:** 2D side-scrolling underwater arcade
-**Target:** Working playable build in one pass
-**Status:** Design locked ✅ (post-Attack phase)
+**Genre:** 2D side-scrolling underwater arcade shooter
+**Target:** Complete, polished browser game
+**Status:** 🔄 Design locked — implementing
 
 ---
 
-## Core Fantasy
+## Core Identity
 
-Pilot a nimble submarine through a hostile underwater corridor, shooting threats, slipping through mine fields, grabbing treasure, and managing fuel pressure long enough to push your score higher.
+**You pilot a retro-adventure submarine through hostile waters.** Copper hull. Brass fittings. Teal glass cockpit. You're diving for treasure in a world that looks like a Jules Verne novel drawn by IREM's arcade team — dense pixel art, chunky explosions, mechanical menace, and a CRT glow.
 
-## MVP Pillars
-
-1. **Readable arcade action** — the player always understands what hit them
-2. **Crisp submarine control** — slight weight, never sluggish
-3. **Fair pressure** — fuel and spawns create urgency without unavoidable failure
-4. **Small scope** — one enemy, one hazard, two pickups, one endless scene
+The aesthetic is locked in `design/visual-tuner.md`. The general arcade craft language is in `design/aesthetic-styleguide.md`.
 
 ---
 
 ## Core Loop
 
-1. Move submarine in 4 directions inside the playfield
-2. Hold or tap Space to fire forward torpedoes
+1. Move the submarine in 4 directions inside the playfield (inertia-based, ~0.2s to max speed)
+2. Hold or tap Space to fire forward torpedoes (cooldown, max 4 active)
 3. Shoot patrol fish and mines before they reach you
-4. Dodge hazards and collect treasure/fuel
-5. Survive until 3 hull hits or fuel starvation destroys the sub
-6. Restart quickly and chase a higher score
+4. Dodge hazards and collect treasure/fuel cans
+5. Fuel drains continuously — at empty, hull takes periodic damage
+6. Survive until 3 hull hits destroy the sub
+7. Restart quickly and chase a higher score
 
 ---
 
-## Player
+## Visual Identity (locked)
 
-- Moves with acceleration and drag
-- Reaches max speed in ~0.2s, stops in ~0.25s after input release
-- Bounded inside playable area (padding from edges)
+See `design/visual-tuner.md` for exact specs. Summary:
+
+| Element | Look |
+|---------|------|
+| Hero sub | Copper cigar hull, brass fittings, teal glass cockpit, cream tail fins, warm dark outlines. 2.24:1 aspect. Three large portholes, conning tower with curved periscope. |
+| Enemies | Dieselpunk military — olive/dark steel, chunky silhouettes, exaggerated weapons |
+| Background | Multi-layer parallax: far water gradient → mid ruins/wreckage → near bubbles/silt. Lower contrast than gameplay sprites. |
+| Effects | White/yellow hot core explosions, orange body, cyan shock rings underwater. Chunky stepped pixel clusters. |
+| UI | Compact arcade HUD: score, HP pips, fuel bar. Blocky bitmap text on dark navy panels. |
+| CRT treatment | Subtle scanlines, low-opacity blue-green underwater grade, slight vignette, nearest-neighbor scaling |
+
+---
+
+## Gameplay Mechanics
+
+### Player
+- Acceleration/drag movement (max speed 260, accel 1400, drag 1800)
 - 3 HP
-- 1200ms invincibility after damage
-- Damage feedback: sprite flash/flicker
+- 1200ms invincibility after damage (sprite flash)
 - Fires forward torpedoes only
-- Holding Space auto-fires at cooldown rate
-- Visual: procedural submarine shape (Graphics or simple sprite)
+- Holding Space auto-fires at cooldown rate (260ms)
+- Bounded in playable area (Y: 80–520)
 
-## Torpedoes
-
-- Move rightward from sub nose
+### Torpedoes
+- Speed 520 px/s, lifetime 1200ms, max 4 active
 - Destroy on first enemy/mine hit
-- Destroy when offscreen or after lifetime expires
-- Max active: 4
-- Score +50 per destroy
+- Score +50 per kill
 
-## Enemies and Hazards
+### Enemies
+**Patrol fish:** Sine-wave vertical drift, 1 HP, speed 120–220 (ramps)
+**Mine:** Area denial, 1 HP, slower drift, cosmetic explosion only
 
-**Patrol fish:**
-- Spawns right of screen, moves left
-- 1 HP
-- Gentle sine-wave vertical drift so it's not a static lane
-- Damages player on contact
+### Collectibles
+**Treasure chest:** +100 score, drifts left
+**Fuel can:** Restores 20s fuel, guaranteed spawn when fuel < 35%
 
-**Mine:**
-- Spawns right of screen, moves left with world scroll
-- 1 HP
-- Damages player on contact
-- Explosion is visual/audio only (no area damage in MVP)
+### Fuel
+- Starts at 60s, drains 1/s
+- Empty = 1 hull damage every 3s until refueled or dead
+- Low warning below 20% (HUD color change)
 
-## Collectibles
+### Spawning
+- Active caps: fish 4, mines 3, treasure 3, fuel 1
+- Spawn at screen width + 40, despawn at x < -80
+- 2s initial grace, 1s damage grace (no mines after hit)
+- Difficulty ramps every 20s (spawn intervals decrease, speed increases)
 
-**Treasure chest:**
-- Drifts left with world
-- Collected on player contact
-- Score +100
-
-**Fuel can:**
-- Drifts left with world
-- Restores 20s of fuel
-- Cannot exceed max fuel
-
-## Fuel
-
-- Starts full (60s worth)
-- Drains continuously at 1s/second
-- Fuel can pickup restores 20s
-- At 0 fuel: player takes 1 hull damage every 3s until refueled or dead
-- Clamps at 0 and max
-- Low-fuel warning below 20% (HUD color change)
-- No surfacing in MVP — surface is visual only
-
-## Spawning
-
-- Spawn all objects at `screen_width + 40` in X
-- Despawn at `x < -80`
-- Playable Y range: 80–520 (excludes HUD area, surface band, seabed)
-- Initial grace period: 2s after game start
-- Damage grace: no new mines for 1s after player hit
-
-**Active caps:**
-- Fish: 4
-- Mines: 3
-- Treasure: 3
-- Fuel cans: 1
-- Torpedoes: 4
-
-**Fairness rules:**
-- Do not spawn two hazards with overlapping collision bounds
-- Do not spawn a mine directly on top of a treasure or fuel can
-- Guarantee a fuel can spawns if fuel is below 35% and no fuel can is active
-
-## Difficulty Ramp
-
-Every 20 seconds, ramp values toward their min/max:
-
-| Value | Start | Min/Max | Unit |
-|-------|-------|---------|------|
-| Fish spawn interval | 1600 | 800 | ms |
-| Mine spawn interval | 3500 | 1800 | ms |
-| Enemy speed | 120 | 220 | px/s |
-
-No new enemy types in MVP.
-
-## HUD
-
-- Score: top-left
-- HP: 3 pips, top-right
-- Fuel bar: horizontal bar, top-center
-- Fuel bar changes color below 20%
-- Invincibility: player sprite flashes
-
-## Scenes
-
-1. **Title** — "Sub Shooter – Press SPACE"
-2. **Game** — main gameplay loop
+### Scenes
+1. **Title** — "SUB SHOOTER — Press SPACE" (300ms input lockout)
+2. **Game** — main loop
 3. **Game Over** — final score, "Press R to restart"
 
-Scene transitions use key-press edge detection (not held state) to prevent immediate fire on scene entry.
+### Config
+33 tunable values in `assets/data/gameplay-config.json` — see file for exact defaults.
 
-## Audio
+---
 
-4 procedural SFX via jsfxr (already wired in the repo):
-- Shoot
-- Collect treasure
-- Hit (player damage)
-- Explosion (mine/fish destroyed)
+## Visual Effects Pipeline
 
-## Config (`assets/data/gameplay-config.json`)
+Applied in order at the compositing layer:
 
-```json
-{
-  "player_max_speed": 260,
-  "player_acceleration": 1400,
-  "player_drag": 1800,
-  "player_max_hp": 3,
-  "player_invincibility_ms": 1200,
-  "projectile_speed": 520,
-  "projectile_cooldown_ms": 260,
-  "projectile_lifetime_ms": 1200,
-  "projectile_max_active": 4,
-  "fuel_max": 60,
-  "fuel_drain_per_second": 1,
-  "fuel_refill_amount": 20,
-  "fuel_empty_damage_interval_ms": 3000,
-  "fuel_low_threshold": 0.2,
-  "score_per_treasure": 100,
-  "score_per_enemy": 50,
-  "spawn_y_min": 80,
-  "spawn_y_max": 520,
-  "fish_max_active": 4,
-  "mine_max_active": 3,
-  "treasure_max_active": 3,
-  "fuel_max_active": 1,
-  "enemy_spawn_interval_start_ms": 1600,
-  "enemy_spawn_interval_min_ms": 800,
-  "mine_spawn_interval_start_ms": 3500,
-  "mine_spawn_interval_min_ms": 1800,
-  "treasure_spawn_interval_ms": 2400,
-  "fuel_spawn_interval_ms": 8000,
-  "enemy_speed_start": 120,
-  "enemy_speed_max": 220,
-  "world_scroll_speed": 90,
-  "difficulty_ramp_seconds": 20
-}
-```
+1. **Render gameplay** — sprites at native resolution with nearest-neighbor
+2. **Parallax background** — 2-3 layers scrolling at different speeds
+3. **Underwater color grade** — low-opacity teal-blue overlay on world container (not HUD)
+4. **Scanlines** — 1px dark lines every 2-3 screen pixels at 8-14% opacity
+5. **Vignette** — subtle dark edge shadow
+6. **Camera shake** — 2-5px mechanical displacement on impacts
 
-## Files to create/modify
+All post-processing must preserve gameplay readability. HUD is exempt from color grade and scanlines.
 
-**New files (~15):**
-- `src/scenes/title-scene.ts`
-- `src/scenes/game-scene.ts`
-- `src/scenes/game-over-scene.ts`
-- `src/gameplay/player.ts`
-- `src/gameplay/enemy.ts`
-- `src/gameplay/projectile.ts`
-- `src/gameplay/treasure.ts`
-- `src/gameplay/fuel-manager.ts`
-- `src/gameplay/spawn-director.ts`
-- `src/gameplay/ocean-background.ts`
-- `src/gameplay/types.ts`
-- `tests/unit/gameplay/player.test.ts`
-- `tests/unit/gameplay/fuel-manager.test.ts`
-- `tests/unit/gameplay/spawn-director.test.ts`
-- `assets/data/gameplay-config.json`
+---
 
-**Modified:**
-- `src/main.ts` — point to new scenes
+## Audio (to implement)
+
+4 procedural SFX via jsfxr (already wired in repo):
+- **Shoot** — short percussive burst
+- **Collect** — bright ascending chime
+- **Hit** — low thud
+- **Explosion** — layered noise burst
+
+Background music: deferred from MVP.
+
+---
 
 ## Tests
 
-- Fuel clamps at 0 and max
-- Empty fuel triggers hull damage
-- Spawn director respects active caps
-- Spawn director respects vertical bounds
-- Damage invincibility prevents repeated hits
-- Score increments once per collected/destroyed object
-- Player movement and firing
+| File | Tests | Coverage |
+|------|-------|----------|
+| `tests/unit/gameplay/sub-player.test.ts` | 4 | Movement, damage, invincibility, death |
+| `tests/unit/gameplay/fuel-manager.test.ts` | 7 | Drain, clamp, refill, low warning, damage ticks, reset |
+| `tests/unit/gameplay/spawn-director.test.ts` | 4 | Caps, bounds, reset |
+| `tests/unit/core/scene-manager.test.ts` | 5 | Scene lifecycle |
+| `tests/unit/core/input-manager.test.ts` | 4 | Keyboard capture |
+| `tests/narrative-core.test.ts` | 5 | Narrative engine |
+
+**Total: 29 tests, all passing.**
+
+---
+
+## Assets to Generate
+
+Using styleguide + tuner with gpt-image-2:
+
+| Asset | Size | Prompt template in |
+|-------|------|--------------------|
+| Hero sub sprite sheet | 64x32 per frame | visual-tuner.md |
+| Patrol fish | 48x24 per frame | aesthetic-styleguide.md |
+| Mine | 24x24 | aesthetic-styleguide.md |
+| Treasure chest | 20x20 | aesthetic-styleguide.md |
+| Fuel can | 16x16 | aesthetic-styleguide.md |
+| Explosion sheet | 64x64 per frame | aesthetic-styleguide.md |
+| Background layer 1 (far) | 800x600 | aesthetic-styleguide.md |
+| Background layer 2 (mid) | 800x600 | aesthetic-styleguide.md |
+| HUD elements | Various | aesthetic-styleguide.md |
+
+---
 
 ## Acceptance Criteria
 
-- [ ] Sub moves in 4 directions with bounded, responsive inertia
+- [ ] Sub moves in 4 directions with responsive inertia
 - [ ] Space fires forward torpedoes with cooldown
-- [ ] Holding Space auto-fires without exceeding max torpedoes
+- [ ] Holding Space auto-fires without exceeding max 4
 - [ ] Fish and mines spawn from right, despawn left
 - [ ] Torpedoes destroy fish and mines
-- [ ] Player takes 1 damage from fish/mine contact
-- [ ] Invincibility prevents repeated damage
+- [ ] Player takes 1 damage from contact, invincibility prevents spam
 - [ ] Treasure increases score once
-- [ ] Fuel drains, refills, clamps, triggers low-fuel warning
+- [ ] Fuel drains, refills, clamps, triggers low warning
 - [ ] Empty fuel causes periodic hull damage
 - [ ] Spawn director respects active caps and Y bounds
-- [ ] Title, Game, Game Over flow correctly
-- [ ] Scene transitions use edge-detection / input lockout
+- [ ] Title, Game, Game Over flow correctly with input lockout
 - [ ] Restart with R works
-- [ ] `npm run build` passes (tsc + vite)
-- [ ] `npm test` passes (vitest)
-- [ ] Playwright screenshot confirms title, gameplay HUD, player, and spawned objects render
+- [ ] Sprites render with nearest-neighbor (no blur)
+- [ ] Scanlines and vignette visible but subtle
+- [ ] Underwater color grade applied to world, not HUD
+- [ ] `npm run build` passes
+- [ ] `npm test` passes (29/29)
+- [ ] Playwright screenshot confirms art, HUD, and CRT effects render
+
+---
+
+## Current Progress
+
+| Area | Status |
+|------|--------|
+| Core gameplay (movement, combat, spawning) | ✅ Built |
+| Fuel system | ✅ Built |
+| 3 scenes with input lockout | ✅ Built |
+| Config (33 values) | ✅ Built |
+| Tests (29 passing) | ✅ Built |
+| Aesthetic styleguide | ✅ Written |
+| Visual tuner (retro-adventure lock) | ✅ Written |
+| Hero sub concept art | ✅ Generated (3 variations) |
+| Sprite generation | ⏳ Not started |
+| Background parallax | ⏳ Not started |
+| CRT effects (scanlines, grade, vignette) | ⏳ Not started |
+| Audio SFX | ⏳ Not started |
+| Playwright visual verification | ⏳ Not started |
