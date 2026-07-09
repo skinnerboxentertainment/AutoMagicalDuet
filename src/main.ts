@@ -1,56 +1,24 @@
-import { Application, Graphics, Text } from "pixi.js"
+import { Application } from "pixi.js"
+import { loadConfig } from "./core/config"
+import { InputManager } from "./core/input-manager"
+import { SceneManager } from "./core/scene-manager"
+import { GameScene } from "./scenes/game-scene"
 
 const app = new Application()
 
 async function init(): Promise<void> {
-  await app.init({ resizeTo: window, background: 0x1a1a2e })
+  await app.init({ resizeTo: window, background: 0x76c7e8 })
   document.body.appendChild(app.canvas)
-  showWelcome(app)
+  const config = await loadConfig()
+  const input = new InputManager()
+  const scenes = new SceneManager(app.stage)
+  scenes.push(new GameScene(app.stage, input, config))
+  app.ticker.add(() => {
+    input.update()
+    scenes.update(0.016)
+  })
 }
 
-function showWelcome(app: Application): void {
-  const bg = new Graphics()
-  bg.rect(0, 0, app.screen.width, app.screen.height)
-  bg.fill({ color: 0x1a1a2e })
-  app.stage.addChild(bg)
-
-  const title = new Text({
-    text: "AutoMagically",
-    style: { fontFamily: "monospace", fontSize: 48, fill: 0x00aaff, fontWeight: "bold" },
-  })
-  title.anchor.set(0.5)
-  title.position.set(app.screen.width / 2, app.screen.height / 3)
-  app.stage.addChild(title)
-
-  const subtitle = new Text({
-    text: "Describe a game. Get a running build.",
-    style: { fontFamily: "monospace", fontSize: 18, fill: 0x888888 },
-  })
-  subtitle.anchor.set(0.5)
-  subtitle.position.set(app.screen.width / 2, app.screen.height / 3 + 50)
-  app.stage.addChild(subtitle)
-
-  const instructions = new Text({
-    text: "Run  /auto-build \"your game idea\"  in the terminal",
-    style: { fontFamily: "monospace", fontSize: 16, fill: 0xcccccc },
-  })
-  instructions.anchor.set(0.5)
-  instructions.position.set(app.screen.width / 2, app.screen.height * 0.6)
-  app.stage.addChild(instructions)
-
-  const start = new Text({
-    text: "Or run  /start  for guided setup",
-    style: { fontFamily: "monospace", fontSize: 14, fill: 0x666666 },
-  })
-  start.anchor.set(0.5)
-  start.position.set(app.screen.width / 2, app.screen.height * 0.65)
-  app.stage.addChild(start)
-
-  const pulse = () => {
-    title.alpha = 0.7 + Math.sin(Date.now() / 500) * 0.3
-    requestAnimationFrame(pulse)
-  }
-  pulse()
-}
-
-init()
+init().catch((error: unknown) => {
+  console.error("Failed to start game", error)
+})

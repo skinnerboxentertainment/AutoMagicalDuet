@@ -1,0 +1,42 @@
+{
+  "id": "level-01",
+  "name": "Gem Ridge",
+  "width": 800,
+  "height": 450,
+  "player": {
+    "x": 64,
+    "y": 336,
+    "width": 28,
+    "height": 36,
+    "speed": 220,
+    "jumpVelocity": 470,
+    "gravity": 1150,
+    "maxFallSpeed": 760
+  },
+  "platforms": [
+    { "id": "ground", "x": 0, "y": 410, "width": 800, "height": 40 },
+    { "id": "left-step", "x": 120, "y": 330, "width": 140, "height": 22 },
+    { "id": "mid-step", "x": 320, "y": 270, "width": 150, "height": 22 },
+    { "id": "right-step", "x": 560, "y": 220, "width": 130, "height": 22 }
+  ],
+  "gems": [
+    { "id": "gem-1", "x": 175, "y": 294, "width": 20, "height": 20, "points": 100 },
+    { "id": "gem-2", "x": 385, "y": 234, "width": 20, "height": 20, "points": 100 },
+    { "id": "gem-3", "x": 615, "y": 184, "width": 20, "height": 20, "points": 100 }
+  ],
+  "enemy": {
+    "x": 430,
+    "y": 378,
+    "width": 30,
+    "height": 32,
+    "minX": 360,
+    "maxX": 610,
+    "speed": 95
+  },
+  "exit": {
+    "x": 730,
+    "y": 350,
+    "width": 34,
+    "height": 60
+  }
+}
