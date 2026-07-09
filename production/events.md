@@ -24,3 +24,7 @@
 - Knowledge base structure: architecture(11), game-design(9), pixijs(7), qa-testing(8), workflow(11), genre(5), narrative(2), audio(2), art(1), README.
 - All sources atomized: 36 agents, 12 rules, 5 genre patterns, 4 custom skills.
 - opencode.json updated with knowledge/README.md for discovery.
+- Repo pushed to new GitHub: skinnerboxentertainment/AutoMagicalDuet.
+- ADR-0002: Role rebalance — OpenCode builds, Codex sharpens.
+- OpenCode → Orchestrator-Builder (owns implementation).
+- Codex → Specialist Critic (research, critique, visual QA, art).

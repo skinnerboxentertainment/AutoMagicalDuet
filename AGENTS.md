@@ -12,10 +12,10 @@ Two actors, three layers of structure:
 
 ### Tier 0: The Consort (always active)
 
-| Role | Agent | Domain | Authority |
-|------|-------|--------|-----------|
-| **Orchestrator** | OpenCode | Architecture, workflow, integration, final review | Owns decision log + integration. Decides on architecture, scope, and repo governance |
-| **Builder** | Codex | Implementation, art generation, browser verification, testing | Decides locally on implementation mechanics inside an approved design |
+| Role | Agent | Primary Domain | Authority |
+|------|-------|---------------|-----------|
+| **Orchestrator-Builder** | OpenCode | Architecture, implementation, coding, integration, repo governance | Decides architecture, implementation, integration. Owns the build. |
+| **Specialist Critic** | Codex | Research, design critique, visual QA/inspection, art generation, browser verification | Advises on design quality, technical risks, visual correctness. Does not own builds. |
 
 ### Tier 1: Operating Rhythm
 
@@ -59,18 +59,19 @@ When OpenCode and Codex disagree:
 3. **Prefer reversible** decisions when evidence is weak
 4. **Require an ADR** for irreversible or architecture-shaping decisions
 5. **User decides** on product goals, taste, scope, acceptable tradeoffs
-6. **OpenCode decides** on integration, architecture, or repo governance
-7. **Codex decides locally** on implementation mechanics inside an approved design
+6. **OpenCode decides** on architecture, implementation, integration, repo governance
+7. **Codex advises** on research, design quality, and visual correctness — does not override OpenCode on implementation
 
 ---
 
 ## Collaboration Protocol
 
-**User-driven collaboration, not autonomous execution.**
+**OpenCode builds, Codex sharpens, user decides.**
 
-- Agents propose, user decides
-- Knowledge packs provide structured guidance but do not override user intent
-- Multi-file changes require explicit approval for the full changeset
+- OpenCode owns architecture, implementation, and integration
+- Codex provides critique, research, visual QA, and art generation
+- Codex advises on design quality and technical risks but does not override OpenCode on implementation
+- Multi-file changes require approval for the full changeset
 - No commits without user instruction
 
 ---
@@ -112,10 +113,10 @@ npm run dev
 Open `http://localhost:5173` in a browser.
 
 To generate a game from a spec, the consort follows the 7-beat rhythm:
-1. **Explore** — inspect current state
-2. **Frame** — define the game spec
-3. **Expand** — discuss approaches
-4. **Attack** — stress-test the approach
-5. **Commit** — lock the design
-6. **Build** — generate + verify
-7. **Prove** — review and log
+1. **Explore** — OpenCode inspects current state
+2. **Frame** — OpenCode defines the game spec
+3. **Expand** — both discuss approaches
+4. **Attack** — Codex stress-tests the approach
+5. **Commit** — OpenCode locks the design
+6. **Build** — OpenCode implements
+7. **Prove** — Codex reviews/verifies, OpenCode integrates

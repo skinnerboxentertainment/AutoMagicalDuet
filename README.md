@@ -1,4 +1,4 @@
-# AutoMagically — Lean Game Studio
+# AutoMagicalDuet — Lean Game Studio
 
 **Architecture:** OpenCode (orchestrator) + Codex (builder) operating in concert.
 **Stack:** PixiJS v8 + TypeScript strict + Vite + Vitest.
@@ -22,7 +22,7 @@ Open `http://localhost:5173` in a browser. A platformer game is already built in
 To generate a new game, the OpenCode + Codex consort follows the 7-beat rhythm:
 
 ```
-Explore → Frame → Expand → Attack → Commit → Build → Prove
+Explore (OC) → Frame (OC) → Expand (both) → Attack (CX) → Commit (OC) → Build (OC) → Prove (CX reviews, OC integrates)
 ```
 
 See `design/lean-consort-model.md` for the full operating model.
@@ -53,10 +53,10 @@ The previous version of this system generated 5 working games across different g
 
 ### The Consort (2 actors)
 
-| Role | Agent | Domain |
-|------|-------|--------|
-| Orchestrator | OpenCode | Architecture, workflow, integration, final review |
-| Builder | Codex | Implementation, art generation (gpt-image-2), browser verification, testing |
+| Role | Agent | Primary Domain |
+|------|-------|---------------|
+| Orchestrator-Builder | OpenCode | Architecture, implementation, coding, integration, repo governance |
+| Specialist Critic | Codex | Research, design critique, visual QA/inspection, art generation, browser verification |
 
 ### Knowledge Base (56 chunks)
 

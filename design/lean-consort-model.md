@@ -2,7 +2,8 @@
 
 **Status:** Design locked ✅
 **Date:** 2026-07-08
-**Consensus between:** OpenCode (orchestrator) + Codex (builder)
+**Revised:** 2026-07-08 (role rebalance — OpenCode builds, Codex sharpens)
+**Consensus between:** OpenCode (Orchestrator-Builder) + Codex (Specialist Critic)
 
 ---
 
@@ -12,11 +13,12 @@
 ┌─────────────────────────────────────────────────┐
 │                 TIER 0: ACTORS                   │
 │                                                   │
-│   OpenCode (Orchestrator)    Codex (Builder)      │
-│   - Architecture             - Implementation     │
-│   - Workflow                 - Art generation     │
-│   - Integration              - Browser verify     │
-│   - Final review             - Testing            │
+│   OpenCode (Orchestrator-Builder)  Codex (Specialist Critic) │
+│   - Architecture                  - Research                 │
+│   - Implementation                - Design critique          │
+│   - Integration                   - Visual QA/inspection     │
+│   - Coding                        - Art generation           │
+│   - Repo governance               - Browser verification     │
 └─────────────────────┬───────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────┐
@@ -51,10 +53,10 @@
 
 ## Tier 0: The Consort
 
-| Role | Agent | Model | Domain | Authority |
-|------|-------|-------|--------|-----------|
-| **Orchestrator** | OpenCode | Pro | Architecture, workflow, code integration, structural decisions, final review | Owns decision log + integration. Decides on architecture, scope, and repo governance |
-| **Builder** | Codex | Flash | Implementation, art generation (gpt-image-2), browser verification, testing, debugging | Decides locally on implementation mechanics inside an approved design |
+| Role | Agent | Model | Primary Domain | Authority |
+|------|-------|-------|---------------|-----------|
+| **Orchestrator-Builder** | OpenCode | Pro | Architecture, implementation, coding, integration, repo governance | Decides architecture, implementation, integration. Owns the build. |
+| **Specialist Critic** | Codex | Flash | Research, design critique, visual QA/inspection, art generation, browser verification | Advises on design quality, technical risks, visual correctness. Does not own builds. |
 
 ### Escalation Ladder
 
@@ -65,11 +67,10 @@ When OpenCode and Codex disagree:
 3. **Prefer reversible** decisions when evidence is weak
 4. **Require an ADR** for irreversible or architecture-shaping decisions
 5. **User decides** on product goals, taste, scope, acceptable tradeoffs
-6. **OpenCode decides** on integration, architecture, or repo governance
-7. **Codex decides locally** on implementation mechanics inside an approved design
+6. **OpenCode decides** on architecture, implementation, integration, repo governance
+7. **Codex advises** on research, design quality, and visual correctness — does not override OpenCode on implementation
 
-> OpenCode is Orchestrator does not mean OpenCode wins every argument.
-> It means OpenCode owns the decision log and integration responsibility.
+> OpenCode owns the build. Codex sharpens it. The user owns the product.
 
 ---
 
@@ -84,8 +85,8 @@ The operating rhythm comes from the 8D framework's field mnemonic:
 | **Expand** | Generate approaches | Both | Trade-off notes |
 | **Attack** | Stress-test leading approach | Codex | Risk list, blockers |
 | **Commit** | Decide path + design contract | OpenCode | Decision record + design spec |
-| **Build** | Implement + verify | Codex | Code, tests, verification results |
-| **Prove** | Review, integrate, log | OpenCode | Summary, event log, checkpoint |
+| **Build** | Implement | OpenCode | Code, tests |
+| **Prove** | Review, verify, log | Codex reviews, OpenCode integrates | Visual verification, event log, checkpoint |
 
 ### Coordination Contract: `production/active.md`
 
