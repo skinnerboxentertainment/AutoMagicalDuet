@@ -25,6 +25,13 @@
 - All sources atomized: 36 agents, 12 rules, 5 genre patterns, 4 custom skills.
 - opencode.json updated with knowledge/README.md for discovery.
 - Repo pushed to new GitHub: skinnerboxentertainment/AutoMagicalDuet.
+- Phase 2-4: Agent redesign, knowledge base, art pipeline completed.
+- Sub Shooter built: full 8D cycle from spec to working game.
+- 3 waves + boss fight (Ironclaw, 2-phase) implemented.
+- 4 enemy types: patrol fish, mine, armored fish, Ironclaw boss.
+- 9 sprites generated via gpt-image-2 (hero sub, enemies, boss, effects).
+- Aesthetic styleguide (IREM lineage) + visual tuner (retro-adventure) written.
+- 35 tests passing, build green.
 - ADR-0002: Role rebalance — OpenCode builds, Codex sharpens.
 - OpenCode → Orchestrator-Builder (owns implementation).
 - Codex → Specialist Critic (research, critique, visual QA, art).

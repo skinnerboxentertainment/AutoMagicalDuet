@@ -1,27 +1,18 @@
 # Active Session
 
 **Date:** 2026-07-08
-**Beat:** Build — Sub Shooter implementation
+**Beat:** Deliver — Sub Shooter complete
 
-## Current Objective
-Complete all gameplay systems (waves, enemies, boss). Then art + polish.
+## Status
+All gameplay systems implemented and verified.
 
-## Done
-- Core movement, combat, fuel, 3 scenes
-- 29 tests passing, build green
-- Aesthetic styleguide + visual tuner
-- 3 hero sub concept art variations
-
-## In Progress
-- Enemy roster: patrol fish ✅, mines ✅, armored fish (✕), Ironclaw boss (✕)
-- Wave progression: 3 waves + boss fight (✕)
-- Spec fully detailed with wave tables, enemy behaviors, boss phases
+## Build
+- Core: movement, combat, fuel, 3 scenes
+- Wave progression: 3 waves + boss fight
+- Enemies: patrol fish, mines, armored fish (2HP), Ironclaw boss (2-phase)
+- 9 sprites generated via gpt-image-2 (hero, enemies, boss, effects)
+- 35 tests passing across 7 files
+- Build: tsc + vite + vitest all green
 
 ## Next
-- Build wave system + armored fish + boss
-- Generate sprites via gpt-image-2
-- CRT effects pipeline (scanlines, vignette, color grade)
-- Audio SFX via jsfxr
-
-## Blockers
-None.
+Awaiting user direction.

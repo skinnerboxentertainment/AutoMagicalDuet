@@ -1,4 +1,4 @@
-import type { Projectile as ProjectileType, SubShooterConfig } from "./types"
+import type { ProjectileEnt as ProjectileType, SubShooterConfig } from "./types"
 
 export class Projectile implements ProjectileType {
   x: number

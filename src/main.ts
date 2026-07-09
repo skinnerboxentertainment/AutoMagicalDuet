@@ -4,7 +4,6 @@ import { InputManager } from "./core/input-manager"
 import { SceneManager } from "./core/scene-manager"
 import { TitleScene } from "./scenes/title-scene"
 import { GameScene } from "./scenes/game-scene"
-import { GameOverScene } from "./scenes/game-over-scene"
 
 const app = new Application()
 const CONFIG_URL = "assets/data/gameplay-config.json"
@@ -20,14 +19,16 @@ async function loadConfig(): Promise<SubShooterConfig> {
       projectile_speed: 520, projectile_cooldown_ms: 260, projectile_lifetime_ms: 1200, projectile_max_active: 4,
       fuel_max: 60, fuel_drain_per_second: 1, fuel_refill_amount: 20,
       fuel_empty_damage_interval_ms: 3000, fuel_low_threshold: 0.2,
-      score_per_treasure: 100, score_per_enemy: 50,
+      score_per_treasure: 100, score_per_enemy: 50, score_per_armored: 100, score_per_boss: 500,
       spawn_y_min: 80, spawn_y_max: 520,
-      fish_max_active: 4, mine_max_active: 3, treasure_max_active: 3, fuel_max_active: 1,
+      fish_max_active: 4, armored_max_active: 2, mine_max_active: 3,
+      treasure_max_active: 3, fuel_max_active: 1,
       enemy_spawn_interval_start_ms: 1600, enemy_spawn_interval_min_ms: 800,
       mine_spawn_interval_start_ms: 3500, mine_spawn_interval_min_ms: 1800,
       treasure_spawn_interval_ms: 2400, fuel_spawn_interval_ms: 8000,
       enemy_speed_start: 120, enemy_speed_max: 220,
       world_scroll_speed: 90, difficulty_ramp_seconds: 20,
+      wave1_duration: 40, wave2_duration: 50, wave3_duration: 60,
     }
   }
 }
@@ -46,21 +47,15 @@ async function init(): Promise<void> {
   function showTitle() {
     scenes.push(new TitleScene(app.stage, input, () => {
       scenes.pop()
-      showGame()
-    }))
-  }
-
-  function showGame() {
-    scenes.push(new GameScene(app.stage, input, config, W, H, (score) => {
-      scenes.pop()
-      showGameOver(score)
-    }))
-  }
-
-  function showGameOver(score: number) {
-    scenes.push(new GameOverScene(app.stage, input, score, () => {
-      scenes.pop()
-      showTitle()
+      const game = new GameScene(app.stage, input, config, W, H, {
+        onGameOver: (score) => {
+          scenes.pop()
+          showTitle()
+        },
+        onVictory: (score) => {
+        },
+      })
+      scenes.push(game)
     }))
   }
 
