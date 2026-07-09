@@ -1,17 +1,26 @@
-import { Container, Graphics, Text } from "pixi.js"
+import { Container, Graphics, Text, Assets, Sprite, Texture } from "pixi.js"
 import type { Scene } from "../core/types"
 import type { InputManager } from "../core/input-manager"
 import type { SubShooterConfig, WaveName } from "../gameplay/types"
+
+interface GameCallbacks {
+  onGameOver: (score: number) => void
+  onVictory: (score: number) => void
+}
 import { Player } from "../gameplay/player"
 import { Projectile as ProjectileEnt } from "../gameplay/projectile"
 import { FuelManager } from "../gameplay/fuel-manager"
 import { SpawnDirector, intersects } from "../gameplay/spawn-director"
 import { IronclawBoss } from "../gameplay/boss"
 import { OceanBackground } from "../gameplay/ocean-background"
+import { CrtEffects } from "../gameplay/crt-effects"
 
-export interface GameCallbacks {
-  onGameOver: (score: number) => void
-  onVictory: (score: number) => void
+const ASSETS_MANIFEST = "/assets/manifest.json"
+
+interface Textures {
+  player: Texture; "patrol-fish": Texture; "armored-fish": Texture; mine: Texture
+  treasure: Texture; "fuel-can": Texture; torpedo: Texture; explosion: Texture
+  "boss-ironclaw": Texture
 }
 
 export class GameScene implements Scene {
@@ -20,6 +29,7 @@ export class GameScene implements Scene {
   private readonly fxLayer = new Container()
   private readonly hudLayer = new Container()
   private readonly bg: OceanBackground
+  private readonly crt: CrtEffects
   private readonly player: Player
   private readonly fuelManager: FuelManager
   private readonly spawn: SpawnDirector
@@ -34,9 +44,11 @@ export class GameScene implements Scene {
   private bossSlideIn = false
   private bossAnnounceTimer = 0
   private time = 0
+  private tex!: Textures
 
-  private readonly playerGfx = new Graphics()
-  private readonly enemyGfx = new Map<string, Graphics>()
+  private readonly playerSprite: Sprite
+  private readonly enemySprites = new Map<string, Sprite>()
+  private readonly projSprites: Sprite[] = []
   private readonly hudScore: Text
   private readonly hudHp: Text
   private readonly hudFuel: Graphics
@@ -47,7 +59,7 @@ export class GameScene implements Scene {
   private readonly victoryText: Text
   private readonly victoryScore: Text
   private readonly victoryRestart: Text
-  private gfxSeq = 0
+  private spriteSeq = 0
 
   constructor(
     private readonly stage: Container,
@@ -59,63 +71,74 @@ export class GameScene implements Scene {
   ) {
     this.bg = new OceanBackground(canvasW, canvasH)
     this.world.addChild(this.bg.container)
-    this.world.addChild(this.playerGfx)
-    this.root.addChild(this.world)
 
     this.player = new Player(config, canvasW, canvasH)
-    this.fuelManager = new FuelManager(config)
-    this.spawn = new SpawnDirector(config, canvasW)
+
+    this.playerSprite = new Sprite()
+    this.world.addChild(this.playerSprite)
+
+    this.root.addChild(this.world)
+
+    this.crt = new CrtEffects(canvasW, canvasH)
+    this.root.addChild(this.crt.container)
 
     this.root.addChild(this.fxLayer)
     this.root.addChild(this.hudLayer)
 
+    this.fuelManager = new FuelManager(config)
+    this.spawn = new SpawnDirector(config, canvasW)
+
     this.hudScore = new Text({ text: "Score: 0", style: { fill: 0xffffff, fontSize: 18, fontFamily: "monospace" } })
-    this.hudScore.position.set(12, 8)
-    this.hudLayer.addChild(this.hudScore)
+    this.hudScore.position.set(12, 8); this.hudLayer.addChild(this.hudScore)
 
     this.hudHp = new Text({ text: "HP: 3", style: { fill: 0xff6666, fontSize: 18, fontFamily: "monospace" } })
-    this.hudHp.position.set(12, 30)
-    this.hudLayer.addChild(this.hudHp)
+    this.hudHp.position.set(12, 30); this.hudLayer.addChild(this.hudHp)
 
     this.hudFuel = new Graphics()
-    this.hudFuel.position.set(300, 12)
-    this.hudLayer.addChild(this.hudFuel)
+    this.hudFuel.position.set(300, 12); this.hudLayer.addChild(this.hudFuel)
 
     this.hudWave = new Text({ text: "", style: { fill: 0x88ccff, fontSize: 16, fontFamily: "monospace" } })
-    this.hudWave.position.set(620, 8)
-    this.hudLayer.addChild(this.hudWave)
+    this.hudWave.position.set(620, 8); this.hudLayer.addChild(this.hudWave)
 
     this.announceText = new Text({ text: "", style: { fill: 0xffcc00, fontSize: 36, fontWeight: "700", fontFamily: "monospace" } })
-    this.announceText.anchor.set(0.5)
-    this.announceText.position.set(canvasW / 2, canvasH / 2 - 40)
+    this.announceText.anchor.set(0.5); this.announceText.position.set(canvasW / 2, canvasH / 2 - 40)
     this.fxLayer.addChild(this.announceText)
 
     this.gameOverText = new Text({ text: "GAME OVER", style: { fill: 0xff4444, fontSize: 48, fontWeight: "700", fontFamily: "monospace" } })
-    this.gameOverText.anchor.set(0.5)
-    this.gameOverText.position.set(canvasW / 2, canvasH / 2 - 30)
+    this.gameOverText.anchor.set(0.5); this.gameOverText.position.set(canvasW / 2, canvasH / 2 - 30)
     this.gameOverText.visible = false
 
     this.restartText = new Text({ text: "Press R to restart", style: { fill: 0x888888, fontSize: 20, fontFamily: "monospace" } })
-    this.restartText.anchor.set(0.5)
-    this.restartText.position.set(canvasW / 2, canvasH / 2 + 20)
+    this.restartText.anchor.set(0.5); this.restartText.position.set(canvasW / 2, canvasH / 2 + 20)
     this.restartText.visible = false
 
     this.victoryText = new Text({ text: "MISSION COMPLETE", style: { fill: 0x44ff88, fontSize: 40, fontWeight: "700", fontFamily: "monospace" } })
-    this.victoryText.anchor.set(0.5)
-    this.victoryText.position.set(canvasW / 2, canvasH / 2 - 40)
+    this.victoryText.anchor.set(0.5); this.victoryText.position.set(canvasW / 2, canvasH / 2 - 40)
+    this.victoryText.visible = false
 
     this.victoryScore = new Text({ text: "", style: { fill: 0xffffff, fontSize: 24, fontFamily: "monospace" } })
-    this.victoryScore.anchor.set(0.5)
-    this.victoryScore.position.set(canvasW / 2, canvasH / 2 + 10)
+    this.victoryScore.anchor.set(0.5); this.victoryScore.position.set(canvasW / 2, canvasH / 2 + 10)
+    this.victoryScore.visible = false
 
     this.victoryRestart = new Text({ text: "Press R to play again", style: { fill: 0x888888, fontSize: 20, fontFamily: "monospace" } })
-    this.victoryRestart.anchor.set(0.5)
-    this.victoryRestart.position.set(canvasW / 2, canvasH / 2 + 50)
+    this.victoryRestart.anchor.set(0.5); this.victoryRestart.position.set(canvasW / 2, canvasH / 2 + 50)
+    this.victoryRestart.visible = false
 
     this.fxLayer.addChild(this.gameOverText, this.restartText, this.victoryText, this.victoryScore, this.victoryRestart)
   }
 
-  enter(): void { this.stage.addChild(this.root) }
+  async enter(): Promise<void> {
+    await Assets.init({ manifest: ASSETS_MANIFEST })
+    const bundle = await Assets.loadBundle("gameplay") as Record<string, Texture>
+    this.tex = bundle as unknown as Textures
+
+    this.playerSprite.texture = this.tex.player
+    this.playerSprite.width = this.player.width
+    this.playerSprite.height = this.player.height
+
+    this.stage.addChild(this.root)
+  }
+
   exit(): void { this.stage.removeChild(this.root) }
 
   private restart(): void {
@@ -127,62 +150,36 @@ export class GameScene implements Scene {
     this.gameOverText.visible = false; this.restartText.visible = false
     this.victoryText.visible = false; this.victoryScore.visible = false; this.victoryRestart.visible = false
     this.announceText.text = ""
-    this.enemyGfx.clear()
-    this.world.removeChildren()
-    this.world.addChild(this.bg.container, this.playerGfx)
+    for (const s of this.enemySprites.values()) { s.parent?.removeChild(s) }
+    this.enemySprites.clear()
+    for (const s of this.projSprites) { s.parent?.removeChild(s) }
+    this.projSprites.length = 0
     this.triggerAnnounce("WAVE 1")
   }
 
   private triggerAnnounce(text: string): void {
-    this.waveAnnounceText = text
-    this.waveAnnounceTimer = 2.0
+    this.waveAnnounceText = text; this.waveAnnounceTimer = 2.0
     this.announceText.text = text
   }
 
-  private gameOver(): void {
-    this.gameState = "game-over"
-    this.gameOverText.visible = true
-    this.restartText.visible = true
-  }
-
-  private victory(score: number): void {
-    this.gameState = "victory"
-    this.victoryText.visible = true
-    this.victoryScore.text = `Score: ${score}`
-    this.victoryScore.visible = true
-    this.victoryRestart.visible = true
-  }
+  private gameOver(): void { this.gameState = "game-over"; this.gameOverText.visible = true; this.restartText.visible = true }
+  private victory(): void { this.gameState = "victory"; this.victoryText.visible = true; this.victoryScore.visible = true; this.victoryRestart.visible = true }
 
   update(dt: number): void {
     this.time += dt
 
-    if (this.gameState === "game-over") {
-      if (this.input.keysJustPressed.has("KeyR")) this.restart()
-      return
-    }
-    if (this.gameState === "victory") {
-      if (this.input.keysJustPressed.has("KeyR")) this.restart()
-      return
-    }
+    if (this.gameState === "game-over") { if (this.input.keysJustPressed.has("KeyR")) this.restart(); return }
+    if (this.gameState === "victory") { if (this.input.keysJustPressed.has("KeyR")) this.restart(); return }
 
-    if (this.waveAnnounceTimer > 0) {
-      this.waveAnnounceTimer -= dt
-      if (this.waveAnnounceTimer <= 0) this.announceText.text = ""
-    }
+    if (this.waveAnnounceTimer > 0) { this.waveAnnounceTimer -= dt; if (this.waveAnnounceTimer <= 0) this.announceText.text = "" }
 
     if (this.bossAnnounceTimer > 0) {
       this.bossAnnounceTimer -= dt
       this.announceText.text = this.bossAnnounceTimer > 0 ? "INCOMING" : ""
-      if (this.bossAnnounceTimer <= 0) {
-        this.bossSlideIn = true
-        this.boss = new IronclawBoss(this.canvasW, this.canvasH)
-      }
+      if (this.bossAnnounceTimer <= 0) { this.bossSlideIn = true; this.boss = new IronclawBoss(this.canvasW, this.canvasH) }
     }
 
-    if (this.boss && this.bossSlideIn) {
-      const done = this.boss.slideIn(dt)
-      if (done) this.bossSlideIn = false
-    }
+    if (this.boss && this.bossSlideIn) { if (this.boss.slideIn(dt)) this.bossSlideIn = false }
 
     const left = this.input.keys.has("ArrowLeft") || this.input.keys.has("KeyA")
     const right = this.input.keys.has("ArrowRight") || this.input.keys.has("KeyD")
@@ -191,20 +188,12 @@ export class GameScene implements Scene {
     const fire = this.input.keys.has("Space")
 
     this.player.update(dt, left, right, up, down)
+    if (this.spawn.currentWave !== "boss") this.bg.update(dt, this.config.world_scroll_speed)
 
-    if (this.spawn.currentWave !== "boss") {
-      this.bg.update(dt, this.config.world_scroll_speed)
-    }
-
-    const fuelLow = this.fuelManager.isLow
-    const waveEvent = this.spawn.update(dt, fuelLow)
-
+    const waveEvent = this.spawn.update(dt, this.fuelManager.isLow)
     if (waveEvent === "wave2") this.triggerAnnounce("WAVE 2")
     else if (waveEvent === "wave3") this.triggerAnnounce("WAVE 3")
-    else if (waveEvent === "boss") {
-      this.bossAnnounceTimer = 2.0
-      this.announceText.text = "INCOMING"
-    }
+    else if (waveEvent === "boss") { this.bossAnnounceTimer = 2.0; this.announceText.text = "INCOMING" }
 
     const fuelDmg = this.fuelManager.update(dt)
     for (let i = 0; i < fuelDmg; i++) this.player.takeDamage()
@@ -216,22 +205,12 @@ export class GameScene implements Scene {
     }
 
     const bossActive = this.boss && this.boss.active
-
-    if (!bossActive) {
-      for (const p of this.projectiles) p.update(dt)
-      this.prune(this.projectiles)
-    }
+    if (!bossActive) { for (const p of this.projectiles) p.update(dt); this.prune(this.projectiles) }
 
     this.handleCollisions(dt)
 
-    if (bossActive && this.boss && this.bossSlideIn === false) {
-      this.boss.update(dt, this.player.y + this.player.height / 2)
-    }
-
-    if (this.boss && !this.boss.active && this.bossSlideIn === false) {
-      this.victory(this.score)
-    }
-
+    if (bossActive && this.boss && !this.bossSlideIn) this.boss.update(dt, this.player.y + this.player.height / 2)
+    if (this.boss && !this.boss.active && !this.bossSlideIn) this.victory()
     if (!this.player.alive) this.gameOver()
 
     this.draw()
@@ -239,30 +218,24 @@ export class GameScene implements Scene {
 
   private handleCollisions(dt: number): void {
     const pb = this.player.bounds
-
     for (const f of this.spawn.fish) {
       if (!f.active) continue
-      const fb = { x: f.x, y: f.y - Math.sin(this.time * 3 + (f as any).wobblePhase || 0) * 0, width: f.width, height: f.height }
+      const fb = { x: f.x, y: f.y, width: f.width, height: f.height }
       if (intersects(pb, fb)) { if (this.player.takeDamage()) this.spawn.onPlayerDamaged() }
       for (const p of this.projectiles) {
         if (!p.active) continue
         if (intersects({ x: p.x, y: p.y, width: p.width, height: p.height }, fb)) { p.active = false; f.active = false; this.score += this.config.score_per_enemy }
       }
     }
-
     for (const a of this.spawn.armored) {
       if (!a.active) continue
       const ab = { x: a.x, y: a.y, width: a.width, height: a.height }
       if (intersects(pb, ab)) { if (this.player.takeDamage()) this.spawn.onPlayerDamaged() }
       for (const p of this.projectiles) {
         if (!p.active) continue
-        if (intersects({ x: p.x, y: p.y, width: p.width, height: p.height }, ab)) {
-          p.active = false; a.hp--
-          if (a.hp <= 0) { a.active = false; this.score += this.config.score_per_armored }
-        }
+        if (intersects({ x: p.x, y: p.y, width: p.width, height: p.height }, ab)) { p.active = false; a.hp--; if (a.hp <= 0) { a.active = false; this.score += this.config.score_per_armored } }
       }
     }
-
     for (const m of this.spawn.mines) {
       if (!m.active) continue
       const mb = { x: m.x, y: m.y, width: m.width, height: m.height }
@@ -272,18 +245,16 @@ export class GameScene implements Scene {
         if (intersects({ x: p.x, y: p.y, width: p.width, height: p.height }, mb)) { p.active = false; m.active = false; this.score += this.config.score_per_enemy }
       }
     }
-
     for (const t of this.spawn.treasures) {
       if (t.collected || !t.active) continue
       if (intersects(pb, { x: t.x, y: t.y, width: t.width, height: t.height })) { t.collected = true; this.score += this.config.score_per_treasure }
     }
-
     for (const f of this.spawn.fuelCans) {
       if (f.collected || !f.active) continue
       if (intersects(pb, { x: f.x, y: f.y, width: f.width, height: f.height })) { f.collected = true; this.fuelManager.refill() }
     }
 
-    if (this.boss && this.boss.active && this.bossSlideIn === false) {
+    if (this.boss && this.boss.active && !this.bossSlideIn) {
       for (const part of this.boss.parts) {
         if (part.destroyed) continue
         const bb = this.boss.getBounds(part.key)
@@ -291,35 +262,86 @@ export class GameScene implements Scene {
         if (intersects(pb, bb)) { if (this.player.takeDamage()) this.spawn.onPlayerDamaged() }
         for (const p of this.projectiles) {
           if (!p.active) continue
-          if (intersects({ x: p.x, y: p.y, width: p.width, height: p.height }, bb)) {
-            p.active = false
-            this.boss.hitPart(part.key)
-          }
+          if (intersects({ x: p.x, y: p.y, width: p.width, height: p.height }, bb)) { p.active = false; this.boss.hitPart(part.key) }
         }
       }
-
       for (const bp of this.boss.projectiles) {
         if (!bp.active) continue
-        if (intersects(pb, { x: bp.x - bp.radius, y: bp.y - bp.radius, width: bp.radius * 2, height: bp.radius * 2 })) {
-          bp.active = false
-          if (this.player.takeDamage()) this.spawn.onPlayerDamaged()
-        }
+        if (intersects(pb, { x: bp.x - bp.radius, y: bp.y - bp.radius, width: bp.radius * 2, height: bp.radius * 2 })) { bp.active = false; if (this.player.takeDamage()) this.spawn.onPlayerDamaged() }
       }
     }
   }
 
-  private prune(arr: { active: boolean }[]): void {
-    for (let i = arr.length - 1; i >= 0; i--) { if (!arr[i].active) arr.splice(i, 1) }
+  private prune(arr: { active: boolean }[]): void { for (let i = arr.length - 1; i >= 0; i--) { if (!arr[i].active) arr.splice(i, 1) } }
+
+  private getSprite(key: string): Sprite {
+    let s = this.enemySprites.get(key)
+    if (!s) {
+      const texMap: Record<string, keyof Textures> = {
+        fish: "patrol-fish", armored: "armored-fish", mine: "mine",
+        treasure: "treasure", fuel: "fuel-can", boss: "boss-ironclaw",
+      }
+      s = new Sprite(this.tex[texMap[key] || "patrol-fish"])
+      this.world.addChild(s)
+      this.enemySprites.set(key, s)
+    }
+    return s
   }
 
   private draw(): void {
-    this.playerGfx.clear()
-    if (this.player.alive) {
-      const vis = !this.player.invincible || Math.floor(this.time * 12) % 2 === 0
-      if (vis) {
-        this.playerGfx.rect(this.player.x, this.player.y, this.player.width, this.player.height).fill(0x44aaff)
-        this.playerGfx.rect(this.player.x + 4, this.player.y - 4, 8, 4).fill(0x888888)
-      }
+    this.playerSprite.position.set(this.player.x, this.player.y)
+    this.playerSprite.visible = this.player.alive && (!this.player.invincible || Math.floor(this.time * 12) % 2 === 0)
+
+    let idx = 0
+    for (const f of this.spawn.fish) {
+      const s = this.getSprite(`fish-${idx}`)
+      s.position.set(f.x, f.y + Math.sin(this.time * 3 + idx) * 15)
+      s.visible = f.active
+      s.width = f.width; s.height = f.height
+      idx++
+    }
+    for (const a of this.spawn.armored) {
+      const s = this.getSprite(`armored-${idx}`)
+      s.position.set(a.x, a.y)
+      s.visible = a.active
+      s.width = a.width; s.height = a.height
+      idx++
+    }
+    for (const m of this.spawn.mines) {
+      const s = this.getSprite(`mine-${idx}`)
+      s.position.set(m.x, m.y)
+      s.visible = m.active
+      s.width = m.width; s.height = m.height
+      idx++
+    }
+    for (const t of this.spawn.treasures) {
+      const s = this.getSprite(`treasure-${idx}`)
+      s.position.set(t.x, t.y)
+      s.visible = t.active && !t.collected
+      s.width = t.width; s.height = t.height
+      idx++
+    }
+    for (const f of this.spawn.fuelCans) {
+      const s = this.getSprite(`fuel-${idx}`)
+      s.position.set(f.x, f.y)
+      s.visible = f.active && !f.collected
+      s.width = f.width; s.height = f.height
+      idx++
+    }
+
+    for (const p of this.projectiles) {
+      let s = this.projSprites.find(s => !s.visible)
+      if (!s) { s = new Sprite(this.tex.torpedo); this.world.addChild(s); this.projSprites.push(s) }
+      s.position.set(p.x, p.y)
+      s.visible = p.active
+      s.width = p.width; s.height = p.height
+    }
+
+    if (this.boss && this.boss.active) {
+      const bs = this.getSprite("boss")
+      bs.position.set(this.boss.x, this.boss.y)
+      bs.width = this.boss.width; bs.height = this.boss.height
+      bs.visible = true
     }
 
     this.hudScore.text = `Score: ${this.score}`

@@ -3,12 +3,15 @@
     {
       "name": "gameplay",
       "assets": {
-        "player": "/assets/gameplay/player.png",
-        "platform": "/assets/gameplay/platform.png",
-        "gem": "/assets/gameplay/gem.png",
-        "enemy": "/assets/gameplay/enemy.png",
-        "exit": "/assets/gameplay/exit.png",
-        "background": "/assets/gameplay/background.png"
+        "player": "/assets/hero-sub.png",
+        "patrol-fish": "/assets/patrol-fish.png",
+        "armored-fish": "/assets/armored-fish.png",
+        "mine": "/assets/mine.png",
+        "treasure": "/assets/treasure.png",
+        "fuel-can": "/assets/fuel-can.png",
+        "torpedo": "/assets/torpedo.png",
+        "explosion": "/assets/explosion.png",
+        "boss-ironclaw": "/assets/boss-ironclaw.png"
       }
     }
   ]

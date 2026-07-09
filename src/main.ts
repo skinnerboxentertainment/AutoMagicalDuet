@@ -48,11 +48,11 @@ async function init(): Promise<void> {
     scenes.push(new TitleScene(app.stage, input, () => {
       scenes.pop()
       const game = new GameScene(app.stage, input, config, W, H, {
-        onGameOver: (score) => {
+        onGameOver: () => {
           scenes.pop()
           showTitle()
         },
-        onVictory: (score) => {
+        onVictory: () => {
         },
       })
       scenes.push(game)
