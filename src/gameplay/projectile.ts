@@ -3,8 +3,8 @@ import type { ProjectileEnt as ProjectileType, SubShooterConfig } from "./types"
 export class Projectile implements ProjectileType {
   x: number
   y: number
-  width = 8
-  height = 4
+  width = 16
+  height = 8
   active = true
   speed: number
   lifetime: number

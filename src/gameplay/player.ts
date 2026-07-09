@@ -3,8 +3,8 @@ import type { SubShooterConfig } from "./types"
 export class Player {
   x: number
   y: number
-  width = 40
-  height = 20
+  width = 64
+  height = 32
   vx = 0
   vy = 0
   hp: number

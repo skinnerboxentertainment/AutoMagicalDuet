@@ -37,8 +37,10 @@ async function init(): Promise<void> {
   await app.init({ width: 800, height: 600, background: 0x0d2b45 })
   const target = document.getElementById("game-canvas-target") || document.body
   target.appendChild(app.canvas)
-  app.canvas.style.margin = "0 auto"
+  app.canvas.style.width = "1600px"
+  app.canvas.style.height = "1200px"
   app.canvas.style.display = "block"
+  app.canvas.style.imageRendering = "pixelated"
 
   const config = await loadConfig()
   const input = new InputManager()

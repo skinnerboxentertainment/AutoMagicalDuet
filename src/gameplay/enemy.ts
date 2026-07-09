@@ -4,7 +4,7 @@ export function spawnFish(canvasW: number, yMin: number, yMax: number, speed: nu
   const yRange = yMax - yMin - 30
   return {
     x: canvasW + 40, y: yMin + 15 + Math.random() * yRange,
-    width: 36, height: 18, active: true, hp: 1,
+    width: 48, height: 24, active: true, hp: 1,
     baseY: 0, wobblePhase: Math.random() * Math.PI * 2, speed: speed + (Math.random() - 0.5) * 30,
   }
 }
@@ -13,7 +13,7 @@ export function spawnArmoredFish(canvasW: number, yMin: number, yMax: number, sp
   const yRange = yMax - yMin - 30
   return {
     x: canvasW + 40, y: yMin + 15 + Math.random() * yRange,
-    width: 40, height: 22, active: true, hp: 2,
+    width: 48, height: 24, active: true, hp: 2,
     baseY: 0, wobblePhase: Math.random() * Math.PI * 2, speed: speed + (Math.random() - 0.5) * 20,
   }
 }
@@ -22,18 +22,18 @@ export function spawnMine(canvasW: number, yMin: number, yMax: number): Mine {
   const yRange = yMax - yMin - 30
   return {
     x: canvasW + 40, y: yMin + 15 + Math.random() * yRange,
-    width: 24, height: 24, active: true, hp: 1, speed: 60 + Math.random() * 30,
+    width: 32, height: 32, active: true, hp: 1, speed: 60 + Math.random() * 30,
   }
 }
 
 export function spawnTreasure(canvasW: number, yMin: number, yMax: number): Treasure {
-  const yRange = yMax - yMin - 20
-  return { x: canvasW + 40, y: yMin + 10 + Math.random() * yRange, width: 20, height: 20, active: true, collected: false, speed: 50 + Math.random() * 30 }
+  const yRange = yMax - yMin - 32
+  return { x: canvasW + 40, y: yMin + 16 + Math.random() * yRange, width: 28, height: 28, active: true, collected: false, speed: 50 + Math.random() * 30 }
 }
 
 export function spawnFuelCan(canvasW: number, yMin: number, yMax: number): FuelCan {
-  const yRange = yMax - yMin - 16
-  return { x: canvasW + 40, y: yMin + 8 + Math.random() * yRange, width: 16, height: 16, active: true, collected: false, speed: 50 + Math.random() * 30 }
+  const yRange = yMax - yMin - 24
+  return { x: canvasW + 40, y: yMin + 12 + Math.random() * yRange, width: 24, height: 24, active: true, collected: false, speed: 50 + Math.random() * 30 }
 }
 
 export function getWaveSpawnIntervals(wave: WaveName, timeInWave: number, config: SubShooterConfig) {
