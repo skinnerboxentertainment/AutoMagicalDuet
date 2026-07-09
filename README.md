@@ -1,132 +1,197 @@
-# AutoMagicalDuet — Lean Game Studio
+<p align="center">
+  <img src="public/assets/banner.png" width="100%" alt="AutoMagicalDuet — You and two AI agents making games together" />
+</p>
 
-**Architecture:** OpenCode (orchestrator) + Codex (builder) operating in concert.
-**Stack:** PixiJS v8 + TypeScript strict + Vite + Vitest.
-**Status:** Working game output, art pipeline, RAG knowledge base.
+<h1 align="center">AutoMagicalDuet</h1>
+<p align="center">
+  <strong>You + two AI agents = your own browser games.</strong>
+  <br />
+  <em>No experience needed. Just an idea and five minutes.</em>
+  <br />
+  <br />
+  <a href="#-your-first-magic-trick"><img src="https://img.shields.io/badge/try%20it%20now-5%20minutes-6a5acd" alt="Try it now"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT"></a>
+  <img src="https://img.shields.io/badge/games%20built-5-success" alt="5 games built">
+  <img src="https://img.shields.io/badge/knowledge-63%20chunks-ff69b4" alt="63 knowledge chunks">
+</p>
 
-```
-Describe → Generate → Art → Verify → Iterate
-```
+## ✨ What is this?
+
+**AutoMagicalDuet** is a workshop where you and two AI helpers build browser games together. You describe what you want. One AI builds it. The other AI looks at it and says "hey, this could be better." You play the game in your browser. You change things. Repeat.
+
+It's like having two game developers as friends who never get tired of your ideas.
 
 ---
 
-## Quick Start
+## 🎮 Games you can make
+
+Real games that were built with this system:
+
+<p align="center">
+  <img src="public/assets/screenshot-platformer.png" width="600" alt="Platformer game" />
+  <br />
+  <em>A platformer — collect gems, dodge enemies, reach the exit.</em>
+</p>
+
+| | | |
+|---|---|---|
+| **Twin-stick shooter** | **Breakout / Arkanoid** | **Submarine explorer** |
+| Survive waves of enemies | Smash bricks, catch power-ups | Dive for treasure, dodge sharks |
+| | | |
+| **Puzzle game** | **Tic-tac-toe** | **Your idea goes here** |
+| Match colors, clear the board | Play against a Cold War AI | **→ You build this one** |
+
+---
+
+## 🪄 Your first magic trick
+
+You have the game running. Let's break it.
+
+Open **`assets/data/gameplay-config.json`** and find this line:
+
+```json
+"player_jump_velocity": -500
+```
+
+Change the `-500` to `-1200`:
+
+```json
+"player_jump_velocity": -1200
+```
+
+Save the file. Refresh the game in your browser. Now your character launches into the sky like a rocket.
+
+You just modded a game. In 10 seconds.
+
+> The player config has about 20 knobs you can tweak: speed, health, gravity, jump height, how many gems you need, whether enemies move faster or slower. Try changing them. See what happens. Break things. That's how you learn to make games.
+
+---
+
+## 🗺️ Three paths
+
+Depending on how deep you want to go:
+
+### 🔰 5 minutes — "Change the game"
+
+Tweak numbers in `assets/data/gameplay-config.json`. Make the player faster, the enemy dumber, the gems worth more. You don't need to know code. You just need to change numbers and see what happens.
+
+**What you learn:** Game balance, tuning, cause and effect.
+
+### ⏰ 1 hour — "Make your own level"
+
+Open `assets/data/level-01.json`. This is a list of platforms, gems, enemies, and the exit. You can move things around, add new platforms, put gems in harder places, make the level longer.
+
+Try adding a new enemy:
+
+```json
+{ "x": 200, "y": 250, "width": 30, "height": 30, "minX": 150, "maxX": 350, "speed": 80 }
+```
+
+**What you learn:** Level design, difficulty curves, placement.
+
+### 🏕️ A weekend — "Invent your own game"
+
+Come up with a game idea and work through it with the AI helpers:
+
+1. **Explore** — "I want to make a fishing game where you catch weird sea creatures"
+2. **Frame** — define what the player does, how they win, what's fun about it
+3. **Attack** — the critic AI pokes holes in your idea ("what happens if the player does nothing?")
+4. **Build** — the builder AI writes the code, you play it, you change it
+5. **Prove** — the critic AI checks it in a browser, finds visual bugs, you fix them
+
+**What you learn:** Full game development loop. This is how real games are made — just faster.
+
+---
+
+## 🤖 How the two AI helpers work
+
+Think of them as two friends on your team:
+
+| Who | What they do | Voice |
+|---|---|---|
+| **OpenCode** | The builder. Writes code, makes the game work, does the heavy lifting. | "I'll build it. Give me a minute." |
+| **Codex** | The critic. Reviews the game, catches bugs, looks at screenshots, generates art. | "Try this instead. Also the jump feels floaty." |
+
+**You** are the game director. You decide what to build. They argue about the best way to do it. You break the tie.
+
+> *OpenCode builds. Codex sharpens. You decide.*
+
+---
+
+## 🧠 The project brain
+
+Every game you build adds knowledge to a shared brain. The brain knows:
+
+- How to design game levels that feel good
+- What makes a fun enemy AI
+- How to balance difficulty
+- PixiJS rendering tricks
+- Testing patterns
+- Art direction
+- Audio design
+
+There are **63 knowledge chunks** across 9 topics. You can browse them at any time.
+
+When you run the game, the landing page is a **knowledge encyclopedia** — a searchable, readable collection of everything the system has learned. Click any topic, read the patterns, steal the ideas.
+
+---
+
+## 🚀 Quick start
 
 ```bash
+git clone https://github.com/skinnerboxentertainment/AutoMagicalDuet.git
+cd AutoMagicalDuet
 npm install
 npm run dev
 ```
 
-Open `http://localhost:5173` in a browser. A platformer game is already built in.
+Open `http://localhost:5173` in your browser.
 
-To generate a new game, the OpenCode + Codex consort follows the 7-beat rhythm:
-
-```
-Explore (OC) → Frame (OC) → Expand (both) → Attack (CX) → Commit (OC) → Build (OC) → Prove (CX reviews, OC integrates)
-```
-
-See `design/lean-consort-model.md` for the full operating model.
+> The landing page is the encyclopedia. Click **"Launch Game"** to play the platformer. Click any knowledge chunk to read it.
 
 ---
 
-## What This Is
+## 🧰 What's under the hood
 
-A two-agent game development system where **OpenCode** (orchestrator) and **Codex** (builder) collaborate to produce browser games. The system learns from every build via a RAG knowledge base extracted from 36 expert agent definitions.
-
-### Capabilities
-
-| Phase | What | Status |
-|-------|------|--------|
-| 0 | Build pipeline — tsc, vite, vitest all green | ✅ |
-| 1 | Working platformer from spec (20/20 tests) | ✅ |
-| 2 | Lean Consort Model — OpenCode + Codex operating model | ✅ |
-| 3 | Art generation + texture pipeline + Playwright visual verification | ✅ |
-| 4 | RAG knowledge base — 56 chunks across 11 domains | ✅ |
-
-### Test Games Produced
-
-The previous version of this system generated 5 working games across different genres: twin-stick shooter, breakout, submarine shmup, puzzle game, and platformer. See `design/` for architecture docs.
+| Layer | What it uses |
+|---|---|
+| **Game engine** | PixiJS v8 (WebGL / WebGPU / Canvas) |
+| **Language** | TypeScript (strict mode — cleaner code) |
+| **Build tool** | Vite (instant dev server, fast builds) |
+| **Tests** | Vitest (automated testing) |
+| **Audio** | Howler.js + jsfxr (retro sound effects) |
+| **Skills** | 34 installed AI skills (PixiJS, debugging, Playwright, TDD...) |
+| **Knowledge** | 63 chunks across 9 domains, browsable in the encyclopedia |
 
 ---
 
-## Architecture
-
-### The Consort (2 actors)
-
-| Role | Agent | Primary Domain |
-|------|-------|---------------|
-| Orchestrator-Builder | OpenCode | Architecture, implementation, coding, integration, repo governance |
-| Specialist Critic | Codex | Research, design critique, visual QA/inspection, art generation, browser verification |
-
-### Knowledge Base (56 chunks)
-
-`knowledge/` directory with tagged, retrievable knowledge across:
-
-| Domain | Chunks | Contents |
-|--------|--------|----------|
-| architecture | 11 | Layer isolation, state ownership, scene lifecycle, engine code standards |
-| game-design | 9 | MDA framework, economy design, core loops, level pacing, balancing |
-| pixijs | 7 | Rendering pipeline, scene management, input handling, asset loading, audio |
-| qa-testing | 8 | Test standards, performance budgets, accessibility, browser smoke tests |
-| workflow | 11 | Collaboration protocol, decision records, release pipeline, localization |
-| genre | 5 | Top-down, shmup, runner, puzzle, minimal |
-| audio, art, narrative | 5 | Sound design, visual identity, worldbuilding, dialogue |
-
-### Durable Memory
-
-- `production/active.md` — current state, next action, active packs
-- `production/events.md` — chronological log of all significant events
-- `docs/architecture/adr/` — numbered architecture decision records
-
----
-
-## Project Structure
+## 📁 Project layout
 
 ```
-├── AGENTS.md                 # Consort model description
-├── opencode.json             # OpenCode config (permissions, models)
-├── design/
-│   └── lean-consort-model.md # Full operating model specification
-├── knowledge/                # RAG knowledge base (56 chunks)
-├── docs/
-│   ├── architecture/adr/     # Decision records
-│   └── packs/                # Knowledge packs (extracted domain guides)
-├── production/
-│   ├── active.md             # Current session state
-│   └── events.md             # Chronological history
-├── src/
-│   ├── main.ts               # Entry point
-│   ├── core/                 # Engine (scene-manager, input-manager, game-loop)
-│   ├── scenes/               # Game scenes (boot, game)
-│   ├── gameplay/             # Game logic (player, level, enemy, gem, state)
-│   └── audio/                # Howler.js + jsfxr audio
-├── public/
-│   └── assets/               # Runtime assets (sprites, manifest)
-├── assets/data/              # Game data (config, levels)
-├── packages/
-│   └── narrative-core/       # Zod-validated narrative engine
-├── tools/
-│   ├── ts-compiler-mcp/      # TypeScript MCP server
-│   └── audio-pipeline/       # Procedural SFX generation
-└── tests/                    # Vitest test suites
+src/                    # Game code
+  main.ts               # Entry point
+  core/                 # Engine (scenes, input, game loop)
+  scenes/               # Game screens (boot, game)
+  gameplay/             # Game logic (player, enemies, gems)
+  audio/                # Sound system
+knowledge/              # The brain (63 chunks, browsable)
+production/             # What's happening now and what happened
+public/assets/          # Game sprites, banner, screenshots
+docs/                   # Architecture decisions and guides
+design/                 # Game design documents
+tests/                  # Automated tests
 ```
 
 ---
 
-## Tech Stack
+## 📜 License
 
-| Layer | Technology |
-|-------|-----------|
-| Renderer | PixiJS v8 (WebGL2/WebGPU/Canvas) |
-| Language | TypeScript 5.9 (strict) |
-| Build | Vite 6 |
-| Testing | Vitest 3 (20 tests, all passing) |
-| Audio | Howler.js + jsfxr (procedural SFX) |
-| Validation | Zod 4 |
-| CI | GitHub Actions (tsc + test + build) |
+MIT — do whatever you want with it. Go make games.
 
----
-
-## License
-
-MIT. See [LICENSE](LICENSE).
+<p align="center">
+  <img src="public/assets/logo.png" width="128" alt="AutoMagicalDuet" />
+  <br />
+  <strong>AutoMagicalDuet</strong>
+  <br />
+  <a href="https://github.com/skinnerboxentertainment/AutoMagicalDuet">GitHub</a>
+</p>
