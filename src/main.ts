@@ -10,7 +10,8 @@ const app = new Application()
 
 async function init(): Promise<void> {
   await app.init({ resizeTo: window, background: 0x76c7e8 })
-  document.body.appendChild(app.canvas)
+  const target = document.getElementById("game-canvas-target") || document.body
+  target.appendChild(app.canvas)
   const config = await loadConfig()
   const input = new InputManager()
   const scenes = new SceneManager(app.stage)

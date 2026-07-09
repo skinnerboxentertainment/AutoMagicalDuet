@@ -26,6 +26,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Build knowledge index
+        run: python tools/build-knowledge-index.py
+
       - name: TypeScript check
         run: npx tsc --noEmit
 

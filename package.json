@@ -8,8 +8,8 @@
     "packages/*"
   ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "dev": "python tools/build-knowledge-index.py && vite",
+    "build": "python tools/build-knowledge-index.py && tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",

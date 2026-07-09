@@ -23,6 +23,9 @@ docs/consistency-failures.md
 # === Generated Assets ===
 assets/audio/generated/
 
+# === Screenshots ===
+production/screenshot-*.png
+
 # === Build Output ===
 node_modules/
 .npm/

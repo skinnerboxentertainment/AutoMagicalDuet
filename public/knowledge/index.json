@@ -1,0 +1,1109 @@
+{
+  "architecture": [
+    {
+      "id": "ai-code-standards",
+      "title": "AI Code Standards",
+      "description": "# AI Code Standards",
+      "tags": [
+        "ai",
+        "behavior",
+        "debugging"
+      ],
+      "triggers": [
+        "src/ai/**",
+        "src/gameplay/**"
+      ],
+      "related": [
+        "game-design/flow-design",
+        "qa-testing/performance-budgets"
+      ],
+      "body": "# AI Code Standards\n\nGame AI should be data-driven, debuggable, readable to players, and bounded by a strict frame budget.\n\n## Patterns\n\n- Prefer behavior trees, utility systems, or explicit state machines over hardcoded if/else chains.\n- Keep AI update work within a 2ms per-frame budget and profile to verify.\n- Load perception ranges, weights, timers, formations, and role assignments from data.\n- Telegraph AI intentions so players can learn and react.\n- Log AI state transitions for debugging.\n- Provide visualization hooks for paths, perception cones, decision trees, and current goals.\n- Validate networked AI inputs and commands server-side.\n\n## Anti-patterns\n\n- Perfectly optimal AI that is unreadable or unfair to play against.\n- Hidden AI parameters embedded in code.\n- Group behavior that ignores formation, flanking, or role data.\n- Networked AI accepting client-provided state as trusted.\n\n## References\n\n- `.opencode/rules/ai-code.md`\n- `.opencode/agents/ai-programmer.md`"
+    },
+    {
+      "id": "engine-code-standards",
+      "title": "Engine Code Standards",
+      "description": "# Engine Code Standards",
+      "tags": [
+        "engine",
+        "hot-paths",
+        "api"
+      ],
+      "triggers": [
+        "src/core/**"
+      ],
+      "related": [
+        "architecture/layer-isolation",
+        "architecture/resource-cleanup"
+      ],
+      "body": "# Engine Code Standards\n\nEngine code forms the foundation other systems depend on. It must be stable, allocation-conscious, documented, and isolated from gameplay.\n\n## Patterns\n\n- Pre-allocate, pool, or reuse objects in update, rendering, physics, and query hot paths.\n- Document whether engine APIs are thread-safe or single-thread-only.\n- Profile before and after optimizations.\n- Provide usage examples in public API doc comments.\n- Use deterministic cleanup for resources.\n- Add deprecation and migration guidance for public interface changes.\n- Support graceful degradation when renderer, assets, or platform features are unavailable.\n\n## Anti-patterns\n\n- Engine imports from gameplay, UI, AI, or scene-specific modules.\n- Array filters, spreads, or temporary collections inside hot loops.\n- Public API changes with no migration path.\n- Engine APIs that assume a specific game mode or design.\n\n## References\n\n- `.opencode/rules/engine-code.md`\n- `.opencode/agents/engine-programmer.md`"
+    },
+    {
+      "id": "gameplay-code-standards",
+      "title": "Gameplay Code Standards",
+      "description": "# Gameplay Code Standards",
+      "tags": [
+        "gameplay",
+        "data-driven",
+        "state-machines"
+      ],
+      "triggers": [
+        "src/gameplay/**"
+      ],
+      "related": [
+        "architecture/state-ownership",
+        "game-design/balancing-methodology"
+      ],
+      "body": "# Gameplay Code Standards\n\nGameplay code must faithfully implement design documents with data-driven values, explicit state, and frame-rate independent behavior.\n\n## Patterns\n\n- Load numeric gameplay values from config/data files with sensible defaults.\n- Use delta time for all movement, cooldowns, timers, and time-dependent formulas.\n- Implement clear interfaces for each gameplay system.\n- Represent state machines with documented states and explicit transition tables.\n- Use events, commands, or signals for gameplay-to-UI communication.\n- Add unit tests for gameplay logic separate from rendering.\n- Document which design doc a feature implements.\n\n## Anti-patterns\n\n- Hardcoded damage, speed, health, spawn rate, or economy values.\n- Direct imports from gameplay into UI or UI into gameplay.\n- Static singletons for mutable game state.\n- Implicit state transitions hidden in nested conditionals.\n\n## References\n\n- `.opencode/rules/gameplay-code.md`\n- `.opencode/agents/gameplay-programmer.md`"
+    },
+    {
+      "id": "layer-isolation",
+      "title": "Layer Isolation",
+      "description": "# Layer Isolation",
+      "tags": [
+        "layering",
+        "boundaries",
+        "dependencies"
+      ],
+      "triggers": [
+        "src/core/**",
+        "src/gameplay/**",
+        "src/ui/**",
+        "src/scenes/**"
+      ],
+      "related": [
+        "architecture/state-ownership",
+        "architecture/engine-code-standards"
+      ],
+      "body": "# Layer Isolation\n\nCode dependencies must point inward toward stable core services. Core engine code cannot import gameplay, scenes, or UI; gameplay must not import UI; UI must not reach into gameplay internals.\n\n## Patterns\n\n- Keep `src/core/` limited to generic systems such as scene management, input, lifecycle, graph registry, timing, and resource helpers.\n- Let gameplay depend on core abstractions and input state, not on UI widgets or scene containers.\n- Let UI consume view models, events, callbacks, or read-only state projections instead of mutating gameplay objects directly.\n- Define narrow interfaces when systems need to collaborate across layer boundaries.\n- Escalate architectural changes when a feature requires reversing dependency direction.\n\n## Anti-patterns\n\n- `src/core/**` importing `src/gameplay/**`, `src/scenes/**`, or `src/ui/**`.\n- Gameplay classes directly constructing HUD elements.\n- UI controls mutating arbitrary gameplay fields.\n- Shared singletons for game state that every layer imports.\n\n## References\n\n- `.opencode/skills/automagically-game-architecture/SKILL.md`\n- `.opencode/docs/ts-reference/module-architecture.md`\n- `.opencode/agents/technical-director.md`"
+    },
+    {
+      "id": "network-code-standards",
+      "title": "Network Code Standards",
+      "description": "# Network Code Standards",
+      "tags": [
+        "networking",
+        "replication",
+        "security"
+      ],
+      "triggers": [
+        "src/networking/**"
+      ],
+      "related": [
+        "architecture/security-review",
+        "qa-testing/performance-budgets"
+      ],
+      "body": "# Network Code Standards\n\nNetworked gameplay must be server-authoritative, versioned, bandwidth-aware, and resilient to real-world latency and disconnection.\n\n## Patterns\n\n- Keep the server authoritative for gameplay-critical state.\n- Version every network message for compatibility.\n- Use local client prediction with server reconciliation.\n- Define replication strategy per value: reliable or unreliable, frequency, interpolation, and authority.\n- Profile bandwidth per message type and apply relevancy, delta compression, and priority-based sending.\n- Handle disconnect, reconnect, and host migration gracefully when applicable.\n- Validate packet sizes, field ranges, and state transitions.\n\n## Anti-patterns\n\n- Trusting clients for health, damage, currency, position, or progression.\n- Unversioned packet formats.\n- Unbounded network logging.\n- Treating 150ms latency as an edge case rather than a design constraint.\n\n## References\n\n- `.opencode/rules/network-code.md`\n- `.opencode/agents/network-programmer.md`"
+    },
+    {
+      "id": "resource-cleanup",
+      "title": "Resource Cleanup",
+      "description": "# Resource Cleanup",
+      "tags": [
+        "cleanup",
+        "lifecycle",
+        "resources"
+      ],
+      "triggers": [
+        "src/core/**",
+        "src/scenes/**",
+        "src/audio/**",
+        "src/assets/**"
+      ],
+      "related": [
+        "architecture/scene-lifecycle",
+        "pixijs/asset-loading"
+      ],
+      "body": "# Resource Cleanup\n\nRuntime systems need deterministic cleanup. Objects that allocate renderer, audio, DOM, subscription, or asset resources must expose clear ownership and teardown behavior.\n\n## Patterns\n\n- Destroy scene-owned containers with children during `exit()`.\n- Remove event subscriptions, timers, ticker callbacks, and DOM listeners when their owner exits.\n- Stop or fade scene-owned audio during scene teardown.\n- Use object pools for frequently created hot-path objects, and document pool ownership.\n- For public engine APIs, document whether callers own returned resources and how to release them.\n\n## Anti-patterns\n\n- Relying on garbage collection to clean renderer resources.\n- Keeping global arrays of active objects without removal on scene exit.\n- Reusing destroyed PixiJS objects.\n- Changing public cleanup contracts without migration notes.\n\n## References\n\n- `.opencode/agents/engine-programmer.md`\n- `.opencode/rules/engine-code.md`\n- `.opencode/skills/automagically-game-architecture/SKILL.md`"
+    },
+    {
+      "id": "scene-lifecycle",
+      "title": "Scene Lifecycle",
+      "description": "# Scene Lifecycle",
+      "tags": [
+        "scenes",
+        "lifecycle",
+        "cleanup"
+      ],
+      "triggers": [
+        "src/scenes/**",
+        "src/core/scene*.*",
+        "src/main.ts"
+      ],
+      "related": [
+        "pixijs/scene-management",
+        "architecture/resource-cleanup"
+      ],
+      "body": "# Scene Lifecycle\n\nScenes are stack-managed runtime units with deterministic entry, update, and exit behavior. A scene owns its display objects and transient subscriptions, but not the PixiJS application or global input service.\n\n## Patterns\n\n- Use `enter()` to create containers, add display objects, subscribe to input-facing signals, and start scene music.\n- Use `update(dt)` for one frame of scene behavior.\n- Use `exit()` to remove display objects, destroy children, unsubscribe listeners, and stop scene-owned audio.\n- Support stack operations: `push` pauses the current scene, `pop` destroys the top scene and resumes the previous one, `replace` destroys the current scene and starts another.\n- Keep the `Application`, renderer, ticker, and `InputManager` at app/core level.\n\n## Anti-patterns\n\n- Creating `new Application()` inside a scene.\n- Leaving display objects attached after scene exit.\n- Letting scene transitions rely on ad hoc booleans instead of explicit stack operations.\n- Registering DOM event listeners per scene.\n\n## References\n\n- `.opencode/skills/automagically-game-architecture/SKILL.md`\n- `.opencode/agents/engine-programmer.md`"
+    },
+    {
+      "id": "security-review",
+      "title": "Security Review",
+      "description": "# Security Review",
+      "tags": [
+        "security",
+        "privacy",
+        "validation"
+      ],
+      "triggers": [
+        "src/networking/**",
+        "src/save/**",
+        "src/analytics/**",
+        "src/**"
+      ],
+      "related": [
+        "architecture/network-code-standards",
+        "workflow/release-pipeline"
+      ],
+      "body": "# Security Review\n\nSecurity review starts from the threat model: untrusted input, cheating, save tampering, data privacy, secrets, and release exposure.\n\n## Patterns\n\n- Validate and sanitize all user-controlled strings and packets.\n- Rate-limit client-to-server calls and anomaly logging.\n- Use TLS for network communication.\n- Keep server-authoritative validation for critical state.\n- Version saves, add integrity checks, and handle corruption gracefully.\n- Collect only necessary analytics data and provide opt-out where required.\n- Keep secrets, tokens, and credentials out of source, logs, saves, and client errors.\n- Review each feature for attack surface before release.\n\n## Anti-patterns\n\n- Hardcoded secrets or credentials.\n- Plaintext sensitive data in logs.\n- Security through obscurity without validation.\n- Exposing cheat detection logic in client-visible errors.\n- Collecting personally identifiable information without explicit requirements.\n\n## References\n\n- `.opencode/agents/security-engineer.md`\n- `.opencode/rules/network-code.md`"
+    },
+    {
+      "id": "state-ownership",
+      "title": "State Ownership",
+      "description": "# State Ownership",
+      "tags": [
+        "state",
+        "rendering",
+        "save-load"
+      ],
+      "triggers": [
+        "src/gameplay/**",
+        "src/scenes/**",
+        "src/core/**"
+      ],
+      "related": [
+        "pixijs/scene-management",
+        "architecture/layer-isolation"
+      ],
+      "body": "# State Ownership\n\nGame simulation state belongs in plain TypeScript classes or serializable records. PixiJS display objects mirror state during render sync; they do not own gameplay facts.\n\n## Patterns\n\n- Store health, position, inventory, timers, flags, and progression on plain state objects.\n- Sync state into `Sprite`, `Container`, `Text`, or `Graphics` during scene update or render sync.\n- Give persistent state `toJSON()` and `fromJSON()` methods when save/load is required.\n- Keep renderer-facing objects disposable. A scene can destroy and recreate visuals without losing simulation state.\n- Use branded IDs, discriminated unions, or typed records for domain entities instead of anonymous strings.\n\n## Anti-patterns\n\n- Adding properties such as `sprite.health`, `container.playerData`, or `text.scoreValue`.\n- Treating PixiJS display object lifetime as gameplay lifetime.\n- Saving by walking the scene graph.\n- Requiring PixiJS in unit tests for core gameplay logic.\n\n## References\n\n- `.opencode/skills/automagically-game-architecture/SKILL.md`\n- `.opencode/agents/lead-programmer.md`\n- `.opencode/rules/gameplay-code.md`"
+    },
+    {
+      "id": "typescript-strict-patterns",
+      "title": "TypeScript Strict Patterns",
+      "description": "# TypeScript Strict Patterns",
+      "tags": [
+        "typescript",
+        "strict",
+        "types"
+      ],
+      "triggers": [
+        "src/**/*.ts",
+        "tests/**/*.ts"
+      ],
+      "related": [
+        "architecture/layer-isolation",
+        "qa-testing/test-standards"
+      ],
+      "body": "# TypeScript Strict Patterns\n\nStrict TypeScript is a design constraint. Public APIs, state machines, and IDs should be typed so illegal states are hard to express.\n\n## Patterns\n\n- Use `unknown` plus type guards instead of `any`.\n- Use discriminated unions for state machines.\n- Use branded types for entity and identifier values.\n- Add explicit return types to public functions.\n- Prefer `Readonly` for immutable state.\n- Add error boundaries to async operations.\n- Use `AbortController` for cancellable async work.\n- Use compiler-backed analysis for symbol lookup, references, import traces, and boundary violations when available.\n\n## Anti-patterns\n\n- `any` outside narrow type guard boundaries.\n- Undocumented `as` assertions.\n- Non-null assertions instead of narrowing.\n- `// @ts-ignore` or `// @ts-expect-error`.\n- Runtime enums where `as const` objects or literal unions are sufficient.\n- Circular module imports.\n\n## References\n\n- `.opencode/skills/typescript-patterns/SKILL.md`\n- `.opencode/agents/lead-programmer.md`"
+    },
+    {
+      "id": "update-loop",
+      "title": "Update Loop",
+      "description": "# Update Loop",
+      "tags": [
+        "ticker",
+        "timing",
+        "deterministic"
+      ],
+      "triggers": [
+        "src/main.ts",
+        "src/core/**",
+        "src/gameplay/**"
+      ],
+      "related": [
+        "pixijs/rendering-pipeline",
+        "qa-testing/performance-budgets"
+      ],
+      "body": "# Update Loop\n\nUse the PixiJS ticker as the single game loop. Start with variable delta time, and introduce fixed-step accumulation only when deterministic physics, rollback, or replay requires it.\n\n## Patterns\n\n- Register one top-level ticker callback that updates input, active scenes, audio state, and diagnostics in a stable order.\n- Treat PixiJS v8 `ticker.deltaTime` as a frame-scaled value where `1.0` represents one frame at the target frame rate.\n- Multiply movement, animation timers, cooldowns, and simulation rates by delta time.\n- Keep hot paths allocation-free by reusing arrays, points, rectangles, and query buffers.\n- Document when a subsystem needs fixed-step behavior and isolate the accumulator behind core timing code.\n\n## Anti-patterns\n\n- `setInterval` or `setTimeout` for gameplay logic.\n- Per-object ticker registrations that make update order implicit.\n- Frame-dependent movement such as `x += speed` without delta.\n- Allocating temporary collections in every update frame.\n\n## References\n\n- `.opencode/skills/automagically-game-architecture/SKILL.md`\n- `.opencode/rules/gameplay-code.md`\n- `.opencode/rules/engine-code.md`"
+    }
+  ],
+  "art": [
+    {
+      "id": "visual-identity",
+      "title": "Visual Identity",
+      "description": "# Visual Identity",
+      "tags": [
+        "visual",
+        "style",
+        "hierarchy"
+      ],
+      "triggers": [
+        "design/art/**",
+        "assets/**",
+        "src/ui/**"
+      ],
+      "related": [
+        "pixijs/ui-code-standards",
+        "qa-testing/accessibility"
+      ],
+      "body": "# Visual Identity\n\nVisual direction needs a maintained art bible that defines style, palette, material language, lighting, hierarchy, and asset specifications.\n\n## Patterns\n\n- Keep an art bible as the visual source of truth.\n- Define what colors mean and how palette shifts communicate state.\n- Use visual hierarchy so important gameplay information is immediately prominent.\n- Specify asset resolution, format, naming convention, color profile, and budget per asset category.\n- Name assets as `[category]_[name]_[variant]_[size].[ext]`.\n- Review visual assets and UI mockups against the art bible with specific corrective guidance.\n\n## Anti-patterns\n\n- Asset style decisions scattered across implementation files.\n- Color palettes that communicate state inconsistently.\n- Visual polish that harms readability or accessibility.\n- Asset naming that omits category, variant, or size.\n\n## References\n\n- `.opencode/agents/art-director.md`\n- `.opencode/agents/technical-artist.md`"
+    }
+  ],
+  "audio": [
+    {
+      "id": "sfx-specifications",
+      "title": "SFX Specifications",
+      "description": "# SFX Specifications",
+      "tags": [
+        "sfx",
+        "events",
+        "variations"
+      ],
+      "triggers": [
+        "design/audio/**",
+        "assets/audio/sfx/**",
+        "assets/audio/sprites/**"
+      ],
+      "related": [
+        "audio/sonic-identity",
+        "pixijs/audio-integration"
+      ],
+      "body": "# SFX Specifications\n\nSound effects need event-level specifications before production or implementation. Each cue should define trigger, priority, mix behavior, variation, and spatial properties.\n\n## Patterns\n\n- Document description, reference sounds, frequency character, duration, volume range, spatial behavior, and variation count.\n- Maintain audio event lists per system with trigger, priority, concurrency limit, and cooldown.\n- Use round-robin or pitch randomization for repeated SFX.\n- Define ambience as layers: base loop, detail sounds, one-shots, and transitions.\n- Assign bus routing and ducking relationships.\n\n## Anti-patterns\n\n- One sound reused for high-frequency actions with no variation.\n- SFX trigger definitions embedded only in gameplay code.\n- Critical sounds with no concurrency or masking rules.\n- Ambience that has no transition policy between areas.\n\n## References\n\n- `.opencode/agents/sound-designer.md`\n- `.opencode/skills/automagically-audio/SKILL.md`"
+    },
+    {
+      "id": "sonic-identity",
+      "title": "Sonic Identity",
+      "description": "# Sonic Identity",
+      "tags": [
+        "audio",
+        "direction",
+        "mix"
+      ],
+      "triggers": [
+        "design/audio/**",
+        "assets/audio/**",
+        "src/audio/**"
+      ],
+      "related": [
+        "pixijs/audio-integration",
+        "qa-testing/accessibility"
+      ],
+      "body": "# Sonic Identity\n\nAudio direction defines the sound palette, music behavior, event architecture, mix hierarchy, and asset specifications so audio supports both emotion and gameplay clarity.\n\n## Patterns\n\n- Define the palette: acoustic or synthetic, clean or distorted, sparse or dense.\n- Map music and ambience to game states, locations, intensity, and emotional arc.\n- Define audio event triggers, priorities, layering, ducking, and concurrency.\n- Ensure gameplay-critical audio remains audible in the mix.\n- Use category naming such as `[category]_[context]_[name]_[variant].[ext]`.\n- Document sample rate, format, loudness, and file-size budgets per category.\n\n## Anti-patterns\n\n- Music or SFX choices that obscure gameplay-critical cues.\n- Audio events with no priority or overlap policy.\n- Unnamed one-off files that bypass asset conventions.\n- Sonic direction changing middleware or code architecture without technical approval.\n\n## References\n\n- `.opencode/agents/audio-director.md`\n- `.opencode/agents/sound-designer.md`"
+    }
+  ],
+  "game-design": [
+    {
+      "id": "balancing-methodology",
+      "title": "Balancing Methodology",
+      "description": "# Balancing Methodology",
+      "tags": [
+        "balance",
+        "formulas",
+        "tuning"
+      ],
+      "triggers": [
+        "design/gdd/**",
+        "assets/data/**",
+        "src/gameplay/**"
+      ],
+      "related": [
+        "game-design/economy-design",
+        "workflow/design-doc-standards"
+      ],
+      "body": "# Balancing Methodology\n\nBalance work must separate target experience, mathematical model, and tuning knobs. Numeric systems need formulas, ranges, worked examples, and data-driven values.\n\n## Patterns\n\n- Anchor combat or challenge tuning to measurable targets such as time-to-kill, time-to-complete, resource gain rate, or failure recovery time.\n- Use appropriate balance structures: transitive, intransitive, frustra, or asymmetric.\n- Group knobs into feel knobs, curve knobs, and gate knobs.\n- Put gameplay values in external data files with safe ranges and rationale.\n- Include edge cases for minimums, maximums, clamping, zero divisions, overflow, and degenerate strategies.\n\n## Anti-patterns\n\n- Hardcoded balance values in gameplay code.\n- Formulas without variable tables, ranges, or examples.\n- Numeric changes with no rationale or test expectation.\n- Balancing only around average cases while ignoring extremes and exploits.\n\n## References\n\n- `.opencode/agents/game-designer.md`\n- `.opencode/agents/systems-designer.md`\n- `.opencode/rules/gameplay-code.md`"
+    },
+    {
+      "id": "core-loops",
+      "title": "Core Loops",
+      "description": "# Core Loops",
+      "tags": [
+        "loops",
+        "pacing",
+        "progression"
+      ],
+      "triggers": [
+        "design/gdd/**",
+        "src/gameplay/**"
+      ],
+      "related": [
+        "game-design/mda-framework",
+        "game-design/flow-design"
+      ],
+      "body": "# Core Loops\n\nEvery mechanic must connect to at least one loop: a moment-to-moment micro-loop, a 5-15 minute meso-loop, or a session-level macro-loop.\n\n## Patterns\n\n- Define a 30-second micro-loop around intrinsically satisfying player action and immediate feedback.\n- Define a meso-loop around goal pursuit, reward, escalation, and renewed intent.\n- Define a macro-loop around progression, a natural stopping point, and a reason to return.\n- Tie rewards to the loop they reinforce; not every reward belongs in long-term progression.\n- Identify what player decision starts, sustains, and ends each loop.\n\n## Anti-patterns\n\n- Mechanics that exist outside all loops.\n- Rewards that interrupt the loop they are supposed to reinforce.\n- Session structures with no stopping point.\n- Progression systems that only increase numbers without changing goals, choices, or mastery.\n\n## References\n\n- `.opencode/agents/game-designer.md`\n- `.opencode/agents/systems-designer.md`"
+    },
+    {
+      "id": "creative-pillars",
+      "title": "Creative Pillars",
+      "description": "# Creative Pillars",
+      "tags": [
+        "pillars",
+        "vision",
+        "scope"
+      ],
+      "triggers": [
+        "design/**",
+        "production/**"
+      ],
+      "related": [
+        "game-design/mda-framework",
+        "workflow/scope-management"
+      ],
+      "body": "# Creative Pillars\n\nCreative pillars are non-negotiable decision filters. They must be few, falsifiable, and useful when departments disagree.\n\n## Patterns\n\n- Keep 3-5 pillars maximum.\n- Make each pillar specific enough to resolve a real design dispute.\n- Define a design test for every pillar.\n- Include anti-pillars that state what the game is not.\n- Evaluate decisions by core fantasy, pillar alignment, target aesthetics, coherence, positioning, and feasibility.\n- When cutting scope, protect features that are the pillars, simplify features near pillars, and cut features far from pillars first.\n\n## Anti-patterns\n\n- Vague pillars such as \"fun gameplay\" or \"high quality.\"\n- Pillars that constrain only one department.\n- Scope cuts that remove the feature that carries the core fantasy.\n- Creative decisions that improve one pillar while silently violating another.\n\n## References\n\n- `.opencode/agents/creative-director.md`\n- `.opencode/agents/game-designer.md`"
+    },
+    {
+      "id": "economy-design",
+      "title": "Economy Design",
+      "description": "# Economy Design",
+      "tags": [
+        "economy",
+        "rewards",
+        "progression"
+      ],
+      "triggers": [
+        "design/gdd/**",
+        "assets/data/**"
+      ],
+      "related": [
+        "game-design/balancing-methodology",
+        "qa-testing/analytics-metrics"
+      ],
+      "body": "# Economy Design\n\nVirtual economies require explicit resource flow models. Every currency, item, unlock, and reward source needs a matching understanding of where resources leave or lose value.\n\n## Patterns\n\n- Map every faucet that creates resources and every sink that removes or consumes them.\n- Model expected resource gain over the target session length.\n- Define acquisition timelines for each reward tier.\n- Use pity timers or bad luck protection when probabilistic rewards can create unacceptable streaks.\n- Track health metrics such as average currency per hour, item acquisition rate, and stockpile distribution.\n- Register cross-system items, currencies, and loot facts in the shared entity registry when they appear in multiple designs.\n\n## Anti-patterns\n\n- Loot tables with vague rarity words but no rates or weights.\n- Infinite accumulation with no meaningful sink.\n- Costs tuned independently from expected earning rate.\n- Pay-to-win advantages in competitive contexts or hidden odds in chance-based rewards.\n\n## References\n\n- `.opencode/agents/economy-designer.md`\n- `.opencode/agents/game-designer.md`"
+    },
+    {
+      "id": "flow-design",
+      "title": "Flow Design",
+      "description": "# Flow Design",
+      "tags": [
+        "flow",
+        "onboarding",
+        "feedback"
+      ],
+      "triggers": [
+        "design/gdd/**",
+        "src/gameplay/**",
+        "src/ui/**"
+      ],
+      "related": [
+        "game-design/core-loops",
+        "game-design/mda-framework"
+      ],
+      "body": "# Flow Design\n\nKeep players in the flow channel by matching challenge to skill, teaching through play, and making consequences readable quickly.\n\n## Patterns\n\n- Introduce each new mechanic in isolation before combining it with other mechanics.\n- Shape difficulty as a sawtooth: build tension, release at a milestone, then resume from a slightly higher baseline.\n- Provide micro-feedback within roughly half a second of player action.\n- Make success and failure causality visible so competence can develop.\n- Scale failure cost to failure frequency; common failures need quick recovery.\n\n## Anti-patterns\n\n- Front-loading tutorial text before the player can act.\n- Vertical difficulty spikes with no preparation.\n- Failure states where the player cannot identify what caused the loss.\n- Long recovery loops for frequent mistakes.\n\n## References\n\n- `.opencode/agents/game-designer.md`\n- `.opencode/agents/ux-designer.md`"
+    },
+    {
+      "id": "level-pacing",
+      "title": "Level Pacing",
+      "description": "# Level Pacing",
+      "tags": [
+        "levels",
+        "pacing",
+        "encounters"
+      ],
+      "triggers": [
+        "design/gdd/**",
+        "design/levels/**",
+        "assets/data/level*"
+      ],
+      "related": [
+        "game-design/flow-design",
+        "genre/top-down"
+      ],
+      "body": "# Level Pacing\n\nLevel design should control challenge, exploration, reward, and rest as an intentional sequence. Each level needs spatial flow, encounter placement, and an intensity curve.\n\n## Patterns\n\n- Document critical path, optional paths, secrets, landmarks, sightlines, chokepoints, and leading elements.\n- Use pacing charts to show intensity over time, including escalation and rest points.\n- Specify encounters by type, composition, position, spawn timing, arena constraints, and difficulty target.\n- Place optional content to reward exploration without punishing critical-path players.\n- Communicate narrative beats through environment and interaction when possible.\n\n## Anti-patterns\n\n- Flat encounter density with no rest or escalation.\n- Layouts that require UI text to compensate for unclear spatial direction.\n- Secrets that feel mandatory for baseline viability.\n- Difficulty parameters set locally without reference to game-wide balance targets.\n\n## References\n\n- `.opencode/agents/level-designer.md`\n- `.opencode/templates/genre-patterns/top-down.md`"
+    },
+    {
+      "id": "live-ops-cadence",
+      "title": "Live Ops Cadence",
+      "description": "# Live Ops Cadence",
+      "tags": [
+        "cadence",
+        "seasons",
+        "retention"
+      ],
+      "triggers": [
+        "design/live-ops/**"
+      ],
+      "related": [
+        "game-design/live-ops",
+        "workflow/community-communication"
+      ],
+      "body": "# Live Ops Cadence\n\nLive content needs cadence tiers, production buffer, event fallback plans, and retention metrics.\n\n## Patterns\n\n- Define daily, weekly, monthly, seasonal, and annual cadence tiers with scope and frequency.\n- Maintain at least two weeks of content buffer ahead of schedule.\n- Give each season a theme, duration, content list, reward track, economy changes, and success metrics.\n- Design events with start/end dates, mechanics, rewards, success criteria, and fallback plan.\n- Track D1, D7, D14, D30, D60, and D90 retention.\n- Avoid permanent economy changes without economy review.\n\n## Anti-patterns\n\n- Seasonal schedules that conflict with core progression or story beats.\n- Event launches that cannot be disabled, extended, or compensated if broken.\n- Premium tracks with exclusive gameplay power.\n- Obfuscated currency conversion or artificial spending pressure.\n\n## References\n\n- `.opencode/agents/live-ops-designer.md`\n- `.opencode/agents/economy-designer.md`"
+    },
+    {
+      "id": "live-ops",
+      "title": "Live Ops",
+      "description": "# Live Ops",
+      "tags": [
+        "live-ops",
+        "events",
+        "retention"
+      ],
+      "triggers": [
+        "design/live-ops/**",
+        "assets/data/**"
+      ],
+      "related": [
+        "game-design/economy-design",
+        "qa-testing/analytics-metrics"
+      ],
+      "body": "# Live Ops\n\nLive operations should use scheduled, data-driven events with clear goals, measurable outcomes, and economy-safe rewards.\n\n## Patterns\n\n- Define event goals before reward tables or content cadence.\n- Connect live events to retention, reactivation, economy health, or community goals.\n- Use data files for event schedules, reward pools, modifiers, and availability windows.\n- Protect the base economy from event reward inflation.\n- Measure participation, completion, spend or resource movement, and return rate.\n\n## Anti-patterns\n\n- Events that add rewards without sinks or pacing controls.\n- Manual code deploys for routine schedule changes.\n- Retention mechanics that rely on opaque pressure or exploitative patterns.\n- Live changes without rollback or expiry.\n\n## References\n\n- `.opencode/agents/live-ops-designer.md`\n- `.opencode/agents/analytics-engineer.md`"
+    },
+    {
+      "id": "mda-framework",
+      "title": "MDA Framework",
+      "description": "# MDA Framework",
+      "tags": [
+        "mda",
+        "aesthetics",
+        "mechanics"
+      ],
+      "triggers": [
+        "design/gdd/**",
+        "design/**/*.md"
+      ],
+      "related": [
+        "game-design/core-loops",
+        "workflow/design-doc-standards"
+      ],
+      "body": "# MDA Framework\n\nDesign mechanics from the desired player experience backward. State the target aesthetics first, then identify the dynamics those feelings require, then specify mechanics that reliably create those dynamics.\n\n## Patterns\n\n- Start with the emotional target: challenge, discovery, expression, fantasy, fellowship, narrative, sensation, or submission.\n- Describe expected dynamics as player behaviors and emergent patterns, not implementation details.\n- Define mechanics as precise rules that generate those dynamics.\n- Validate mechanics against Self-Determination Theory: autonomy, competence, and relatedness.\n- Use playtest acceptance criteria to verify both function and feel.\n\n## Anti-patterns\n\n- Beginning with a system because it is familiar rather than because it serves the target aesthetic.\n- Treating \"fun\" or \"feels good\" as sufficient specification.\n- Adding mechanics that create dynamics opposed to the project pillars.\n- Shipping choices where one option clearly dominates while pretending they support autonomy.\n\n## References\n\n- `.opencode/agents/game-designer.md`\n- `.opencode/rules/design-docs.md`"
+    }
+  ],
+  "genre": [
+    {
+      "id": "minimal",
+      "title": "Minimal Pattern",
+      "description": "# Minimal Pattern",
+      "tags": [
+        "minimal",
+        "fallback",
+        "scaffold"
+      ],
+      "triggers": [
+        "design/gdd/**",
+        "src/gameplay/**"
+      ],
+      "related": [
+        "genre/top-down",
+        "qa-testing/browser-smoke-tests"
+      ],
+      "body": "# Minimal Pattern\n\nThe minimal pattern is a fallback scaffold when a requested genre is unknown. It guarantees a playable canvas with a movable character and a tiny test surface.\n\n## Patterns\n\n- Provide a viewport-sized canvas with a solid background.\n- Implement 4-direction player movement with delta-scaled speed.\n- Avoid health, physics, gravity, obstacles, scrolling, and audio.\n- Generate only the essential player logic and a unit test for move-and-stop behavior.\n- Use browser smoke testing to verify canvas render and input response.\n\n## Anti-patterns\n\n- Expanding fallback into an unrequested genre.\n- Adding audio, progression, or combat to the minimal scaffold.\n- Failing auto-build because genre recognition was uncertain.\n\n## References\n\n- `.opencode/templates/genre-patterns/minimal.md`"
+    },
+    {
+      "id": "puzzle",
+      "title": "Puzzle Pattern",
+      "description": "# Puzzle Pattern",
+      "tags": [
+        "puzzle",
+        "grid",
+        "matching"
+      ],
+      "triggers": [
+        "design/gdd/**",
+        "src/gameplay/**",
+        "assets/data/level*.json"
+      ],
+      "related": [
+        "game-design/balancing-methodology",
+        "qa-testing/testing-pyramid"
+      ],
+      "body": "# Puzzle Pattern\n\nA match puzzle game should treat gameplay as grid-index logic, not physics. Board generation, match detection, gravity, and scoring must be deterministic and testable.\n\n## Patterns\n\n- Map pointer position to grid cell with explicit coordinate math.\n- Allow swaps only between orthogonally adjacent cells.\n- Scan rows and columns for 3+ consecutive matching tiles.\n- Collapse tiles downward after matches and spawn replacements from the top.\n- Generate the initial board so no pre-existing matches exist.\n- Test match detection, gravity, spawn fill, swap validation, combo scoring, and no-match board generation.\n\n## Anti-patterns\n\n- Pixel collision for tile matching.\n- Initial boards that auto-clear before player input.\n- Diagonal swaps unless explicitly designed.\n- Non-deterministic board generation in unit tests.\n\n## References\n\n- `.opencode/templates/genre-patterns/puzzle.md`"
+    },
+    {
+      "id": "runner",
+      "title": "Runner Pattern",
+      "description": "# Runner Pattern",
+      "tags": [
+        "runner",
+        "procedural",
+        "obstacles"
+      ],
+      "triggers": [
+        "design/gdd/**",
+        "src/gameplay/**",
+        "assets/data/difficulty.json"
+      ],
+      "related": [
+        "game-design/flow-design",
+        "qa-testing/testing-pyramid"
+      ],
+      "body": "# Runner Pattern\n\nAn endless runner depends on auto-movement, jump/duck readability, procedural obstacle safety rules, and distance-based pacing.\n\n## Patterns\n\n- Keep player horizontally auto-running and camera fixed around a stable screen position.\n- Use gravity, ground checks, jump velocity, variable jump height, and duck hitbox changes.\n- Increase speed and obstacle density over time within capped ranges.\n- Enforce safe zones and obstacle sequence rules so procedural output stays fair.\n- Spawn high obstacles only when the player can reasonably duck, and avoid high obstacles immediately after gaps.\n- Test jump arc, duck hitbox, obstacle collision, coin overlap, spawn spacing, and safe-zone enforcement.\n\n## Anti-patterns\n\n- Random obstacle placement without recovery space.\n- Two identical high-pressure obstacle types in a row when the rules forbid it.\n- Camera Y movement that reduces jump readability.\n- Difficulty curves hardcoded in gameplay code.\n\n## References\n\n- `.opencode/templates/genre-patterns/runner.md`"
+    },
+    {
+      "id": "shmup",
+      "title": "SHMUP Pattern",
+      "description": "# SHMUP Pattern",
+      "tags": [
+        "shmup",
+        "projectiles",
+        "waves"
+      ],
+      "triggers": [
+        "design/gdd/**",
+        "src/gameplay/**",
+        "assets/data/waves.json"
+      ],
+      "related": [
+        "game-design/core-loops",
+        "qa-testing/testing-pyramid"
+      ],
+      "body": "# SHMUP Pattern\n\nA shoot-em-up centers on 8-direction movement, projectile timing, enemy waves, collision readability, and score pressure.\n\n## Patterns\n\n- Use screen-locked or upward auto-scrolling space.\n- Model player states as active, invincible, and dead.\n- Use a firing cooldown and explicit projectile speed.\n- Generate enemy waves with count, HP, pattern, spawn interval, and boss phase data.\n- Use circle collision for player, bullets, enemies, and boss shapes when visuals are roughly circular.\n- Test projectile movement, wave timing, collision damage, power-up effects, wave completion, and boss spawn.\n\n## Anti-patterns\n\n- Projectile creation without pooling once fire rate becomes high.\n- Enemy wave data embedded in scene code.\n- Collision radii that do not match visual readability.\n- Power-up duration controlled by real clock instead of game delta or testable timing.\n\n## References\n\n- `.opencode/templates/genre-patterns/shmup.md`"
+    },
+    {
+      "id": "top-down",
+      "title": "Top-Down Pattern",
+      "description": "# Top-Down Pattern",
+      "tags": [
+        "top-down",
+        "movement",
+        "tiles"
+      ],
+      "triggers": [
+        "design/gdd/**",
+        "src/gameplay/**",
+        "assets/data/level*.json"
+      ],
+      "related": [
+        "game-design/level-pacing",
+        "pixijs/scene-management"
+      ],
+      "body": "# Top-Down Pattern\n\nA top-down game uses 4- or 8-direction movement, tile-based world constraints, pickups, enemy zones, and a camera clamped to map bounds.\n\n## Patterns\n\n- Use per-axis AABB resolution against impassable tiles.\n- Keep the camera centered on the player and clamped inside map bounds.\n- Store levels as tile arrays plus spawn metadata.\n- Give enemies aggro range and patrol behavior.\n- Use invincibility frames and visual blink after damage.\n- Test movement directions, patrol boundaries, item overlap, damage invincibility, spawn activation, and health pickup behavior.\n\n## Anti-patterns\n\n- Letting the camera show outside the tile grid.\n- Enemies colliding with walls unless pathfinding or steering is explicitly designed.\n- Collectibles placed where walls or water make them unreachable.\n- Tile meanings defined only in code instead of data schema.\n\n## References\n\n- `.opencode/templates/genre-patterns/top-down.md`"
+    }
+  ],
+  "narrative": [
+    {
+      "id": "dialogue-standards",
+      "title": "Dialogue Standards",
+      "description": "# Dialogue Standards",
+      "tags": [
+        "dialogue",
+        "localization",
+        "writing"
+      ],
+      "triggers": [
+        "design/narrative/**",
+        "locales/**"
+      ],
+      "related": [
+        "workflow/localization",
+        "narrative/worldbuilding-consistency"
+      ],
+      "body": "# Dialogue Standards\n\nDialogue must serve character, context, and gameplay clarity while staying localization-ready.\n\n## Patterns\n\n- Give every line a speaker tag and context note.\n- Match the voice profile defined for the character.\n- Use condition and state annotations for branching dialogue.\n- Use named placeholders such as `{player_name}` and `{item_count}`.\n- Keep dialogue lines within 120 characters for dialogue box constraints.\n- Avoid idioms that do not translate cleanly.\n- Make mechanical information in item and ability text unambiguous.\n\n## Anti-patterns\n\n- Lines that contradict character voice profiles.\n- Variable insertion by string concatenation.\n- Unannotated dialogue that lacks trigger or state context.\n- Flavor text that obscures essential mechanics.\n\n## References\n\n- `.opencode/agents/writer.md`\n- `.opencode/rules/narrative.md`"
+    },
+    {
+      "id": "worldbuilding-consistency",
+      "title": "Worldbuilding Consistency",
+      "description": "# Worldbuilding Consistency",
+      "tags": [
+        "lore",
+        "canon",
+        "consistency"
+      ],
+      "triggers": [
+        "design/narrative/**"
+      ],
+      "related": [
+        "workflow/localization",
+        "game-design/mda-framework"
+      ],
+      "body": "# Worldbuilding Consistency\n\nNarrative content needs explicit canon status, world rules, contradictions checks, and player relevance.\n\n## Patterns\n\n- Assign each lore entry a canon level: Established, Provisional, or Under Review.\n- Document what is possible and impossible in the world.\n- Cross-reference new lore against existing lore before accepting it.\n- Give mysteries true answers even when players never learn them.\n- Define faction motivations, relationships, and power structures logically.\n- Include player relevance for world elements.\n\n## Anti-patterns\n\n- Lore that contradicts established world rules without review.\n- Mysteries with no internal answer.\n- Factions that exist only as labels, without motivation or power structure.\n- Narrative scope added without production approval.\n\n## References\n\n- `.opencode/rules/narrative.md`\n- `.opencode/agents/narrative-director.md`"
+    }
+  ],
+  "pixijs": [
+    {
+      "id": "asset-loading",
+      "title": "Asset Loading",
+      "description": "# Asset Loading",
+      "tags": [
+        "assets",
+        "bundles",
+        "manifest"
+      ],
+      "triggers": [
+        "src/assets/**",
+        "src/scenes/**",
+        "assets/**",
+        "public/**"
+      ],
+      "related": [
+        "architecture/resource-cleanup",
+        "pixijs/rendering-pipeline"
+      ],
+      "body": "# Asset Loading\n\nUse PixiJS v8 `Assets` with scene-level bundles. Load during boot or scene entry, never inside frame updates.\n\n## Patterns\n\n- Initialize `Assets` with a manifest such as `assets/manifest.json`.\n- Load one bundle per scene in `scene.enter()` or during a loading scene.\n- Keep a shared core bundle for fonts and common UI/player assets.\n- Use spritesheet JSON files for multi-frame sprites and variants.\n- Put fixed-URL files such as manifests in `public/`; import Vite-processed textures, fonts, spritesheets, and data from source when bundling is desired.\n\n## Anti-patterns\n\n- `Assets.load` inside `update()`.\n- PixiJS v7 `Loader` or `app.loader`.\n- Loading the entire game asset set at boot by default.\n- Importing hashed runtime assets from `public/`.\n\n## References\n\n- `.opencode/skills/automagically-assets-and-build/SKILL.md`\n- `.opencode/agents/pixijs-specialist.md`"
+    },
+    {
+      "id": "audio-integration",
+      "title": "Audio Integration",
+      "description": "# Audio Integration",
+      "tags": [
+        "audio",
+        "howler",
+        "scenes"
+      ],
+      "triggers": [
+        "src/audio/**",
+        "src/scenes/**",
+        "assets/audio/**"
+      ],
+      "related": [
+        "architecture/scene-lifecycle",
+        "qa-testing/test-doubles"
+      ],
+      "body": "# Audio Integration\n\nScenes call an audio manager for music and sound effects. Howler owns runtime playback; scene lifecycle owns when audio starts and stops.\n\n## Patterns\n\n- Initialize audio only after a user gesture.\n- Use separate music and SFX volume controls, persisted to local storage.\n- Provide WebM/Opus primary audio and MP3 fallback.\n- Start scene music in `enter()` and stop/unload scene-owned audio in `exit()`.\n- Use Howler audio sprites for frequently played short SFX.\n- Expose an `IAudioManager` interface and use test doubles in automated tests.\n\n## Anti-patterns\n\n- Creating `Howl` instances at module scope.\n- Creating `AudioContext` before user interaction.\n- MP3-only runtime sources.\n- Uncaught `onloaderror` or `onplayerror` failures blocking gameplay.\n- Real Howler instances in unit tests.\n\n## References\n\n- `.opencode/skills/automagically-audio/SKILL.md`\n- `.opencode/agents/audio-specialist.md`"
+    },
+    {
+      "id": "input-handling",
+      "title": "Input Handling",
+      "description": "# Input Handling",
+      "tags": [
+        "input",
+        "events",
+        "hitarea"
+      ],
+      "triggers": [
+        "src/input/**",
+        "src/ui/**",
+        "src/scenes/**"
+      ],
+      "related": [
+        "architecture/update-loop",
+        "qa-testing/browser-smoke-tests"
+      ],
+      "body": "# Input Handling\n\nCapture input centrally once per frame, then let scenes and UI read stable input state. PixiJS pointer events are useful for interactive display objects, but DOM listener ownership should remain centralized.\n\n## Patterns\n\n- Use a single `InputManager` for keyboard, pointer, touch, and gamepad state.\n- Call `InputManager.update()` before scene updates.\n- Clear or reset input state on pause, blur, and scene transitions.\n- Set explicit `hitArea` on interactive PixiJS UI containers.\n- Support keyboard/mouse and gamepad for all interactive UI.\n\n## Anti-patterns\n\n- Scenes registering their own DOM event listeners.\n- Reading raw browser events from gameplay logic.\n- Interactive containers without bounded hit areas.\n- Required simultaneous button presses without accessible alternatives.\n\n## References\n\n- `.opencode/skills/automagically-game-architecture/SKILL.md`\n- `.opencode/rules/ui-code.md`\n- `.opencode/agents/ux-designer.md`"
+    },
+    {
+      "id": "rendering-pipeline",
+      "title": "Rendering Pipeline",
+      "description": "# Rendering Pipeline",
+      "tags": [
+        "rendering",
+        "webgl",
+        "webgpu"
+      ],
+      "triggers": [
+        "src/core/**",
+        "src/rendering/**",
+        "src/main.ts"
+      ],
+      "related": [
+        "pixijs/shader-code-standards",
+        "qa-testing/performance-budgets"
+      ],
+      "body": "# Rendering Pipeline\n\nPixiJS v8 should own browser renderer selection and frame rendering. Project code should configure the application once, organize the scene graph, and avoid main-thread GPU stalls.\n\n## Patterns\n\n- Initialize PixiJS once in `main.ts` or equivalent app bootstrap.\n- Prefer PixiJS v8 APIs documented for the pinned project version.\n- Let PixiJS handle WebGL/WebGPU/Canvas fallback where possible.\n- Use texture atlases and batching-friendly ordering for repeated sprites.\n- Avoid GPU readbacks in gameplay or render hot paths.\n- Profile rendering before optimizing and record before/after numbers.\n\n## Anti-patterns\n\n- Recreating the renderer during gameplay.\n- Using v7 loader-era APIs in v8 code.\n- Reading pixels from the GPU on the main thread during updates.\n- Changing renderer architecture without an ADR or technical review.\n\n## References\n\n- `.opencode/agents/pixijs-specialist.md`\n- `.opencode/agents/technical-artist.md`\n- `.opencode/agents/engine-programmer.md`"
+    },
+    {
+      "id": "scene-management",
+      "title": "Scene Management",
+      "description": "# Scene Management",
+      "tags": [
+        "scene-graph",
+        "containers",
+        "lifecycle"
+      ],
+      "triggers": [
+        "src/scenes/**",
+        "src/core/**"
+      ],
+      "related": [
+        "architecture/scene-lifecycle",
+        "architecture/state-ownership"
+      ],
+      "body": "# Scene Management\n\nPixiJS scene graph objects should represent render hierarchy, not gameplay ownership. Use `Container` roots per scene and sync them from plain state.\n\n## Patterns\n\n- Give each scene a root `Container` added to `app.stage` on enter and destroyed on exit.\n- Group related visuals with `Container` children so transforms, visibility, alpha, and z-ordering are local and predictable.\n- Use explicit scene stack operations for push, pop, and replace.\n- Keep `Application`, renderer, ticker, and input manager outside scenes.\n- Use culling or lazy creation for off-screen and hidden content.\n\n## Anti-patterns\n\n- Creating a PixiJS `Application` inside a scene or gameplay class.\n- Storing gameplay state on `Sprite`, `Container`, or `Text`.\n- Leaving display objects attached when a scene exits.\n- Building scene transitions through unmanaged global flags.\n\n## References\n\n- `.opencode/agents/pixijs-specialist.md`\n- `.opencode/skills/automagically-game-architecture/SKILL.md`"
+    },
+    {
+      "id": "shader-code-standards",
+      "title": "Shader Code Standards",
+      "description": "# Shader Code Standards",
+      "tags": [
+        "shaders",
+        "filters",
+        "performance"
+      ],
+      "triggers": [
+        "assets/shaders/**",
+        "src/rendering/**"
+      ],
+      "related": [
+        "pixijs/rendering-pipeline",
+        "qa-testing/performance-budgets"
+      ],
+      "body": "# Shader Code Standards\n\nShaders and filters must be named, parameterized, documented, and budgeted so visual effects remain portable and debuggable.\n\n## Patterns\n\n- Name shader files with `[type]_[category]_[name].[ext]`.\n- Prefer built-in PixiJS filters when they meet the visual requirement.\n- Use descriptive uniforms and document non-obvious math.\n- Document target platform and complexity budget for every custom shader.\n- Minimize fragment texture samples and dynamic branching.\n- Provide WebGL2 fallback when using WebGPU-specific features.\n\n## Anti-patterns\n\n- Magic numeric constants with no uniform, name, or comment.\n- Texture reads inside loops.\n- Unbounded shader variants.\n- WebGPU-only shaders with no fallback path.\n\n## References\n\n- `.opencode/rules/shader-code.md`\n- `.opencode/agents/technical-artist.md`"
+    },
+    {
+      "id": "ui-code-standards",
+      "title": "UI Code Standards",
+      "description": "# UI Code Standards",
+      "tags": [
+        "ui",
+        "accessibility",
+        "localization"
+      ],
+      "triggers": [
+        "src/ui/**"
+      ],
+      "related": [
+        "qa-testing/accessibility",
+        "workflow/localization"
+      ],
+      "body": "# UI Code Standards\n\nUI displays state and requests changes through commands or events. It must not own gameplay state or block the game thread.\n\n## Patterns\n\n- Build HUD and in-game indicators with PixiJS `Container` hierarchy.\n- Use DOM overlays only for menus, settings, and complex screens where DOM ergonomics matter.\n- Route all player-facing text through localization keys.\n- Support keyboard, mouse, and gamepad navigation.\n- Make animations skippable and respect motion/accessibility preferences.\n- Test screens at minimum and maximum supported resolutions.\n\n## Anti-patterns\n\n- Hardcoded user-facing strings.\n- UI elements directly mutating gameplay objects.\n- UI sounds triggered by direct audio object access instead of the audio event/manager path.\n- Interactive UI containers without explicit `hitArea`.\n\n## References\n\n- `.opencode/rules/ui-code.md`\n- `.opencode/agents/ui-programmer.md`"
+    }
+  ],
+  "qa-testing": [
+    {
+      "id": "accessibility",
+      "title": "Accessibility",
+      "description": "# Accessibility",
+      "tags": [
+        "accessibility",
+        "wcag",
+        "input"
+      ],
+      "triggers": [
+        "src/ui/**",
+        "src/input/**",
+        "production/qa/accessibility/**"
+      ],
+      "related": [
+        "pixijs/ui-code-standards",
+        "workflow/localization"
+      ],
+      "body": "# Accessibility\n\nAccessibility requirements apply to UI, input, audio, visual communication, and cognitive load. WCAG 2.1 Level AA is the default target for UI findings.\n\n## Patterns\n\n- Use minimum text size of 18px at 1080p and support scaling up to 200%.\n- Maintain at least 4.5:1 text contrast and 3:1 UI element contrast.\n- Never encode information through color alone; pair color with shape, icon, label, or pattern.\n- Support remapping for keyboard, mouse, and gamepad.\n- Provide subtitle support for dialogue and story-critical audio.\n- Offer separate volume sliders for master, music, SFX, dialogue, and UI.\n- Cite WCAG success criteria in accessibility audit findings.\n\n## Anti-patterns\n\n- Required simultaneous inputs without toggle or alternative.\n- QTEs with no skip or auto-complete option.\n- Flashing or motion-sensitive content without mitigation.\n- Raw color-only status indicators.\n- UI unreachable by keyboard or gamepad navigation.\n\n## References\n\n- `.opencode/agents/accessibility-specialist.md`\n- `.opencode/agents/ux-designer.md`"
+    },
+    {
+      "id": "analytics-metrics",
+      "title": "Analytics Metrics",
+      "description": "# Analytics Metrics",
+      "tags": [
+        "analytics",
+        "telemetry",
+        "metrics"
+      ],
+      "triggers": [
+        "src/analytics/**",
+        "design/analytics/**"
+      ],
+      "related": [
+        "game-design/economy-design",
+        "workflow/release-pipeline"
+      ],
+      "body": "# Analytics Metrics\n\nTelemetry should answer specific design and quality questions. Each event needs a documented purpose, naming convention, and privacy review.\n\n## Patterns\n\n- Name events as `[category].[action].[detail]`, such as `game.level.started` or `economy.currency.spent`.\n- Define funnel steps for onboarding, progression, monetization, retention, or feature use.\n- Specify dashboards by chart, data source, and actionable insight.\n- Define A/B test segmentation, assignment, success metrics, and minimum sample sizes before running.\n- Anonymize or pseudonymize analytics data and provide opt-out where required.\n\n## Anti-patterns\n\n- Collecting data with no intended decision.\n- Making design decisions from data alone without design interpretation.\n- Personally identifiable telemetry without explicit requirements.\n- Events whose names encode inconsistent categories or actions.\n\n## References\n\n- `.opencode/agents/analytics-engineer.md`\n- `.opencode/agents/economy-designer.md`"
+    },
+    {
+      "id": "browser-smoke-tests",
+      "title": "Browser Smoke Tests",
+      "description": "# Browser Smoke Tests",
+      "tags": [
+        "browser",
+        "smoke",
+        "playwright"
+      ],
+      "triggers": [
+        "tests/browser/**",
+        "tests/smoke/**",
+        "src/main.ts"
+      ],
+      "related": [
+        "qa-testing/testing-pyramid",
+        "workflow/verification-gate"
+      ],
+      "body": "# Browser Smoke Tests\n\nBrowser smoke tests prove that the built game boots and accepts core interaction in a real browser environment.\n\n## Patterns\n\n- Verify the dev server page loads and a visible canvas appears.\n- Exercise one keyboard or pointer input path for the active genre.\n- Check pause/resume and focus-loss handling when available.\n- Keep smoke scenarios to the 10-15 highest-value critical paths.\n- Run smoke checks before manual QA handoff.\n\n## Anti-patterns\n\n- Browser smoke tests that attempt exhaustive gameplay coverage.\n- Depending on frame-perfect visual state for smoke pass/fail.\n- Letting smoke tests mutate persistent local storage without cleanup.\n\n## References\n\n- `.opencode/skills/automagically-testing/SKILL.md`\n- `.opencode/agents/qa-lead.md`"
+    },
+    {
+      "id": "evidence-gates",
+      "title": "Evidence Gates",
+      "description": "# Evidence Gates",
+      "tags": [
+        "evidence",
+        "gates",
+        "done"
+      ],
+      "triggers": [
+        "production/qa/**",
+        "tests/**",
+        "design/gdd/**"
+      ],
+      "related": [
+        "qa-testing/test-standards",
+        "workflow/verification-gate"
+      ],
+      "body": "# Evidence Gates\n\nTesting evidence is part of Definition of Done. Logic and integration stories are blockers when evidence is missing; visual, UI, and config stories may use documented manual evidence.\n\n## Patterns\n\n- Classify each story as logic, integration, visual/feel, UI, or config/data.\n- Require automated unit tests for logic stories.\n- Require integration tests or documented playtests for multi-system stories.\n- Store visual/feel evidence as screenshots plus lead sign-off in `production/qa/evidence/`.\n- Use manual walkthroughs or interaction tests for UI work.\n- Require smoke check evidence for config and data changes.\n\n## Anti-patterns\n\n- Marking logic stories complete without tests.\n- Treating \"manual looked fine\" as evidence for formula or state-machine logic.\n- Running full-game regression for every small bug fix instead of targeted regression.\n- Skipping smoke checks before manual QA handoff.\n\n## References\n\n- `.opencode/agents/qa-lead.md`\n- `.opencode/agents/qa-tester.md`"
+    },
+    {
+      "id": "performance-budgets",
+      "title": "Performance Budgets",
+      "description": "# Performance Budgets",
+      "tags": [
+        "performance",
+        "budgets",
+        "profiling"
+      ],
+      "triggers": [
+        "src/**",
+        "tests/performance/**",
+        "production/qa/**"
+      ],
+      "related": [
+        "pixijs/rendering-pipeline",
+        "pixijs/shader-code-standards"
+      ],
+      "body": "# Performance Budgets\n\nPerformance work starts with measured budgets, not guesses. Track CPU, GPU, memory, loading, and rendering categories over time.\n\n## Patterns\n\n- Define frame-time budgets by category: gameplay logic, rendering, physics, AI, and audio.\n- Track memory by textures, meshes, audio, game state, and UI.\n- Document top bottlenecks with impact, recommendation, and expected implementation cost.\n- Compare builds to detect regressions.\n- Profile before and after optimizations and record measured numbers.\n- Maintain visual budgets for draw calls, vertex count, texture memory, particle count, shader instructions, and overdraw.\n\n## Anti-patterns\n\n- Optimizing without profiling.\n- Changing budgets locally instead of escalating to technical direction.\n- Ignoring load-time and scene-transition regressions.\n- Treating average FPS as enough without frame-time category breakdown.\n\n## References\n\n- `.opencode/agents/performance-analyst.md`\n- `.opencode/agents/technical-artist.md`\n- `.opencode/rules/engine-code.md`"
+    },
+    {
+      "id": "test-doubles",
+      "title": "Test Doubles",
+      "description": "# Test Doubles",
+      "tags": [
+        "mocks",
+        "doubles",
+        "deterministic"
+      ],
+      "triggers": [
+        "tests/helpers/**",
+        "tests/**"
+      ],
+      "related": [
+        "qa-testing/testing-pyramid",
+        "pixijs/audio-integration"
+      ],
+      "body": "# Test Doubles\n\nTests should replace browser, audio, randomness, and time dependencies with deterministic doubles.\n\n## Patterns\n\n- Use fake clocks for systems that depend on time.\n- Use seeded RNG for random gameplay logic.\n- Mock audio through `IAudioManager` rather than constructing Howler objects.\n- Keep shared helpers in `tests/helpers/` for factories, mocks, assertions, seeded RNG, and fake clock.\n- Test state changes directly instead of inferring them through rendered pixels.\n\n## Anti-patterns\n\n- Calling `Date.now()`, `performance.now()`, or `requestAnimationFrame` directly in core game logic.\n- Real `Howl` instances in unit tests.\n- Random tests without fixed seeds.\n- Screenshot tests for state transitions.\n\n## References\n\n- `.opencode/skills/automagically-testing/SKILL.md`\n- `.opencode/skills/automagically-audio/SKILL.md`"
+    },
+    {
+      "id": "test-standards",
+      "title": "Test Standards",
+      "description": "# Test Standards",
+      "tags": [
+        "standards",
+        "regression",
+        "vitest"
+      ],
+      "triggers": [
+        "tests/**"
+      ],
+      "related": [
+        "qa-testing/testing-pyramid",
+        "qa-testing/evidence-gates"
+      ],
+      "body": "# Test Standards\n\nTests must be deterministic, readable, and tied to the behavior they protect. Every bug fix needs a regression test that would have caught the original failure.\n\n## Patterns\n\n- Name tests with `test_[system]_[scenario]_[expected_result]`.\n- Structure every test as arrange, act, assert.\n- Define test data inside the test or dedicated fixtures.\n- Mock external dependencies.\n- Give performance tests explicit thresholds that fail when exceeded.\n- For formulas, test normal, zero/null, maximum, negative modifier, and documented edge cases.\n\n## Anti-patterns\n\n- Imprecise assertions such as \"less than current value\" when an exact result is required.\n- Shared mutable test state.\n- Integration tests without cleanup.\n- Accepting subjective criteria such as \"feels snappy\" without binary pass criteria.\n\n## References\n\n- `.opencode/rules/test-standards.md`\n- `.opencode/agents/qa-tester.md`"
+    },
+    {
+      "id": "testing-pyramid",
+      "title": "Testing Pyramid",
+      "description": "# Testing Pyramid",
+      "tags": [
+        "testing",
+        "vitest",
+        "playwright"
+      ],
+      "triggers": [
+        "tests/**",
+        "src/**"
+      ],
+      "related": [
+        "qa-testing/test-standards",
+        "qa-testing/browser-smoke-tests"
+      ],
+      "body": "# Testing Pyramid\n\nMost coverage should test deterministic logic without a browser or renderer. Browser and visual tests are valuable but intentionally sparse.\n\n## Patterns\n\n- Use unit tests for roughly 80% of coverage: state transitions, formulas, collision decisions, spawn logic, save/load, and seeded RNG.\n- Use integration tests for scene lifecycle, input capture, audio routing, resize behavior, and asset failure handling.\n- Use browser tests for startup, canvas rendering, input paths, pause/resume, fullscreen, and focus-loss behavior.\n- Use visual tests only for stable contracts such as main menu, representative gameplay, HUD, and game-over state.\n\n## Anti-patterns\n\n- Testing gameplay logic through screenshots.\n- Visual regression tests for animations, particles, or nondeterministic content.\n- Unit tests that require PixiJS, a browser, network, or filesystem state.\n- Integration tests that leave listeners, timers, or scene objects alive.\n\n## References\n\n- `.opencode/skills/automagically-testing/SKILL.md`\n- `.opencode/agents/qa-lead.md`"
+    }
+  ],
+  "workflow": [
+    {
+      "id": "collaboration-protocol",
+      "title": "Collaboration Protocol",
+      "description": "# Collaboration Protocol",
+      "tags": [
+        "collaboration",
+        "decisions",
+        "approval"
+      ],
+      "triggers": [
+        "production/**",
+        "design/**",
+        "src/**"
+      ],
+      "related": [
+        "workflow/decision-records",
+        "workflow/scope-management"
+      ],
+      "body": "# Collaboration Protocol\n\nWork is user-driven. Agents propose options, surface trade-offs, and wait for approval when architecture or multi-file changes are involved.\n\n## Patterns\n\n- Read relevant docs before proposing implementation.\n- Separate specified requirements from ambiguity.\n- Present concrete options with trade-offs and downstream consequences.\n- Use reversible choices when evidence is weak.\n- Ask for approval before multi-file changes or architecture-shaping edits.\n- Document irreversible or architecture-shaping decisions in ADRs.\n\n## Anti-patterns\n\n- Autonomous execution of broad changes without user approval.\n- Hiding deviations from the design document.\n- Treating agent persona instructions as product requirements.\n- Making final product, taste, or scope decisions without the user.\n\n## References\n\n- `AGENTS.md`\n- `.opencode/agents/technical-director.md`\n- `.opencode/agents/producer.md`"
+    },
+    {
+      "id": "community-communication",
+      "title": "Community Communication",
+      "description": "# Community Communication",
+      "tags": [
+        "community",
+        "patch-notes",
+        "feedback"
+      ],
+      "triggers": [
+        "production/community/**",
+        "production/releases/**"
+      ],
+      "related": [
+        "workflow/release-pipeline",
+        "game-design/live-ops"
+      ],
+      "body": "# Community Communication\n\nPlayer-facing communication should be clear, transparent, coordinated with release timing, and written for players rather than developers.\n\n## Patterns\n\n- Structure patch notes around headline, new content, gameplay changes, bug fixes, known issues, and optional developer commentary.\n- Include before/after values for balance changes.\n- Publish feedback digests with top requested features, top reported bugs, sentiment trend, and noteworthy suggestions.\n- Acknowledge incidents quickly, update regularly during active issues, and write post-mortems after resolution.\n- Never promise features or dates without production approval.\n\n## Anti-patterns\n\n- Developer jargon in player-facing patch notes.\n- Hiding known issues that materially affect players.\n- Speculating about future plans in public.\n- Combative responses to criticism.\n\n## References\n\n- `.opencode/agents/community-manager.md`\n- `.opencode/agents/release-manager.md`"
+    },
+    {
+      "id": "decision-records",
+      "title": "Decision Records",
+      "description": "# Decision Records",
+      "tags": [
+        "adr",
+        "decisions",
+        "governance"
+      ],
+      "triggers": [
+        "docs/architecture/adr/**",
+        "design/**",
+        "production/**"
+      ],
+      "related": [
+        "workflow/collaboration-protocol",
+        "architecture/layer-isolation"
+      ],
+      "body": "# Decision Records\n\nIrreversible, architecture-shaping, or identity-shaping decisions should be recorded with context, chosen direction, consequences, alternatives, and validation criteria.\n\n## Patterns\n\n- Use ADRs for architecture decisions and equivalent decision docs for creative or production calls.\n- Include title, status, context, decision, consequences, implications, and alternatives considered.\n- Explain why rejected alternatives were rejected.\n- Add validation criteria so the team knows whether the decision worked.\n- Cascade accepted decisions to affected docs, systems, and owners.\n\n## Anti-patterns\n\n- Major decisions living only in chat history.\n- ADRs that describe an implementation but not the problem or alternatives.\n- Accepted decisions with no status or supersession path.\n- Silent deviations from an accepted ADR.\n\n## References\n\n- `.opencode/agents/technical-director.md`\n- `.opencode/agents/creative-director.md`\n- `docs/architecture/adr/`"
+    },
+    {
+      "id": "design-doc-standards",
+      "title": "Design Doc Standards",
+      "description": "# Design Doc Standards",
+      "tags": [
+        "design-docs",
+        "gdd",
+        "specifications"
+      ],
+      "triggers": [
+        "design/gdd/**"
+      ],
+      "related": [
+        "game-design/balancing-methodology",
+        "game-design/mda-framework"
+      ],
+      "body": "# Design Doc Standards\n\nDesign documents must be implementable, testable, and explicit enough that engineering and QA can work from them without guessing.\n\n## Patterns\n\n- Include Overview, Player Fantasy, Detailed Rules, Formulas, Edge Cases, Dependencies, Tuning Knobs, and Acceptance Criteria.\n- Give formulas variable definitions, ranges, output bounds, and worked examples.\n- State exact edge-case behavior.\n- Document bidirectional dependencies between interacting systems.\n- Make acceptance criteria binary enough for QA to pass or fail.\n- Create skeletons first and fill sections incrementally with approval.\n\n## Anti-patterns\n\n- \"Handle gracefully\" without defining behavior.\n- Balance values without formula, source, or rationale.\n- One system doc naming a dependency that the dependent system doc omits.\n- Subjective acceptance criteria without measurable alternatives.\n\n## References\n\n- `.opencode/rules/design-docs.md`\n- `.opencode/agents/game-designer.md`\n- `.opencode/agents/systems-designer.md`"
+    },
+    {
+      "id": "localization",
+      "title": "Localization",
+      "description": "# Localization",
+      "tags": [
+        "localization",
+        "i18n",
+        "strings"
+      ],
+      "triggers": [
+        "src/ui/**",
+        "locales/**",
+        "assets/ui/fonts/**"
+      ],
+      "related": [
+        "pixijs/ui-code-standards",
+        "qa-testing/accessibility"
+      ],
+      "body": "# Localization\n\nPlayer-facing text must flow through a localization system with context, fallback, and layout testing. UI code should never hardcode production strings.\n\n## Patterns\n\n- Store text in structured locale files, one language per system or feature area.\n- Use hierarchical dot-notation keys such as `menu.settings.audio.volume_label`.\n- Define fallback chains so missing regional strings degrade gracefully.\n- Use ICU MessageFormat or equivalent for pluralization and parameters.\n- Include context comments with location, character limits, and variables.\n- Test with pseudolocalization and longer translated text.\n- Maintain a glossary for game-specific terms.\n\n## Anti-patterns\n\n- Raw user-facing strings in UI source.\n- Displaying missing localization keys to players.\n- Fixed-width UI that cannot handle 30-40% text expansion.\n- Adding a language without confirming font glyph coverage.\n\n## References\n\n- `.opencode/agents/localization-lead.md`\n- `.opencode/rules/ui-code.md`"
+    },
+    {
+      "id": "prototype-standards",
+      "title": "Prototype Standards",
+      "description": "# Prototype Standards",
+      "tags": [
+        "prototype",
+        "spike",
+        "learning"
+      ],
+      "triggers": [
+        "prototypes/**"
+      ],
+      "related": [
+        "workflow/design-doc-standards",
+        "workflow/scope-management"
+      ],
+      "body": "# Prototype Standards\n\nPrototype code is disposable. Its durable output is evidence about a falsifiable hypothesis.\n\n## Patterns\n\n- Put each prototype in `prototypes/[name]/` or a mode-specific prototype directory.\n- State the hypothesis, riskiest assumption, run instructions, status, findings, and recommendation.\n- Use HTML prototypes for logic-heavy or turn-based ideas; engine prototypes for action feel; paper prototypes for rules and economy questions.\n- Keep scope to one mechanic, technical question, or validation loop.\n- Preserve findings and rewrite production implementation from scratch.\n\n## Anti-patterns\n\n- Production code importing from `prototypes/`.\n- Prototype code gradually becoming production through cleanup.\n- Polishing menus, audio, or progression when they are unrelated to the hypothesis.\n- Continuing past a timebox without reframing the question.\n\n## References\n\n- `.opencode/rules/prototype-code.md`\n- `.opencode/agents/prototyper.md`"
+    },
+    {
+      "id": "release-pipeline",
+      "title": "Release Pipeline",
+      "description": "# Release Pipeline",
+      "tags": [
+        "release",
+        "versioning",
+        "hotfix"
+      ],
+      "triggers": [
+        "production/release/**",
+        "package.json",
+        "vite.config.ts"
+      ],
+      "related": [
+        "workflow/verification-gate",
+        "workflow/scope-management"
+      ],
+      "body": "# Release Pipeline\n\nReleases proceed through build, test, certification or platform checks, submission, verification, launch, and post-release monitoring. Failed steps halt the pipeline.\n\n## Patterns\n\n- Use semantic versioning for player-facing releases.\n- Use internal build numbers in `MAJOR.MINOR.PATCH.BUILD` form.\n- Tag releases in git.\n- For hotfixes, branch from the release tag, apply the minimal fix, QA verify, deploy, then merge back.\n- Monitor crash rate, retention, store reviews, community channels, and server health during the first 72 hours.\n\n## Anti-patterns\n\n- Skipping QA sign-off because the build is late.\n- Mixing feature work into hotfix branches.\n- Launching without store-build verification on target hardware or browser targets.\n- Shipping without known issue and support-channel coordination.\n\n## References\n\n- `.opencode/agents/release-manager.md`\n- `.opencode/agents/devops-engineer.md`"
+    },
+    {
+      "id": "scope-management",
+      "title": "Scope Management",
+      "description": "# Scope Management",
+      "tags": [
+        "scope",
+        "planning",
+        "risk"
+      ],
+      "triggers": [
+        "production/**",
+        "design/**"
+      ],
+      "related": [
+        "workflow/collaboration-protocol",
+        "workflow/release-pipeline"
+      ],
+      "body": "# Scope Management\n\nProduction planning should break work into small, owned tasks with explicit dependencies, acceptance criteria, risk, and buffer.\n\n## Patterns\n\n- Keep sprint tasks sized for 1-3 days.\n- Assign each task to one owner.\n- List dependencies explicitly.\n- Reserve roughly 20% sprint capacity for unplanned work and bugs.\n- Identify critical path tasks.\n- Maintain a risk register with probability, impact, owner, and mitigation.\n- Flag milestone risk at least two sprints before delivery.\n\n## Anti-patterns\n\n- Multi-owner tasks with unclear accountability.\n- Hidden dependencies discovered during implementation.\n- Scope changes without documented trade-offs.\n- Removing QA or verification to preserve schedule.\n\n## References\n\n- `.opencode/agents/producer.md`\n- `.opencode/agents/qa-lead.md`"
+    },
+    {
+      "id": "tooling-standards",
+      "title": "Tooling Standards",
+      "description": "# Tooling Standards",
+      "tags": [
+        "tools",
+        "automation",
+        "pipeline"
+      ],
+      "triggers": [
+        "tools/**",
+        "scripts/**"
+      ],
+      "related": [
+        "workflow/verification-gate",
+        "pixijs/asset-loading"
+      ],
+      "body": "# Tooling Standards\n\nInternal tools are production surfaces for the team. They need validation, clear errors, documentation, and failure behavior that preserves data.\n\n## Patterns\n\n- Validate inputs and produce actionable error messages.\n- Make operations undoable where possible.\n- Use atomic writes or backups so failures do not corrupt source data.\n- Test tools against representative data sets.\n- Document usage and examples for every tool.\n- Avoid duplicating built-in engine or platform functionality.\n\n## Anti-patterns\n\n- Tools that silently skip malformed data.\n- Partial writes that corrupt content on failure.\n- Undocumented scripts that only the author knows how to run.\n- Tools designed without consulting their content-author users.\n\n## References\n\n- `.opencode/agents/tools-programmer.md`\n- `.opencode/skills/automagically-assets-and-build/SKILL.md`"
+    },
+    {
+      "id": "verification-gate",
+      "title": "Verification Gate",
+      "description": "# Verification Gate",
+      "tags": [
+        "verification",
+        "typescript",
+        "tests"
+      ],
+      "triggers": [
+        "src/**",
+        "tests/**",
+        "assets/**"
+      ],
+      "related": [
+        "qa-testing/evidence-gates",
+        "qa-testing/test-standards"
+      ],
+      "body": "# Verification Gate\n\nBefore marking work complete, run verification that matches the changed surface. TypeScript and tests are baseline checks.\n\n## Patterns\n\n- Run `npx tsc --noEmit` and require zero TypeScript errors.\n- Run `npx vitest run` and require all tests to pass.\n- Preserve all pre-existing passing tests.\n- Add scope checks for gameplay state ownership, audio interface compliance, scene lifecycle, and PixiJS v8 asset loading.\n- If verification fails, fix the underlying issue and rerun up to three attempts.\n- Report `PASS WITH NOTES` only when remaining failures are documented with blocker/warning status.\n\n## Anti-patterns\n\n- Proceeding silently after failed verification.\n- Treating new passing tests as acceptable if old tests regressed.\n- Running only the narrow test for the touched file when shared behavior changed.\n\n## References\n\n- `.opencode/rules/verification-gate.md`\n- `.opencode/agents/qa-lead.md`"
+    },
+    {
+      "id": "web-runtime-standards",
+      "title": "Web Runtime Standards",
+      "description": "# Web Runtime Standards",
+      "tags": [
+        "web",
+        "runtime",
+        "performance"
+      ],
+      "triggers": [
+        "src/**",
+        "vite.config.ts",
+        "public/**"
+      ],
+      "related": [
+        "pixijs/rendering-pipeline",
+        "workflow/verification-gate"
+      ],
+      "body": "# Web Runtime Standards\n\nBrowser games must protect first paint, avoid main-thread stalls, and recover gracefully from web platform failures.\n\n## Patterns\n\n- Keep critical-path bundle size under the project budget, defaulting to 200KB gzipped unless revised.\n- Handle Canvas/WebGL context loss by recreating textures and rendering state.\n- Add error boundaries for async operations.\n- Use Web Workers or frame-splitting for heavy computation.\n- Use `requestIdleCallback` for non-critical work when available.\n- Treat service worker, PWA manifest, offline fallback, and install prompt as opt-in features.\n\n## Anti-patterns\n\n- Direct DOM manipulation outside the UI layer.\n- Unhandled promise rejections.\n- Blocking first paint for optional PWA/service-worker work.\n- Long-running synchronous computation on the main thread.\n\n## References\n\n- `.opencode/rules/web-code.md`\n- `.opencode/agents/devops-engineer.md`"
+    }
+  ]
+}

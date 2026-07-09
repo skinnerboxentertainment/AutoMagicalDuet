@@ -1,22 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AutoMagically Built Games</title>
-  <style>
-    body { margin: 0; overflow: hidden; background: #1a1a2e; }
-    #loading {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      display: flex; align-items: center; justify-content: center;
-      font-family: monospace; font-size: 18px; color: #888;
-      z-index: 10; pointer-events: none;
-    }
-    canvas + #loading { display: none; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoMagicalDuet — Knowledge Encyclopedia</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f0f1a; color: #e0e0e0; line-height: 1.6; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+  header { text-align: center; padding: 40px 0 24px; border-bottom: 1px solid #2a2a3e; margin-bottom: 32px; }
+  header h1 { font-size: 2.2em; background: linear-gradient(135deg, #6a5acd, #00bfff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  header p { color: #888; margin-top: 8px; font-size: 0.95em; }
+  header .badge { display: inline-block; background: #2a2a3e; padding: 4px 14px; border-radius: 12px; font-size: 0.85em; color: #aaa; margin-top: 8px; }
+
+  .toolbar { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+  .toolbar input { flex: 1; min-width: 200px; padding: 10px 16px; border: 1px solid #2a2a3e; border-radius: 8px; background: #1a1a2e; color: #e0e0e0; font-size: 0.95em; outline: none; }
+  .toolbar input:focus { border-color: #6a5acd; }
+  .toolbar button { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.95em; font-weight: 600; white-space: nowrap; }
+  .btn-launch { background: linear-gradient(135deg, #6a5acd, #00bfff); color: #fff; }
+  .btn-launch:hover { opacity: 0.9; }
+  .btn-filter { background: #2a2a3e; color: #e0e0e0; }
+  .btn-filter.active { background: #6a5acd; color: #fff; }
+  .btn-filter:hover { opacity: 0.85; }
+
+  .domain { margin-bottom: 32px; }
+  .domain h2 { font-size: 1.3em; color: #6a5acd; margin-bottom: 4px; text-transform: capitalize; }
+  .domain .count { color: #666; font-size: 0.85em; margin-bottom: 12px; }
+  .chunks { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 12px; }
+
+  .chunk { background: #1a1a2e; border: 1px solid #2a2a3e; border-radius: 10px; padding: 16px; cursor: pointer; transition: border-color 0.2s; }
+  .chunk:hover { border-color: #6a5acd; }
+  .chunk h3 { font-size: 1em; color: #e0e0e0; margin-bottom: 6px; }
+  .chunk p { font-size: 0.88em; color: #888; line-height: 1.5; }
+  .chunk .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+  .chunk .tags span { background: #2a2a3e; padding: 2px 8px; border-radius: 4px; font-size: 0.75em; color: #6a5acd; }
+  .chunk .triggers { font-size: 0.78em; color: #555; margin-top: 6px; font-family: monospace; }
+
+  .search-highlight { background: #6a5acd44; padding: 0 2px; border-radius: 2px; }
+
+  .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; }
+  .modal.open { display: flex; }
+  .modal-content { background: #1a1a2e; border: 1px solid #2a2a3e; border-radius: 12px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 28px; position: relative; }
+  .modal-content h2 { color: #e0e0e0; margin-bottom: 12px; }
+  .modal-content .meta { font-size: 0.85em; color: #666; margin-bottom: 16px; }
+  .modal-content .meta span { margin-right: 16px; }
+  .modal-content .body { font-size: 0.95em; line-height: 1.7; color: #ccc; white-space: pre-wrap; }
+  .modal .close { position: absolute; top: 12px; right: 16px; background: none; border: none; color: #666; font-size: 1.5em; cursor: pointer; }
+  .modal .close:hover { color: #e0e0e0; }
+
+  .hidden { display: none !important; }
+
+  #game-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 200; background: #1a1a2e; }
+  #game-container canvas { display: block; }
+
+  .back-link { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 16px; color: #6a5acd; cursor: pointer; font-size: 0.9em; }
+  .back-link:hover { text-decoration: underline; }
+
+  @media (max-width: 600px) {
+    .chunks { grid-template-columns: 1fr; }
+    header h1 { font-size: 1.6em; }
+  }
+</style>
 </head>
 <body>
-    <div id="loading">Loading AutoMagically Built Games...</div>
-  <script type="module" src="/src/main.ts"></script>
+
+<div id="encyclopedia">
+  <div class="container">
+    <header>
+      <h1>AutoMagicalDuet</h1>
+      <p>Two-agent game development system — OpenCode builds, Codex sharpens</p>
+      <div class="badge">56 knowledge chunks · 9 domains</div>
+    </header>
+
+    <div class="toolbar">
+      <input id="search" type="text" placeholder="Search knowledge base..." oninput="render()">
+      <button class="btn-launch" onclick="launchGame()">▶ Launch Game</button>
+      <button class="btn-filter active" data-domain="all" onclick="setFilter('all', this)">All</button>
+      <button class="btn-filter" data-domain="architecture" onclick="setFilter('architecture', this)">Architecture</button>
+      <button class="btn-filter" data-domain="pixijs" onclick="setFilter('pixijs', this)">PixiJS</button>
+      <button class="btn-filter" data-domain="game-design" onclick="setFilter('game-design', this)">Game Design</button>
+      <button class="btn-filter" data-domain="qa-testing" onclick="setFilter('qa-testing', this)">QA</button>
+      <button class="btn-filter" data-domain="workflow" onclick="setFilter('workflow', this)">Workflow</button>
+    </div>
+
+    <div id="domains"></div>
+  </div>
+</div>
+
+<div id="game-container" class="hidden">
+  <div id="game-canvas-target" style="width:100%;height:100%;"></div>
+  <div style="position:absolute;top:12px;right:16px;z-index:210;">
+    <button onclick="closeGame()" style="background:#2a2a3e;color:#e0e0e0;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.9em;">✕ Close Game</button>
+  </div>
+</div>
+
+<script type="module" src="/src/main.ts"></script>
+
+<div id="modal" class="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-content">
+    <button class="close" onclick="closeModal()">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+let data = null
+let filter = 'all'
+let gameLoaded = false
+
+fetch('/knowledge/index.json')
+  .then(r => r.json())
+  .then(d => { data = d; render() })
+  .catch(e => { document.getElementById('domains').innerHTML = '<p style="color:#888;">Failed to load knowledge base.</p>' })
+
+function render() {
+  if (!data) return
+  const q = document.getElementById('search').value.toLowerCase()
+  const container = document.getElementById('domains')
+  container.innerHTML = ''
+
+  for (const [domain, chunks] of Object.entries(data)) {
+    if (filter !== 'all' && domain !== filter) continue
+    const matched = chunks.filter(c => matches(c, q))
+    if (q && matched.length === 0) continue
+
+    const section = document.createElement('div')
+    section.className = 'domain'
+    section.innerHTML = `<h2>${domain}</h2><div class="count">${matched.length} chunk${matched.length !== 1 ? 's' : ''}</div><div class="chunks"></div>`
+    const grid = section.querySelector('.chunks')
+
+    for (const c of matched) {
+      const card = document.createElement('div')
+      card.className = 'chunk'
+      card.onclick = () => openChunk(c.id, domain)
+
+      const title = q ? highlight(c.title, q) : c.title
+      const desc = q ? highlight(c.description, q) : c.description
+
+      let html = `<h3>${title}</h3><p>${desc}</p>`
+      if (c.tags && c.tags.length) {
+        html += `<div class="tags">${c.tags.map(t => `<span>${t}</span>`).join('')}</div>`
+      }
+      if (c.triggers && c.triggers.length) {
+        html += `<div class="triggers">${c.triggers.join(', ')}</div>`
+      }
+      card.innerHTML = html
+      grid.appendChild(card)
+    }
+    container.appendChild(section)
+  }
+}
+
+function matches(c, q) {
+  if (!q) return true
+  const search = q.toLowerCase()
+  return c.title.toLowerCase().includes(search) ||
+    c.description.toLowerCase().includes(search) ||
+    (c.tags || []).some(t => t.toLowerCase().includes(search))
+}
+
+function highlight(text, q) {
+  if (!q) return text
+  const re = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+  return text.replace(re, '<span class="search-highlight">$1</span>')
+}
+
+function setFilter(d, btn) {
+  filter = d
+  document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'))
+  if (btn) btn.classList.add('active')
+  render()
+}
+
+function openChunk(id, domain) {
+  const chunk = data?.[domain]?.find(c => c.id === id)
+  if (!chunk) return
+  let body = chunk.body || ''
+  let title = chunk.title || id
+  const meta = `<span>Domain: ${domain}</span><span>${chunk.tags?.length ? 'Tags: ' + chunk.tags.join(', ') : ''}</span>`
+  const content = body
+    .replace(/^#\s+.+/m, '')
+    .replace(/```([\s\S]*?)```/g, '<pre style="background:#0a0a15;padding:12px;border-radius:6px;overflow-x:auto;font-size:0.85em;">$1</pre>')
+    .replace(/##\s+(.+)/g, '<h3 style="color:#6a5acd;margin:16px 0 8px;">$1</h3>')
+    .replace(/^-\s+(.+)/gm, '<li style="margin:2px 0 2px 16px;">$1</li>')
+    .replace(/\n\n/g, '</p><p style="margin:8px 0;">')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+
+  document.getElementById('modal-body').innerHTML = `
+    <h2>${title}</h2>
+    <div class="meta">${meta}</div>
+    <div class="body"><p style="margin:0;">${content}</p></div>`
+  document.getElementById('modal').classList.add('open')
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open')
+}
+
+function launchGame() {
+  const container = document.getElementById('game-container')
+  container.classList.remove('hidden')
+  document.getElementById('encyclopedia').classList.add('hidden')
+}
+
+function closeGame() {
+  document.getElementById('game-container').classList.add('hidden')
+  document.getElementById('encyclopedia').classList.remove('hidden')
+}
+</script>
 </body>
 </html>
