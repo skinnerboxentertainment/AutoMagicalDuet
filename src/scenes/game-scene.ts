@@ -299,12 +299,18 @@ export class GameScene implements Scene {
   }
 
   private draw(): void {
-    if (this.tex) {
-      this.playerSprite.position.set(this.player.x, this.player.y)
-      this.playerSprite.visible = this.player.alive && (!this.player.invincible || Math.floor(this.time * 12) % 2 === 0)
-    } else {
-      this.playerSprite.visible = false
-    }
+    this.hudScore.text = `Score: ${this.score}`
+    this.hudHp.text = `HP: ${"■".repeat(this.player.hp)}${"□".repeat(this.player.maxHp - this.player.hp)}`
+    const fp = this.fuelManager.fuel / this.fuelManager.maxFuel
+    this.hudFuel.clear()
+    this.hudFuel.rect(0, 0, 120, 12).fill(0x333333)
+    this.hudFuel.rect(0, 0, 120 * fp, 12).fill(fp < 0.2 ? 0xff4444 : 0x44aaff)
+    this.hudWave.text = this.spawn.currentWave === "boss" ? "BOSS" : `WAVE ${this.spawn.currentWave.slice(-1)}`
+
+    if (!this.tex) return
+
+    this.playerSprite.position.set(this.player.x, this.player.y)
+    this.playerSprite.visible = this.player.alive && (!this.player.invincible || Math.floor(this.time * 12) % 2 === 0)
 
     let idx = 0
     for (const f of this.spawn.fish) {
@@ -357,13 +363,5 @@ export class GameScene implements Scene {
       bs.width = this.boss.width; bs.height = this.boss.height
       bs.visible = true
     }
-
-    this.hudScore.text = `Score: ${this.score}`
-    this.hudHp.text = `HP: ${"■".repeat(this.player.hp)}${"□".repeat(this.player.maxHp - this.player.hp)}`
-    const fp = this.fuelManager.fuel / this.fuelManager.maxFuel
-    this.hudFuel.clear()
-    this.hudFuel.rect(0, 0, 120, 12).fill(0x333333)
-    this.hudFuel.rect(0, 0, 120 * fp, 12).fill(fp < 0.2 ? 0xff4444 : 0x44aaff)
-    this.hudWave.text = this.spawn.currentWave === "boss" ? "BOSS" : `WAVE ${this.spawn.currentWave.slice(-1)}`
   }
 }
