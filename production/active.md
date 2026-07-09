@@ -1,27 +1,27 @@
 # Active Session
 
 **Date:** 2026-07-08
-**Beat:** Build (Sub Shooter implementation in progress)
+**Beat:** Build — Sub Shooter implementation
 
 ## Current Objective
-Complete Sub Shooter — retro-adventure submarine arcade game.
+Complete all gameplay systems (waves, enemies, boss). Then art + polish.
 
-## What's Done
-- Core gameplay: movement, combat, spawning, fuel, 3 scenes
+## Done
+- Core movement, combat, fuel, 3 scenes
 - 29 tests passing, build green
-- Aesthetic styleguide (In the Hunt / Metal Slug lineage)
-- Visual tuner (retro-adventure lock with exact palette + proportions)
-- 3 hero sub concept art variations generated
+- Aesthetic styleguide + visual tuner
+- 3 hero sub concept art variations
 
-## What's Next
-- Generate sprites via gpt-image-2 (hero sub, enemies, treasure, explosions)
-- Build parallax background layers
-- Add CRT effects pipeline (scanlines, vignette, underwater grade)
-- Wire audio SFX via jsfxr
-- Playwright visual verification
+## In Progress
+- Enemy roster: patrol fish ✅, mines ✅, armored fish (✕), Ironclaw boss (✕)
+- Wave progression: 3 waves + boss fight (✕)
+- Spec fully detailed with wave tables, enemy behaviors, boss phases
 
-## Open Decisions
-- None — spec locked at design/mvp-sub-shooter.md
+## Next
+- Build wave system + armored fish + boss
+- Generate sprites via gpt-image-2
+- CRT effects pipeline (scanlines, vignette, color grade)
+- Audio SFX via jsfxr
 
 ## Blockers
 None.
