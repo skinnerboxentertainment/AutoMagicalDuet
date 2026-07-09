@@ -6,20 +6,23 @@ import levelData from "../../assets/data/level-01.json"
 import gameplayConfig from "../../assets/data/gameplay-config.json"
 import { Level, type LevelDefinition } from "../gameplay/level"
 import { Player, type PlayerInput, intersects } from "../gameplay/player"
-import { PlatformerRenderer } from "../gameplay/renderer"
+import { PlatformerRenderer, type GameplayTextures } from "../gameplay/renderer"
 import { GameplayState } from "../gameplay/state"
 
 export class GameScene implements Scene {
   private readonly level = new Level(levelData as LevelDefinition)
   private readonly player = new Player(this.level.player)
   private readonly state = new GameplayState(this.level.totalGems)
-  private readonly renderer = new PlatformerRenderer(this.level)
+  private readonly renderer: PlatformerRenderer
 
   constructor(
     private readonly stage: Container,
     private readonly input: InputManager,
     private readonly config: GameplayConfig,
-  ) {}
+    textures: GameplayTextures,
+  ) {
+    this.renderer = new PlatformerRenderer(this.level, textures)
+  }
 
   enter(): void {
     this.stage.addChild(this.renderer.root)

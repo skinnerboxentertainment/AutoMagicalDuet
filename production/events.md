@@ -11,3 +11,9 @@
 - opencode.json updated to reference new packs instead of 36-agent system.
 - Remaining packs to extract: architecture, performance, audio (extracted when needed).
 - Git checkpoint created.
+- Phase 3: Art + Visual Consort completed.
+- 6 sprites generated and integrated (player, platform, gem, enemy, exit, background).
+- PixiJS manifest + texture pipeline wired (Assets.init, loadBundle, Sprite/TilingSprite).
+- Production build verified (assets in dist/, game renders correctly).
+- Visual verification screenshot: production/screenshot-production.png.
+- Dev server: http://127.0.0.1:5173 (dev) / http://127.0.0.1:4173 (production preview).
