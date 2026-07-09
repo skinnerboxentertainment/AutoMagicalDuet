@@ -105,14 +105,30 @@ Come up with a game idea and work through it with the AI helpers:
 
 ## 🤖 How the two AI helpers work
 
-Think of them as two friends on your team:
+Think of them as two friends on your team with clear jobs:
 
-| Who | What they do | Voice |
-|---|---|---|
-| **OpenCode** | The builder. Writes code, makes the game work, does the heavy lifting. | "I'll build it. Give me a minute." |
-| **Codex** | The critic. Reviews the game, catches bugs, looks at screenshots, generates art. | "Try this instead. Also the jump feels floaty." |
+### Who does what
 
-**You** are the game director. You decide what to build. They argue about the best way to do it. You break the tie.
+```
+OpenCode (the builder)                  Codex (the critic)
+─────────────────────────────            ─────────────────────────────
+✓ Architecture decisions                ✓ Research & info gathering
+✓ ALL coding & implementation           ✓ Design review & critique
+✓ Wiring things together                ✓ Visual QA — screenshots, layout
+✓ Git & repo management                 ✓ Art generation (sprites, banners)
+✓ Final call on disputes                ✓ Browser verification
+```
+
+| What needs doing | Who handles it |
+|---|---|
+| **"Build this feature"** | OpenCode writes the code |
+| **"Does this design work?"** | Codex stress-tests it before coding starts |
+| **"The jump feels wrong"** | OpenCode tweaks numbers, Codex checks the screenshot |
+| **"Make a gem sprite"** | Codex generates via gpt-image-2, OpenCode integrates |
+| **"Is the game broken?"** | Codex runs Playwright, inspects the canvas |
+| **"Who decides?"** | OpenCode decides on implementation. You decide on the game. |
+
+**You** are the game director. OpenCode builds. Codex sharpens. You decide.
 
 > *OpenCode builds. Codex sharpens. You decide.*
 

@@ -1,14 +1,42 @@
-# AutoMagically — Lean Consort Model
+# AutoMagicalDuet — Role Delegation
 
-**Architecture:** OpenCode (orchestrator) + Codex (builder) operating in concert.
-**Previous model:** 36-agent studio (deprecated — see `.opencode/agents/` for reference).
-**Design doc:** `design/lean-consort-model.md`
+**Short version:** OpenCode builds. Codex sharpens. You decide.
 
 ---
 
-## Operating Model
+## Who Does What
 
-Two actors, three layers of structure:
+```
+OpenCode (Orchestrator-Builder)          Codex (Specialist Critic)
+─────────────────────────────            ─────────────────────────────
+✓ Architecture decisions                ✓ Research & info aggregation
+✓ ALL coding & implementation           ✓ Design critique & deconstruction
+✓ Integration & wiring                  ✓ Visual QA (Playwright screenshots)
+✓ Repo governance & git                 ✓ Art generation (gpt-image-2)
+✓ Final decision on disputes            ✓ Browser verification
+```
+
+| Domain | Owned by | Codex's role |
+|--------|----------|-------------|
+| **Architecture** | OpenCode decides | Codex advises on risks |
+| **Implementation** | OpenCode builds | Codex reviews diffs |
+| **Visual QA** | OpenCode integrates | Codex inspects screenshots |
+| **Art** | OpenCode integrates assets | Codex generates via gpt-image-2 |
+| **Testing** | OpenCode writes tests | Codex reviews coverage |
+| **Research** | OpenCode frames the question | Codex investigates and summarizes |
+
+### Operating Rhythm
+
+```
+Explore (OC) → Frame (OC) → Expand (both) → Attack (CX) → Commit (OC) → Build (OC) → Prove (CX reviews, OC integrates)
+```
+
+### Previous model
+36-agent studio (deprecated — see `.opencode/agents/` for reference).
+
+---
+
+## Full Operating Model
 
 ### Tier 0: The Consort (always active)
 

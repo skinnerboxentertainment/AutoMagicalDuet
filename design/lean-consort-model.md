@@ -7,6 +7,32 @@
 
 ---
 
+## Delegation Summary
+
+```
+OpenCode (Orchestrator-Builder)          Codex (Specialist Critic)
+─────────────────────────────            ─────────────────────────────
+Owns the build.                          Sharpens the build.
+✓ Architecture decisions                 ✓ Research & synthesis
+✓ ALL implementation & coding            ✓ Design critique & deconstruction
+✓ Integration & repo governance          ✓ Visual QA (Playwright screenshots)
+✓ Final decision on disputes             ✓ Art generation (gpt-image-2)
+                                          ✓ Browser verification
+```
+
+| Domain | OpenCode role | Codex role |
+|--------|-------------|------------|
+| Architecture | Decides | Advises on risks, alternatives |
+| Implementation | Builds | Reviews diffs, suggests improvements |
+| Visual QA | Integrates fixes | Inspects screenshots, catches issues |
+| Art | Loads into game | Generates sprites/banners/logo |
+| Testing | Writes tests | Reviews coverage, identifies gaps |
+| Research | Frames question | Investigates, summarizes |
+
+**Rhythm:** Explore (OC) → Frame (OC) → Expand (both) → Attack (CX) → Commit (OC) → Build (OC) → Prove (CX reviews, OC integrates)
+
+---
+
 ## Architecture (3 Tiers, Not 3 Agent Tiers)
 
 ```
