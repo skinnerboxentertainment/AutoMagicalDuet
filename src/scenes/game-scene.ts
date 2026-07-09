@@ -76,6 +76,8 @@ export class GameScene implements Scene {
 
     this.playerSprite = new Sprite()
     this.playerSprite.eventMode = "none"
+    this.playerSprite.anchor.set(0.5)
+    this.playerSprite.scale.x = -1
     this.world.addChild(this.playerSprite)
 
     this.world.eventMode = "none"
@@ -213,12 +215,12 @@ export class GameScene implements Scene {
       this.fireCooldown = this.config.projectile_cooldown_ms / 1000
     }
 
-    const bossActive = this.boss && this.boss.active
-    if (!bossActive) { for (const p of this.projectiles) p.update(dt); this.prune(this.projectiles) }
+    for (const p of this.projectiles) p.update(dt)
+    this.prune(this.projectiles)
 
     this.handleCollisions(dt)
 
-    if (bossActive && this.boss && !this.bossSlideIn) this.boss.update(dt, this.player.y + this.player.height / 2)
+    if (this.boss && this.boss.active && !this.bossSlideIn) this.boss.update(dt, this.player.y + this.player.height / 2)
     if (this.boss && !this.boss.active && !this.bossSlideIn) this.victory()
     if (!this.player.alive) this.gameOver()
 
@@ -309,7 +311,7 @@ export class GameScene implements Scene {
 
     if (!this.tex) return
 
-    this.playerSprite.position.set(this.player.x, this.player.y)
+    this.playerSprite.position.set(this.player.x + this.player.width / 2, this.player.y + this.player.height / 2)
     this.playerSprite.visible = this.player.alive && (!this.player.invincible || Math.floor(this.time * 12) % 2 === 0)
 
     let idx = 0
@@ -349,12 +351,15 @@ export class GameScene implements Scene {
       idx++
     }
 
+    for (const s of this.projSprites) s.visible = false
+    let pi = 0
     for (const p of this.projectiles) {
-      let s = this.projSprites.find(s => !s.visible)
+      let s = this.projSprites[pi]
       if (!s) { s = new Sprite(this.tex.torpedo); s.eventMode = "none"; this.world.addChild(s); this.projSprites.push(s) }
       s.position.set(p.x, p.y)
       s.visible = p.active
       s.width = p.width; s.height = p.height
+      pi++
     }
 
     if (this.boss && this.boss.active) {
