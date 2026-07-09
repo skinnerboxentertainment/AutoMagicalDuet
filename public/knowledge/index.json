@@ -658,6 +658,27 @@
       "body": "# Input Handling\n\nCapture input centrally once per frame, then let scenes and UI read stable input state. PixiJS pointer events are useful for interactive display objects, but DOM listener ownership should remain centralized.\n\n## Patterns\n\n- Use a single `InputManager` for keyboard, pointer, touch, and gamepad state.\n- Call `InputManager.update()` before scene updates.\n- Clear or reset input state on pause, blur, and scene transitions.\n- Set explicit `hitArea` on interactive PixiJS UI containers.\n- Support keyboard/mouse and gamepad for all interactive UI.\n\n## Anti-patterns\n\n- Scenes registering their own DOM event listeners.\n- Reading raw browser events from gameplay logic.\n- Interactive containers without bounded hit areas.\n- Required simultaneous button presses without accessible alternatives.\n\n## References\n\n- `.opencode/skills/automagically-game-architecture/SKILL.md`\n- `.opencode/rules/ui-code.md`\n- `.opencode/agents/ux-designer.md`"
     },
     {
+      "id": "installed-skills",
+      "title": "Installed PixiJS v8 Skills",
+      "description": "# Installed PixiJS v8 Skills",
+      "tags": [
+        "skills",
+        "reference",
+        "pixijs-v8"
+      ],
+      "triggers": [
+        "src/scenes/**",
+        "src/gameplay/renderer.ts",
+        "pixi.js"
+      ],
+      "related": [
+        "pixijs/scene-management",
+        "pixijs/rendering-pipeline",
+        "pixijs/asset-loading"
+      ],
+      "body": "# Installed PixiJS v8 Skills\n\n26 specialized PixiJS v8 skills are installed at `.agents/skills/pixijs-*/SKILL.md`.\nThe router skill `.agents/skills/pixijs/SKILL.md` provides the full index.\n\n## Available Skills\n\n### Foundations\n- **pixijs-application** — App setup, `app.init()`, stage/renderer/canvas, resize\n- **pixijs-core-concepts** — Renderer pipeline, WebGL/WebGPU/Canvas selection\n- **pixijs-create** — Project scaffolding with create-pixi CLI\n- **pixijs-environments** — Web Workers, Node/SSR, CSP contexts\n- **pixijs-migration-v8** — Upgrading from v7, breaking changes\n\n### Scene Objects\n- **pixijs-scene-core-concepts** — Scene graph, containers vs leaves, transforms\n- **pixijs-scene-container** — Container operations, children, masking, layers\n- **pixijs-scene-sprite** — Sprite creation, textures, anchor, scale, tint\n- **pixijs-scene-graphics** — Shape API (rect, circle, polygon, path), fills, strokes\n- **pixijs-scene-text** — Text, BitmapText, HTML, styles, fonts, resolution\n- **pixijs-scene-mesh** — Mesh, plane, rope, simple mesh, geometry, shader\n- **pixijs-scene-particle-container** — ParticleContainer for performance\n- **pixijs-scene-gif** — GifSprite for animated GIFs\n- **pixijs-scene-dom-container** — Mix DOM elements into the scene graph\n\n### Features\n- **pixijs-assets** — Assets class, manifests, bundles, load, cache, spritesheets\n- **pixijs-events** — EventSystem, pointer events, hitArea, event modes\n- **pixijs-filters** — Filter, BlurFilter, ColorMatrix, custom shader filters\n- **pixijs-blend-modes** — BlendMode enum, custom blend modes\n- **pixijs-color** — Color class, conversion, gradients, palettes\n- **pixijs-math** — Point, ObservablePoint, Matrix, Rectangle, transforms\n- **pixijs-ticker** — Ticker, shared ticker, delta time, frame scheduling\n\n### Advanced\n- **pixijs-custom-rendering** — Custom renderer plugins, pipes, systems\n- **pixijs-performance** — Optimization, draw calls, batching, GPU profiling\n- **pixijs-accessibility** — Accessibility features, tab navigation, ARIA\n- **pixijs-html-source** — HTMLSource, html` template literal, styled text\n\n## Usage\n\nLoad a specific skill when needed. The router at `.agents/skills/pixijs/SKILL.md`\nroutes to the correct sub-skill based on the task description.\n\n```bash\n# Load the router to find the right sub-skill\nopencode use-skill pixijs\n\n# Or load a specific skill directly\nopencode use-skill pixijs-scene-sprite\n```"
+    },
+    {
       "id": "rendering-pipeline",
       "title": "Rendering Pipeline",
       "description": "# Rendering Pipeline",
