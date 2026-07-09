@@ -128,15 +128,19 @@ export class GameScene implements Scene {
   }
 
   async enter(): Promise<void> {
-    await Assets.init({ manifest: ASSETS_MANIFEST })
-    const bundle = await Assets.loadBundle("gameplay") as Record<string, Texture>
-    this.tex = bundle as unknown as Textures
-
-    this.playerSprite.texture = this.tex.player
-    this.playerSprite.width = this.player.width
-    this.playerSprite.height = this.player.height
-
     this.stage.addChild(this.root)
+    try {
+      if (!this.tex) {
+        await Assets.init({ manifest: ASSETS_MANIFEST })
+        const bundle = await Assets.loadBundle("gameplay") as Record<string, Texture>
+        this.tex = bundle as unknown as Textures
+        this.playerSprite.texture = this.tex.player
+        this.playerSprite.width = this.player.width
+        this.playerSprite.height = this.player.height
+      }
+    } catch (e) {
+      console.warn("Texture loading failed, using fallback rendering", e)
+    }
   }
 
   exit(): void { this.stage.removeChild(this.root) }
@@ -289,8 +293,10 @@ export class GameScene implements Scene {
   }
 
   private draw(): void {
-    this.playerSprite.position.set(this.player.x, this.player.y)
-    this.playerSprite.visible = this.player.alive && (!this.player.invincible || Math.floor(this.time * 12) % 2 === 0)
+    if (this.tex && this.tex.player) {
+      this.playerSprite.position.set(this.player.x, this.player.y)
+      this.playerSprite.visible = this.player.alive && (!this.player.invincible || Math.floor(this.time * 12) % 2 === 0)
+    }
 
     let idx = 0
     for (const f of this.spawn.fish) {
