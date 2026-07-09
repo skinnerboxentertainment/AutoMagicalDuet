@@ -1,123 +1,93 @@
-import type { PlatformDefinition } from './level';
-
-export interface PlayerInput {
-  left: boolean;
-  right: boolean;
-  jump: boolean;
-  restart: boolean;
-}
-
-export interface PlayerConfig {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  speed: number;
-  jumpVelocity: number;
-  gravity: number;
-  maxFallSpeed: number;
-}
-
-export interface Bounds {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+import type { SubShooterConfig } from "./types"
 
 export class Player {
-  readonly width: number;
-  readonly height: number;
+  x: number
+  y: number
+  width = 40
+  height = 20
+  vx = 0
+  vy = 0
+  hp: number
+  invincibleUntil = 0
+  alive = true
 
-  x: number;
-  y: number;
-  vx = 0;
-  vy = 0;
-  grounded = false;
+  private readonly maxSpeed: number
+  private readonly accel: number
+  private readonly drag: number
+  private readonly invincMs: number
+  readonly maxHp: number
+  private readonly minX: number
+  private readonly minY: number
+  private readonly maxX: number
+  private readonly maxY: number
 
-  private readonly spawnX: number;
-  private readonly spawnY: number;
-  private readonly speed: number;
-  private readonly jumpVelocity: number;
-  private readonly gravity: number;
-  private readonly maxFallSpeed: number;
-  private jumpWasDown = false;
+  constructor(config: SubShooterConfig, canvasW: number, canvasH: number) {
+    this.x = 80
+    this.y = canvasH / 2
+    this.maxSpeed = config.player_max_speed
+    this.accel = config.player_acceleration
+    this.drag = config.player_drag
+    this.hp = config.player_max_hp
+    this.maxHp = config.player_max_hp
+    this.invincMs = config.player_invincibility_ms
+    this.minX = 40
+    this.minY = config.spawn_y_min
+    this.maxX = canvasW * 0.3
+    this.maxY = config.spawn_y_max - this.height
+  }
 
-  constructor(config: PlayerConfig) {
-    this.spawnX = config.x;
-    this.spawnY = config.y;
-    this.x = config.x;
-    this.y = config.y;
-    this.width = config.width;
-    this.height = config.height;
-    this.speed = config.speed;
-    this.jumpVelocity = config.jumpVelocity;
-    this.gravity = config.gravity;
-    this.maxFallSpeed = config.maxFallSpeed;
+  get invincible(): boolean {
+    return performance.now() < this.invincibleUntil
+  }
+
+  get bounds() {
+    return { x: this.x, y: this.y, width: this.width, height: this.height }
   }
 
   reset(): void {
-    this.x = this.spawnX;
-    this.y = this.spawnY;
-    this.vx = 0;
-    this.vy = 0;
-    this.grounded = false;
-    this.jumpWasDown = false;
+    this.hp = this.maxHp
+    this.alive = true
+    this.invincibleUntil = 0
+    this.vx = 0
+    this.vy = 0
   }
 
-  update(deltaSeconds: number, input: PlayerInput, platforms: PlatformDefinition[]): void {
-    const dt = Math.max(0, deltaSeconds);
-    const direction = Number(input.right) - Number(input.left);
-    this.vx = direction * this.speed;
+  update(dt: number, left: boolean, right: boolean, up: boolean, down: boolean): void {
+    if (!this.alive) return
 
-    const jumpPressed = input.jump && !this.jumpWasDown;
-    if (jumpPressed && this.grounded) {
-      this.vy = -this.jumpVelocity;
-      this.grounded = false;
+    if (left) this.vx -= this.accel * dt
+    if (right) this.vx += this.accel * dt
+    if (up) this.vy -= this.accel * dt
+    if (down) this.vy += this.accel * dt
+
+    if (!left && !right) {
+      if (this.vx > 0) this.vx = Math.max(0, this.vx - this.drag * dt)
+      else if (this.vx < 0) this.vx = Math.min(0, this.vx + this.drag * dt)
     }
-    this.jumpWasDown = input.jump;
-
-    this.x += this.vx * dt;
-    this.vy = Math.min(this.maxFallSpeed, this.vy + this.gravity * dt);
-    this.y += this.vy * dt;
-
-    this.resolvePlatformCollisions(platforms);
-  }
-
-  getBounds(): Bounds {
-    return {
-      x: this.x,
-      y: this.y,
-      width: this.width,
-      height: this.height,
-    };
-  }
-
-  private resolvePlatformCollisions(platforms: PlatformDefinition[]): void {
-    this.grounded = false;
-
-    for (const platform of platforms) {
-      const bounds = this.getBounds();
-      if (!intersects(bounds, platform)) {
-        continue;
-      }
-
-      const previousBottom = bounds.y + bounds.height - this.vy / 60;
-      const platformTop = platform.y;
-      if (this.vy >= 0 && previousBottom <= platformTop + 8) {
-        this.y = platformTop - this.height;
-        this.vy = 0;
-        this.grounded = true;
-      }
+    if (!up && !down) {
+      if (this.vy > 0) this.vy = Math.max(0, this.vy - this.drag * dt)
+      else if (this.vy < 0) this.vy = Math.min(0, this.vy + this.drag * dt)
     }
-  }
-}
 
-export function intersects(a: Bounds, b: Bounds): boolean {
-  return (
-    a.x < b.x + b.width &&
-    a.x + a.width > b.x &&
-    a.y < b.y + b.height &&
-    a.y + a.height > b.y
-  );
+    this.vx = Math.max(-this.maxSpeed, Math.min(this.maxSpeed, this.vx))
+    this.vy = Math.max(-this.maxSpeed, Math.min(this.maxSpeed, this.vy))
+
+    this.x += this.vx * dt
+    this.y += this.vy * dt
+
+    this.x = Math.max(this.minX, Math.min(this.maxX, this.x))
+    this.y = Math.max(this.minY, Math.min(this.maxY, this.y))
+  }
+
+  takeDamage(): boolean {
+    if (this.invincible || !this.alive) return false
+    this.hp--
+    this.invincibleUntil = performance.now() + this.invincMs
+    if (this.hp <= 0) this.alive = false
+    return true
+  }
+
+  canFire(): boolean {
+    return this.alive
+  }
 }
