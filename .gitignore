@@ -48,6 +48,7 @@ out/
 
 # === Temporary and Cache ===
 *.tmp
+tmp/
 *.temp
 *.cache
 *.log
