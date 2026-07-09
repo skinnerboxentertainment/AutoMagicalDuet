@@ -20,7 +20,7 @@ export class BootScene implements Scene {
 
   private async loadGameplayAssets(): Promise<void> {
     try {
-      await Assets.init({ manifest: "/assets/manifest.json" })
+      await Assets.init({ manifest: "assets/manifest.json" })
       await Assets.loadBundle("gameplay")
       this.loaded = true
       this.onLoaded()

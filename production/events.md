@@ -17,3 +17,4 @@
 - Production build verified (assets in dist/, game renders correctly).
 - Visual verification screenshot: production/screenshot-production.png.
 - Dev server: http://127.0.0.1:5173 (dev) / http://127.0.0.1:4173 (production preview).
+- Fixed: JSON import MIME type error — removed custom Vite middleware, moved runtime assets to public/.

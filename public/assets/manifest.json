@@ -1,0 +1,15 @@
+{
+  "bundles": [
+    {
+      "name": "gameplay",
+      "assets": {
+        "player": "gameplay/player.png",
+        "platform": "gameplay/platform.png",
+        "gem": "gameplay/gem.png",
+        "enemy": "gameplay/enemy.png",
+        "exit": "gameplay/exit.png",
+        "background": "gameplay/background.png"
+      }
+    }
+  ]
+}
