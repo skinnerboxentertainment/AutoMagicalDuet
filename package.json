@@ -21,6 +21,7 @@
     "@automagically/narrative-core": "*",
     "howler": "^2.2.4",
     "jsfxr": "^1.4.1",
+    "lucide": "^1.24.0",
     "pixi.js": "^8.19.0",
     "zod": "^4.4.3"
   },
