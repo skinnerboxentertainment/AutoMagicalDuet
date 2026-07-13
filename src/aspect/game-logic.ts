@@ -2,6 +2,10 @@ import type { GameState, HexTile, SageUnit, Contemplation, AspectInstance } from
 import { DISCOVERIES, findDiscovery } from "./discovery-pool"
 import { key } from "./map-data"
 
+export const MAX_TURNS = 30
+export const ARCANA_REVEAL_COST = 10
+export const SAGE_MOVE_RANGE = 3
+
 export function createInitialState(mapHexes: Map<string, HexTile>): GameState {
   const playerSage: SageUnit = {
     id: "sage_player",
@@ -10,6 +14,7 @@ export function createInitialState(mapHexes: Map<string, HexTile>): GameState {
     r: 8,
     level: 1,
     studyRadius: 1,
+    moveRange: SAGE_MOVE_RANGE,
     status: "idle",
     contemplation: null,
     domain: null,
@@ -21,6 +26,7 @@ export function createInitialState(mapHexes: Map<string, HexTile>): GameState {
     r: 2,
     level: 1,
     studyRadius: 1,
+    moveRange: SAGE_MOVE_RANGE,
     status: "idle",
     contemplation: null,
     domain: null,
@@ -33,11 +39,11 @@ export function createInitialState(mapHexes: Map<string, HexTile>): GameState {
     playerSageIndex: 0,
     rivalSageIndex: 1,
     discoveriesMade: [],
+    rivalDiscoveryCount: 0,
     failedPairs: [],
     arcana: 0,
-    selectedSageIndex: 0,
-    selectedAspects: [],
     message: "Select aspects in your Sage's study radius to begin contemplation.",
+    popup: null,
     winner: null,
   }
 }
@@ -136,6 +142,11 @@ export function resolveContemplations(state: GameState): string[] {
       const dId = sage.contemplation.expectedDiscoveryId
       if (dId && !state.discoveriesMade.includes(dId)) {
         applyDiscovery(state, dId, sage)
+        if (sage.owner === 1) state.rivalDiscoveryCount++
+        const disc = DISCOVERIES.find(x => x.id === dId)
+        if (disc) {
+          state.popup = { title: disc.name, description: disc.description, domain: disc.domain }
+        }
         msgs.push(`${sage.id} discovered ${dId}!`)
       }
       sage.contemplation = null
@@ -183,15 +194,17 @@ export function rivalAct(state: GameState): string[] {
   if (pairs.length > 0) {
     const idx = Math.floor(Math.random() * pairs.length)
     const [a, b] = pairs[idx]
+    const d = findDiscovery(a, b)
     rival.contemplation = {
       aspectA: a,
       aspectB: b,
-      progressRequired: 4,
+      progressRequired: d ? d.turnsRequired : 4,
       progressCurrent: 0,
-      expectedDiscoveryId: null,
+      expectedDiscoveryId: d ? d.id : null,
     }
     rival.status = "contemplating"
-    msgs.push(`Rival Sage is contemplating something...`)
+    const pairStr = d ? d.name : `${a}+${b}`
+    msgs.push(`Rival Sage is contemplating ${pairStr}...`)
   } else {
     const target = findBestHex(state, rival)
     if (target) {
@@ -222,6 +235,29 @@ function findBestHex(state: GameState, sage: SageUnit): { q: number; r: number }
   return best
 }
 
+export function movePlayerSage(state: GameState, targetQ: number, targetR: number): string {
+  const sage = state.sages[state.playerSageIndex]
+  const dist = hexDist(sage.q, sage.r, targetQ, targetR)
+  if (dist > sage.moveRange) return "Destination too far."
+  if (dist === 0) return "Sage is already there."
+  const tile = state.mapHexes.get(key(targetQ, targetR))
+  if (!tile || tile.terrain === "water" || tile.terrain === "mountain") return "Cannot move there."
+  sage.q = targetQ
+  sage.r = targetR
+  return "Sage moved."
+}
+
+export function spendArcanaReveal(state: GameState): string {
+  if (state.arcana < ARCANA_REVEAL_COST) return `Need ${ARCANA_REVEAL_COST} Arcana.`
+  const pairs = getAvailableDiscoveryPairs(state, state.playerSageIndex)
+  if (pairs.length === 0) return "No undiscovered pairs available."
+  const idx = Math.floor(Math.random() * pairs.length)
+  const [a, b] = pairs[idx]
+  state.arcana -= ARCANA_REVEAL_COST
+  const d = findDiscovery(a, b)
+  return d ? `Hint: ${a} + ${b} → ${d.name}` : `Hint: try ${a} + ${b}`
+}
+
 export function endTurn(state: GameState): string[] {
   if (state.phase !== "player") return ["Already resolving."]
   state.phase = "resolution"
@@ -236,9 +272,23 @@ export function endTurn(state: GameState): string[] {
   state.turn++
   state.phase = "player"
 
-  if (state.discoveriesMade.length >= 10) {
+  if (state.rivalDiscoveryCount >= 10) {
+    state.winner = 1
+    msgs.push("Rival has achieved a Magnum Opus! Defeat!")
+  } else if (state.discoveriesMade.length >= 10) {
     state.winner = 0
     msgs.push("You have achieved a Magnum Opus! Victory!")
+  } else if (state.turn > MAX_TURNS) {
+    if (state.discoveriesMade.length > state.rivalDiscoveryCount) {
+      state.winner = 0
+      msgs.push(`Time up! You win ${state.discoveriesMade.length}-${state.rivalDiscoveryCount}!`)
+    } else if (state.rivalDiscoveryCount > state.discoveriesMade.length) {
+      state.winner = 1
+      msgs.push(`Time up! Rival wins ${state.rivalDiscoveryCount}-${state.discoveriesMade.length}!`)
+    } else {
+      state.winner = 0
+      msgs.push(`Time up! Tie at ${state.discoveriesMade.length} — you win on tiebreaker!`)
+    }
   }
 
   return msgs.length > 0 ? msgs : ["Turn ends. Nothing new."]

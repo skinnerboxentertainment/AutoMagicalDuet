@@ -10,11 +10,8 @@ export interface HexTile {
   q: number
   r: number
   terrain: Terrain
-  feature: string | null
   aspects: AspectInstance[]
   owner: number | null
-  ownerCity: number | null
-  improvement: string | null
   style: "normal" | "study" | "selected" | "validPair"
 }
 
@@ -25,6 +22,7 @@ export interface SageUnit {
   r: number
   level: number
   studyRadius: number
+  moveRange: number
   status: "idle" | "contemplating" | "moving"
   contemplation: Contemplation | null
   domain: string | null
@@ -57,6 +55,12 @@ export interface AspectChange {
   terrainFilter: string | null
 }
 
+export interface PopupData {
+  title: string
+  description: string
+  domain: string
+}
+
 export interface GameState {
   turn: number
   phase: "player" | "resolution"
@@ -65,11 +69,11 @@ export interface GameState {
   playerSageIndex: number
   rivalSageIndex: number
   discoveriesMade: string[]
+  rivalDiscoveryCount: number
   failedPairs: string[]
   arcana: number
-  selectedSageIndex: number
-  selectedAspects: string[]
   message: string
+  popup: PopupData | null
   winner: number | null
 }
 
