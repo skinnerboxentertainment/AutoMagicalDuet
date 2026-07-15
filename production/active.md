@@ -1,35 +1,43 @@
 # Production Active State
 
-**AutoMagicalDuet — Lean Consort Model**
+**AutoMagicJumpTuner — Build Jump Physics Demo**
 
 ---
 
 ## Current Operation
 
-- **Phase:** Design — pre-prototype
-- **Active project:** ASPECT (game concept: discovery-driven 4X)
-- **Design docs:** `design/` directory
+- **Phase:** Research → Knowledge Extraction
+- **Active project:** Jump Physics Engine bundled demo
+- **Source research:** NEW_JUMP (Game Feel Tuner) at `C:\Users\oscar\AI WORKBENCH\NEW_JUMP`
 
 ---
 
-## Active Runlist Pass
+## Completed
 
-The 36-agent design runlist (`design/design-runlist.md`) has been compiled from the deprecated `.opencode/agents/` and is available for systematic review. Before building the Sage Laboratory prototype:
-
-1. Run **all 11 Phase I agents** against the revised NEWGAME-CONCEPT.md
-2. Mark each verdict (Pass / Pivot / Kill)
-3. Resolve any Pivot or Kill verdicts before writing code
-
----
-
-## Build Order (Tentative)
-
-1. Sage Laboratory prototype (12×12 map, 6 aspects, 1 Sage, 15 discoveries, rival pressure)
-2. Validate core loop against 4 binary validation questions
-3. If PASS → vertical slice planning. If FAIL → redesign or kill.
+- ✅ Identified best candidate: NEW_JUMP (14-param physics, hybrid automaton, 6 presets, 8 tests)
+- ✅ Extracted physics knowledge into `knowledge/game-design/jump-physics-engine.md`
+- ✅ Registered in `knowledge/index.json`
+- ✅ Repo relocated to `C:\Users\oscar\AI WORKBENCH\AutoMagicJumpTuner`
 
 ---
 
 ## Next Action
 
-Complete the design runlist pass for all 11 Phase I agents.
+Ready for the 7-beat consort rhythm to build the bundled PixiJS demo:
+
+1. **Explore** — review extracted knowledge + existing `src/` structure
+2. **Frame** — define the demo spec (what to build, what to strip)
+3. **Expand** — OpenCode + Codex discuss approach
+4. **Attack** — Codex stress-tests the plan
+5. **Commit** — lock the design
+6. **Build** — implement
+7. **Prove** — test + verify
+
+---
+
+## Build Target
+
+- Strip ASPECT code from repo
+- Port physics engine (pure TypeScript, zero changes needed)
+- Build PixiJS v8 renderer + keyboard/gamepad input
+- Ship 6 presets + trajectory overlay as the bundled demo

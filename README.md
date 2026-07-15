@@ -113,7 +113,7 @@ Open `http://localhost:5173` in your browser.
 
 > The landing page is the knowledge encyclopedia. Browse 64 knowledge chunks across 9 domains.
 >
-> **Note on "Launch Game":** The current prototype (ASPECT) is a work-in-progress and may not boot correctly. The strength of this project is the workflow, not any single in-progress prototype. For playable games, see the sibling project directories described above.
+> **"Launch Game"** boots the bundled Jump Physics Demo — a playable 2D platformer sandbox with 6 feel presets, keyboard + gamepad support, squash-and-stretch juice, particle effects, and real-time physics visualization. Press `P` to cycle presets.
 
 ---
 
@@ -135,15 +135,18 @@ Open `http://localhost:5173` in your browser.
 
 ```
 src/                    # Game code
-  main.ts               # Entry point (boots current prototype)
+  main.ts               # Entry point (boots jump demo)
   core/                 # Engine (scenes, input, game loop)
-  aspect/               # Current prototype (ASPECT — work in progress)
-knowledge/              # The brain (64 chunks, browsable)
+  gameplay/             # Jump physics demo
+    physics/            # Physics engine (movement, collision, juice)
+    jump-scene.ts       # PixiJS scene + renderer
+    presets.ts          # 6 feel presets
+knowledge/              # The brain (65 chunks, browsable)
 production/             # What's happening now and what happened
 public/assets/          # Game sprites, banner, screenshots
 docs/                   # Architecture decisions and guides
 design/                 # Game design documents (historical)
-tests/                  # Automated tests (39 passing)
+tests/                  # Automated tests
 ```
 
 ---

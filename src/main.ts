@@ -1,31 +1,61 @@
-import { bootAspect, destroyAspect } from "./aspect/main-aspect"
+import { Application } from "pixi.js"
+import { InputManager } from "./core/input-manager"
+import { JumpScene } from "./gameplay/jump-scene"
 
-let started = false
+let app: Application | null = null
+let input: InputManager | null = null
+let scene: JumpScene | null = null
 
-export function launchAspectFromUI(): void {
+export async function launchGame(): Promise<void> {
   const container = document.getElementById("game-container")
   const target = document.getElementById("game-canvas-target")
   const encyclopedia = document.getElementById("encyclopedia")
-
   if (!container || !target) return
 
   container.classList.remove("hidden")
   if (encyclopedia) encyclopedia.classList.add("hidden")
 
-  if (!started) {
-    started = true
-    bootAspect(target).catch((error: unknown) => {
-      console.error("ASPECT boot failed", error)
-    })
-  }
+  if (app) return
 
-  const closeBtn = container.querySelector("button")
-  if (closeBtn) {
-    closeBtn.onclick = () => {
-      container.classList.add("hidden")
-      if (encyclopedia) encyclopedia.classList.remove("hidden")
+  app = new Application()
+  await app.init({
+    width: 1280,
+    height: 1024,
+    background: 0x0d0d1a,
+    antialias: true,
+    autoDensity: true,
+    resolution: Math.min(2, window.devicePixelRatio || 1),
+  })
+  target.innerHTML = ""
+  target.appendChild(app.canvas)
+
+  input = new InputManager()
+
+  app.ticker.maxFPS = 60
+  app.ticker.add(() => {
+    if (!input) return
+    input.update()
+    if (scene) {
+      scene.update(app!.ticker.deltaMS / 1000)
     }
+  })
+
+  scene = new JumpScene(app, input)
+}
+
+function closeGame() {
+  if (app) {
+    if (scene) scene.destroy()
+    if (input) input.destroy()
+    app.destroy({ removeView: true })
+    app = null
+    input = null
+    scene = null
   }
+  const container = document.getElementById("game-container")
+  const encyclopedia = document.getElementById("encyclopedia")
+  if (container) container.classList.add("hidden")
+  if (encyclopedia) encyclopedia.classList.remove("hidden")
 }
 
 declare global {
@@ -35,10 +65,5 @@ declare global {
   }
 }
 
-window.launchGame = launchAspectFromUI
-window.closeGame = () => {
-  const container = document.getElementById("game-container")
-  const encyclopedia = document.getElementById("encyclopedia")
-  if (container) container.classList.add("hidden")
-  if (encyclopedia) encyclopedia.classList.remove("hidden")
-}
+window.launchGame = launchGame
+window.closeGame = closeGame
