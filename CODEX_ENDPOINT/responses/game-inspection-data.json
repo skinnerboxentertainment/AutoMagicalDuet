@@ -1,0 +1,229 @@
+{
+  "baseUrl": "http://127.0.0.1:5173",
+  "landing": {
+    "title": "AutoMagicalDuet",
+    "tagline": "AutoMagicalDuet\n      You + two AI agents = your own browser games.\n      64 knowledge chunks · 9 domains",
+    "buttons": [
+      {
+        "text": "▶ Launch Game",
+        "style": null,
+        "rect": {
+          "x": 483.4375,
+          "y": 611.53125,
+          "width": 157.84375,
+          "height": 40,
+          "top": 611.53125,
+          "right": 641.28125,
+          "bottom": 651.53125,
+          "left": 483.4375
+        }
+      },
+      {
+        "text": "All",
+        "style": null,
+        "rect": {
+          "x": 653.28125,
+          "y": 611.53125,
+          "width": 59.4375,
+          "height": 40,
+          "top": 611.53125,
+          "right": 712.71875,
+          "bottom": 651.53125,
+          "left": 653.28125
+        }
+      },
+      {
+        "text": "Architecture",
+        "style": null,
+        "rect": {
+          "x": 724.71875,
+          "y": 611.53125,
+          "width": 129.546875,
+          "height": 40,
+          "top": 611.53125,
+          "right": 854.265625,
+          "bottom": 651.53125,
+          "left": 724.71875
+        }
+      },
+      {
+        "text": "PixiJS",
+        "style": null,
+        "rect": {
+          "x": 866.265625,
+          "y": 611.53125,
+          "width": 85.640625,
+          "height": 40,
+          "top": 611.53125,
+          "right": 951.90625,
+          "bottom": 651.53125,
+          "left": 866.265625
+        }
+      },
+      {
+        "text": "Game Design",
+        "style": null,
+        "rect": {
+          "x": 963.90625,
+          "y": 611.53125,
+          "width": 137.15625,
+          "height": 40,
+          "top": 611.53125,
+          "right": 1101.0625,
+          "bottom": 651.53125,
+          "left": 963.90625
+        }
+      },
+      {
+        "text": "QA",
+        "style": null,
+        "rect": {
+          "x": 1113.0625,
+          "y": 611.53125,
+          "width": 62.8125,
+          "height": 40,
+          "top": 611.53125,
+          "right": 1175.875,
+          "bottom": 651.53125,
+          "left": 1113.0625
+        }
+      },
+      {
+        "text": "Workflow",
+        "style": null,
+        "rect": {
+          "x": 1187.875,
+          "y": 611.53125,
+          "width": 108.125,
+          "height": 40,
+          "top": 611.53125,
+          "right": 1296,
+          "bottom": 651.53125,
+          "left": 1187.875
+        }
+      },
+      {
+        "text": "✕ Close Game",
+        "style": "background:#2a2a3e;color:#e0e0e0;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.9em;",
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      {
+        "text": "✕",
+        "style": null,
+        "rect": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      }
+    ],
+    "cards": [
+      "architecture12 chunksAI Code Standards# AI Code Standardsaibehaviordebuggingsrc/ai/**, src/gameplay/**Deep Module Review# Deep Module Reviewmodulesreviewseamssrc/**, docs/architecture/adr/**Engine Code Standards# Engine Code Standardsenginehot-pathsapisrc/core/**Gameplay Code Standards# Gameplay Code Standardsgameplaydata-drivenstate-machinessrc/gameplay/**Layer Isolation# Layer Isolationlayeringboundariesdependenciessrc/core/**, src/gameplay/**, src/ui/**, src/scenes/**Network Code Standards# Network Code Standardsnetworkingreplicationsecuritysrc/networking/**Resource Cleanup# Resource Cleanupcleanuplifecycleresourcessrc/core/**, src/scenes/**, src/audio/**, src/assets/**Scene Lifecycle# Scene Lifecyclesceneslifecyclecleanupsrc/scenes/**, src/core/scene*.*, src/main.tsSecurity Review# Security Reviewsecurityprivacyvalidationsrc/networking/**, src/save/**, src/analytics/**, src/**State Ownership# State Ownershipstaterenderingsave-loadsrc/gameplay/**, src/scenes/**, src/core/**TypeScript Strict Patterns# TypeScript Strict Patternstypescriptstricttypessrc/**/*.ts, tests/**/*.tsUpdate Loop# Update Looptickertimingdeterministicsrc/main.ts, src/core/**, src/gameplay/**",
+      "art1 chunkVisual Identity# Visual Identityvisualstylehierarchydesign/art/**, assets/**, src/ui/**",
+      "audio2 chunksSFX Specifications# SFX Specificationssfxeventsvariationsdesign/audio/**, assets/audio/sfx/**, assets/audio/sprites/**Sonic Identity# Sonic Identityaudiodirectionmixdesign/audio/**, assets/audio/**, src/audio/**",
+      "game-design11 chunksBalancing Methodology# Balancing Methodologybalanceformulastuningdesign/gdd/**, assets/data/**, src/gameplay/**Core Loops# Core Loopsloopspacingprogressiondesign/gdd/**, src/gameplay/**Creative Pillars# Creative Pillarspillarsvisionscopedesign/**, production/**Economy Design# Economy Designeconomyrewardsprogressiondesign/gdd/**, assets/data/**Flow Design# Flow Designflowonboardingfeedbackdesign/gdd/**, src/gameplay/**, src/ui/**Jump Physics Engine — Parameter Model & Feel Techniques# Jump Physics Engine — Parameter Model & Feel TechniquesLevel Pacing# Level Pacinglevelspacingencountersdesign/gdd/**, design/levels/**, assets/data/level*Live Ops Cadence# Live Ops Cadencecadenceseasonsretentiondesign/live-ops/**Live Ops# Live Opslive-opseventsretentiondesign/live-ops/**, assets/data/**MDA Framework# MDA Frameworkmdaaestheticsmechanicsdesign/gdd/**, design/**/*.mdSub Shooter — Game Design Spec# Sub Shooter — Game Design Specspecsub-shootermvpside-scrollerunderwatersrc/scenes/game-scene.ts, src/gameplay/player.ts, src/gameplay/enemy.ts, assets/data/gameplay-config.json",
+      "genre5 chunksMinimal Pattern# Minimal Patternminimalfallbackscaffolddesign/gdd/**, src/gameplay/**Puzzle Pattern# Puzzle Patternpuzzlegridmatchingdesign/gdd/**, src/gameplay/**, assets/data/level*.jsonRunner Pattern# Runner Patternrunnerproceduralobstaclesdesign/gdd/**, src/gameplay/**, assets/data/difficulty.jsonSHMUP Pattern# SHMUP Patternshmupprojectileswavesdesign/gdd/**, src/gameplay/**, assets/data/waves.jsonTop-Down Pattern# Top-Down Patterntop-downmovementtilesdesign/gdd/**, src/gameplay/**, assets/data/level*.json",
+      "narrative2 chunksDialogue Standards# Dialogue Standardsdialoguelocalizationwritingdesign/narrative/**, locales/**Worldbuilding Consistency# Worldbuilding Consistencylorecanonconsistencydesign/narrative/**",
+      "pixijs8 chunksAsset Loading# Asset Loadingassetsbundlesmanifestsrc/assets/**, src/scenes/**, assets/**, public/**Audio Integration# Audio Integrationaudiohowlerscenessrc/audio/**, src/scenes/**, assets/audio/**Input Handling# Input Handlinginputeventshitareasrc/input/**, src/ui/**, src/scenes/**Installed PixiJS v8 Skills# Installed PixiJS v8 Skillsskillsreferencepixijs-v8src/scenes/**, src/gameplay/renderer.ts, pixi.jsRendering Pipeline# Rendering Pipelinerenderingwebglwebgpusrc/core/**, src/rendering/**, src/main.tsScene Management# Scene Managementscene-graphcontainerslifecyclesrc/scenes/**, src/core/**Shader Code Standards# Shader Code Standardsshadersfiltersperformanceassets/shaders/**, src/rendering/**UI Code Standards# UI Code Standardsuiaccessibilitylocalizationsrc/ui/**",
+      "qa-testing10 chunksAccessibility# Accessibilityaccessibilitywcaginputsrc/ui/**, src/input/**, production/qa/accessibility/**Analytics Metrics# Analytics Metricsanalyticstelemetrymetricssrc/analytics/**, design/analytics/**Browser Smoke Tests# Browser Smoke Testsbrowsersmokeplaywrighttests/browser/**, tests/smoke/**, src/main.tsBug Diagnosis Loop# Bug Diagnosis Loopdebuggingregressioninstrumentationsrc/**, tests/**, production/events.mdEvidence Gates# Evidence Gatesevidencegatesdoneproduction/qa/**, tests/**, design/gdd/**Performance Budgets# Performance Budgetsperformancebudgetsprofilingsrc/**, tests/performance/**, production/qa/**TDD Tracer Bullets# TDD Tracer Bulletstddtracer-bulletspublic-interfacestests/**, src/**Test Doubles# Test Doublesmocksdoublesdeterministictests/helpers/**, tests/**Test Standards# Test Standardsstandardsregressionvitesttests/**Testing Pyramid# Testing Pyramidtestingvitestplaywrighttests/**, src/**",
+      "workflow14 chunksAvailable Skills# Available Skillsskillsreferencetools.agents/skills/**Collaboration Protocol# Collaboration Protocolcollaborationdecisionsapprovalproduction/**, design/**, src/**Community Communication# Community Communicationcommunitypatch-notesfeedbackproduction/community/**, production/releases/**Decision Records# Decision Recordsadrdecisionsgovernancedocs/architecture/adr/**, design/**, production/**Design Doc Standards# Design Doc Standardsdesign-docsgddspecificationsdesign/gdd/**Handoff Standards# Handoff Standardshandoffcontextcontinuityproduction/**, docs/**, .agents/skills/handoff/**Localization# Localizationlocalizationi18nstringssrc/ui/**, locales/**, assets/ui/fonts/**Prototype Standards# Prototype Standardsprototypespikelearningprototypes/**Release Pipeline# Release Pipelinereleaseversioninghotfixproduction/release/**, package.json, vite.config.tsScope Management# Scope Managementscopeplanningriskproduction/**, design/**Skill Authoring Standards# Skill Authoring Standardsskillsauthoringmaintainability.agents/skills/**, .opencode/skills/**Tooling Standards# Tooling Standardstoolsautomationpipelinetools/**, scripts/**Verification Gate# Verification Gateverificationtypescripttestssrc/**, tests/**, assets/**Web Runtime Standards# Web Runtime Standardswebruntimeperformancesrc/**, vite.config.ts, public/**"
+    ],
+    "bodyText": "AutoMagicalDuet\nYou + two AI agents = your own browser games.\n64 knowledge chunks · 9 domains\nOpenCode — Builder\nArchitecture · Coding · Integration · Final call\nCodex — Critic\nResearch · Critique · Visual QA · Art generation\nYou — Director\nProduct goals · Scope · Taste · Final tradeoffs\n▶ Launch Game\nAll\nArchitecture\nPixiJS\nGame Design\nQA\nWorkflow\nArchitecture\n12 chunks\nAI Code Standards\n\n# AI Code Standards\n\nai\nbehavior\ndebugging\nsrc/ai/**, src/gameplay/**\nDeep Module Review\n\n# Deep Module Review\n\nmodules\nreview\nseams\nsrc/**, docs/architecture/adr/**\nEngine Code Standards\n\n# Engine Code Standards\n\nengine\nhot-paths\napi\nsrc/core/**\nGameplay Code Standards\n\n# Gameplay Code Standards\n\ngameplay\ndata-driven\nstate-machines\nsrc/gameplay/**\nLayer Isolation\n\n# Layer Isolation\n\nlayering\nboundaries\ndependencies\nsrc/core/**, src/gameplay/**, src/ui/**, src/scenes/**\nNetwork Code Standards\n\n# Network Code Standards\n\nnetworking\nreplication\nsecurity\nsrc/networking/**\nResource Cleanup\n\n# Resource Cleanup\n\ncleanup\nlifecycle\nresources\nsrc/core/**, src/scenes/**, src/audio/**, src/assets/**\nScene Lifecycle\n\n# Scene Lifecycle\n\nscenes\nlifecycle\ncleanup\nsrc/scenes/**, src/core/scene*.*, src/main.ts\nSecurity Review\n\n# Security Review\n\nsecurity\nprivacy\nvalidation\nsrc/networking/**, src/save/**, src/analytics/**, src/**\nState Ownership\n\n# State Ownership\n\nstate\nrendering\nsave-load\nsrc/gameplay/**, src/scenes/**, src/core/**\nTypeScript Strict Patterns\n\n# TypeScript Strict Patterns\n\ntypescript\nstrict\ntypes\nsrc/**/*.ts, tests/**/*.ts\nUpdate Loop\n\n# Update Loop\n\nticker\ntiming\ndeterministic\nsrc/main.ts, src/core/**, src/gameplay/**\nArt\n1 chunk\nVisual Identity\n\n# Visual Identity\n\nvisual\nstyle\nhierarchy\ndesign/art/**, assets/**, src/ui/**\nAudio\n2 chunks\nSFX Specifications\n\n# SFX Specifications\n\nsfx\nevents\nvariations\ndesign/audio/**, assets/audio/sfx/**, assets/audio/sprites/**\nSonic Identity\n\n# Sonic Identity\n\naudio\ndirection\nmix\ndesign/audio/**, assets/audio/**, src/audio/**\nGame-Design\n11 chunks\nBalancing Methodology\n\n# Balancing Methodology\n\nbalance\nformulas\ntuning\ndesign/gdd/**, assets/data/**, src/gameplay/**\nCore Loops\n\n# Core Loops\n\nloops\npacing\nprogression\ndesign/gdd/**, src/gameplay/**\nCreative Pillars\n\n# Creative Pillars\n\npillars\nvision\nscope\ndesign/**, production/**\nEconomy Design\n\n# Economy Design\n\neconomy\nrewards\nprogression\ndesign/gdd/**, assets/data/**\nFlow Design\n\n# Flow Design\n\nflow\nonboarding\nfeedback\ndesign/gdd/**, src/gameplay/**, src/ui/**\nJump Physics Engine — Parameter Model & Feel Techniques\n\n# Jump Physics Engine — Parameter Model & Feel Techniques\n\nLevel Pacing\n\n# Level Pacing\n\nlevels\npacing\nencounters\ndesign/gdd/**, design/levels/**, assets/data/level*\nLive Ops Cadence\n\n# Live Ops Cadence\n\ncadence\nseasons\nretention\ndesign/live-ops/**\nLive Ops\n\n# Live Ops\n\nlive-ops\nevents\nretention\ndesign/live-ops/**, assets/data/**\nMDA Framework\n\n# MDA Framework\n\nmda\naesthetics\nmechanics\ndesign/gdd/**, design/**/*.md\nSub Shooter — Game Design Spec\n\n# Sub Shooter — Game Design Spec\n\nspec\nsub-shooter\nmvp\nside-scroller\nunderwater\nsrc/scenes/game-scene.ts, src/gameplay/player.ts, src/gameplay/enemy.ts, assets/data/gameplay-config.json\nGenre\n5 chunks\nMinimal Pattern\n\n# Minimal Pattern\n\nminimal\nfallback\nscaffold\ndesign/gdd/**, src/gameplay/**\nPuzzle Pattern\n\n# Puzzle Pattern\n\npuzzle\ngrid\nmatching\ndesign/gdd/**, src/gameplay/**, assets/data/level*.json\nRunner Pattern\n\n# Runner Pattern\n\nrunner\nprocedural\nobstacles\ndesign/gdd/**, src/gameplay/**, assets/data/difficulty.json\nSHMUP Pattern\n\n# SHMUP Pattern\n\nshmup\nprojectiles\nwaves\ndesign/gdd/**, src/gameplay/**, assets/data/waves.json\nTop-Down Pattern\n\n# Top-Down Pattern\n\ntop-down\nmovement\ntiles\ndesign/gdd/**, src/gameplay/**, assets/data/level*.json\nNarrative\n2 chunks\nDialogue Standards\n\n# Dialogue Standards\n\ndialogue\nlocalization\nwriting\ndesign/narrative/**, locales/**\nWorldbuilding Consistency\n\n# Worldbuilding Consistency\n\nlore\ncanon\nconsistency\ndesign/narrative/**\nPixijs\n8 chunks\nAsset Loading\n\n# Asset Loading\n\nassets\nbundles\nmanifest\nsrc/assets/**, src/scenes/**, assets/**, public/**\nAudio Integration\n\n# Audio Integration\n\naudio\nhowler\nscenes\nsrc/audio/**, src/scenes/**, assets/audio/**\nInput Handling\n\n# Input Handling\n\ninput\nevents\nhitarea\nsrc/input/**, src/ui/**, src/scenes/**\nInstalled PixiJS v8 Skills\n\n# Installed PixiJS v8 Skills\n\nskills\nreference\npixijs-v8\nsrc/scenes/**, src/gameplay/renderer.ts, pixi.js\nRendering Pipeline\n\n# Rendering Pipeline\n\nrendering\nwebgl\nwebgpu\nsrc/core/**, src/rendering/**, src/main.ts\nScene Management\n\n# Scene Management\n\nscene-graph\ncontainers\nlifecycle\nsrc/scenes/**, src/core/**\nShader Code Standards\n\n# Shader Code Standards\n\nshaders\nfilters\nperformance\nassets/shaders/**, src/rendering/**\nUI Code Standards\n\n# UI Code Standards\n\nui\naccessibility\nlocalization\nsrc/ui/**\nQa-Testing\n10 chunks\nAccessibility\n\n# Accessibility\n\naccessibility\nwcag\ninput\nsrc/ui/**, src/input/**, production/qa/accessibility/**\nAnalytics Metrics\n\n# Analytics Metrics\n\nanalytics\ntelemetry\nmetrics\nsrc/analytics/**, design/analytics/**\nBrowser Smoke Tests\n\n# Browser Smoke Tests\n\nbrowser\nsmoke\nplaywright\ntests/browser/**, tests/smoke/**, src/main.ts\nBug Diagnosis Loop\n\n# Bug Diagnosis Loop\n\ndebugging\nregression\ninstrumentation\nsrc/**, tests/**, production/events.md\nEvidence Gates\n\n# Evidence Gates\n\nevidence\ngates\ndone\nproduction/qa/**, tests/**, design/gdd/**\nPerformance Budgets\n\n# Performance Budgets\n\nperformance\nbudgets\nprofiling\nsrc/**, tests/performance/**, production/qa/**\nTDD Tracer Bullets\n\n# TDD Tracer Bullets\n\ntdd\ntracer-bullets\npublic-interfaces\ntests/**, src/**\nTest Doubles\n\n# Test Doubles\n\nmocks\ndoubles\ndeterministic\ntests/helpers/**, tests/**\nTest Standards\n\n# Test Standards\n\nstandards\nregression\nvitest\ntests/**\nTesting Pyramid\n\n# Testing Pyramid\n\ntesting\nvitest\nplaywright\ntests/**, src/**\nWorkflow\n14 chunks\nAvailable Skills\n\n# Available Skills\n\nskills\nreference\ntools\n.agents/skills/**\nCollaboration Protocol\n\n# Collaboration Protocol\n\ncollaboration\ndecisions\napproval\nproduction/**, design/**, src/**\nCommunity Communication\n\n# Community Communication\n\ncommunity\npatch-notes\nfeedback\nproduction/community/**, production/releases/**\nDecision Records\n\n# Decision Records\n\nadr\ndecisions\ngovernance\ndocs/architecture/adr/**, design/**, production/**\nDesign Doc Standards\n\n# Design Doc Standards\n\ndesign-docs\ngdd\nspecifications\ndesign/gdd/**\nHandoff Standards\n\n# Handoff Standards\n\nhandoff\ncontext\ncontinuity\nproduction/**, docs/**, .agents/skills/handoff/**\nLocalization\n\n# Localization\n\nlocalization\ni18n\nstrings\nsrc/ui/**, locales/**, assets/ui/fonts/**\nPrototype Standards\n\n# Prototype Standards\n\nprototype\nspike\nlearning\nprototypes/**\nRelease Pipeline\n\n# Release Pipeline\n\nrelease\nversioning\nhotfix\nproduction/release/**, package.json, vite.config.ts\nScope Management\n\n# Scope Management\n\nscope\nplanning\nrisk\nproduction/**, design/**\nSkill Authoring Standards\n\n# Skill Authoring Standards\n\nskills\nauthoring\nmaintainability\n.agents/skills/**, .opencode/skills/**\nTooling Standards\n\n# Tooling Standards\n\ntools\nautomation\npipeline\ntools/**, scripts/**\nVerification Gate\n\n# Verification Gate\n\nverification\ntypescript\ntests\nsrc/**, tests/**, assets/**\nWeb Runtime Standards\n\n# Web Runtime Standards\n\nweb\nruntime\nperformance\nsrc/**, vite.config.ts, public/**"
+  },
+  "idle": {
+    "canvas": {
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 900,
+      "top": 0,
+      "right": 1440,
+      "bottom": 900,
+      "left": 0
+    },
+    "hud": "✕ Close Game",
+    "gamepadApi": true
+  },
+  "movingHud": "✕ Close Game",
+  "jumpHud": "✕ Close Game",
+  "tuning": {
+    "categories": [
+      "Max Speed ⓘ450",
+      "Acceleration ⓘ2000",
+      "Deceleration ⓘ2500",
+      "Turn Multiplier ⓘ2",
+      "Jump Force ⓘ750",
+      "Gravity ⓘ1500",
+      "Fall Grav Mult ⓘ1.5",
+      "Terminal Vel ⓘ1200",
+      "Air Control ⓘ0.8",
+      "Air Friction ⓘ400",
+      "Cancel Mode ⓘ",
+      "Min Hold (s) ⓘ0.05",
+      "Max Hold (s) ⓘ0.35",
+      "Early Release Grav ⓘ2.5",
+      "Elasticity ⓘ1",
+      "Squash Recovery ⓘ15",
+      "Max Air Jumps ⓘ0",
+      "Coyote Time (s) ⓘ0.1",
+      "Jump Buffer (s) ⓘ0.1",
+      "Wall Slide Gravity ⓘ0.3",
+      "Wall Jump Force ⓘ0",
+      "Wall Jump Horiz ⓘ0"
+    ],
+    "sliderCount": 21,
+    "selectCount": 1,
+    "tips": [
+      "Horizontal speed cap (px/s). Higher = faster run.",
+      "How fast the player reaches max speed on the ground.",
+      "How fast the player stops when releasing the key.",
+      "Extra acceleration when reversing direction. Higher = snappier turns.",
+      "Initial upward velocity. Higher = higher jumps.",
+      "Downward acceleration (px/s²). Higher = shorter, snappier jumps.",
+      "Extra gravity while falling. >1 makes descents feel snappier.",
+      "Max fall speed cap. Higher = faster max fall.",
+      "Fraction of ground acceleration available in the air. 0 = no air steering, 1 = full control.",
+      "Horizontal deceleration while airborne with no input.",
+      "none = fixed arc. partial = gravity spike on release. full = kill upward velocity instantly.",
+      "Minimum time jump is force-held. Prevents accidental short hops from light taps.",
+      "Max time jump can be held. Longer = more variable height range.",
+      "Gravity spike when releasing jump early in partial mode. Higher = shorter hops.",
+      "Intensity of squash & stretch on skid, takeoff, and landing. 0 = no deformation.",
+      "How fast the player snaps back to normal shape after squashing. Higher = snappier.",
+      "Number of extra jumps allowed in the air. Wall slides reset this counter.",
+      "Grace period after walking off a ledge where jump still works. Prevents 'I pressed jump!' frustration.",
+      "Grace period before landing where jump input is queued. Makes tight jumps feel responsive.",
+      "Gravity multiplier while wall sliding. 0.3 = slow slide, 1 = normal fall.",
+      "Vertical launch when jumping off a wall. 0 = no wall jump.",
+      "Horizontal push away from the wall on wall jump."
+    ],
+    "text": "Tuning PanelPreset: Balanced✕ Close (Tab)Ground MovementMax Speed ⓘ450Acceleration ⓘ2000Deceleration ⓘ2500Turn Multiplier ⓘ2Jump CoreJump Force ⓘ750Gravity ⓘ1500Fall Grav Mult ⓘ1.5Terminal Vel ⓘ1200Air MovementAir Control ⓘ0.8Air Friction ⓘ400Variable HeightCancel Mode ⓘnonepartialfullMin Hold (s) ⓘ0.05Max Hold (s) ⓘ0.35Early Release Grav ⓘ2.5Feel & AssistsElasticity ⓘ1Squash Recovery ⓘ15Max Air Jumps ⓘ0Coyote Time (s) ⓘ0.1Jump Buffer (s) ⓘ0.1Wall SlideWall Slide Gravity ⓘ0.3Wall Jump Force ⓘ0Wall Jump Horiz ⓘ0"
+  },
+  "presets": [
+    "not found",
+    "not found",
+    "not found",
+    "not found",
+    "not found",
+    "not found"
+  ],
+  "afterClose": {
+    "hasCanvas": false,
+    "bodyText": "AutoMagicalDuet\nYou + two AI agents = your own browser games.\n64 knowledge chunks · 9 domains\nOpenCode — Builder\nArchitecture · Coding · Integration · Final call\nCodex — Critic\nResearch · Critique · Visual QA · Art generation\nYou — Director\nProduct goals · Scope · Taste · Final tradeoffs\n▶ Launch Game\nAll\nArchitecture\nPixiJS\nGame Design\nQA\nWorkflow\nArchitecture\n12 chunks\nAI Code Standards\n\n# AI Code Standards\n\nai\nbehavior\ndebugging\nsrc/ai/**, src/gameplay/**\nDeep Module Review\n\n# Deep Module Review\n\nmodules\nreview\nseams\nsrc/**, docs/architecture/adr/**\nEngine Code Standards\n\n# Engine Code Standards\n\nengine\nhot-paths\napi\nsrc/core/**\nGameplay Code Standards\n\n# Gameplay Code Standards\n\ngameplay\ndata-driven\nstate-machines\nsrc/gameplay/**\nLayer Isolation\n\n# Layer Isolation\n\nlayering\nboundaries\ndependencies\nsrc/core/**, src/gameplay/**, src/ui/**, src/scenes/**\nNetwork Code Standards\n\n# Network Code Standards\n\nnetworking\nreplication\nsecurity\nsrc/networking/**\nResource Cleanup\n\n# Resource Cleanup\n\ncleanup\nlifecycle\nresources\nsrc/core/**, src/scenes/**, src/audio/**, src/assets/**\nScene Lifecycle\n\n# Scene Lifecycle\n\nscenes\nlifecycle\ncleanup\nsrc/scenes/**, src/core/scene*.*, src/main.ts\nSecurity Review\n\n# Security Review\n\nsecurity\nprivacy\nvalidation\nsrc/networking/**, src/save/**, src/analytics/**, src/**\nState Ownership\n\n# State Ownership\n\nstate\nrendering\nsave-load\nsrc/gameplay/**, src/scenes/**, src/core/**\nTypeScript Strict Patterns\n\n# TypeScript Strict Patterns\n\ntypescript\nstrict\ntypes\nsrc/**/*.ts, tests/**/*.ts\nUpdate Loop\n\n# Update Loop\n\nticker\ntiming\ndeterministic\nsrc/main.ts, src/core/**, src/gameplay/**\nArt\n1 chunk\nVisual Identity\n\n# Visual Identity\n\nvisual\nstyle\nhierarchy\ndesign/art/**, assets/**, src/ui/**\nAudio\n2 chunks\nSFX Specifications\n\n# SFX Specifications\n\nsfx\nevents\nvariations\ndesign/audio/**, assets/audio/sfx/**, assets/audio/sprites/**\nSonic Identity\n\n# Sonic Identity\n\naudio\ndirection\nmix\ndesign/audio/**, assets/audio/**, src/audio/**\nGame-Design\n11 chunks\nBalancing Methodology\n\n# Balancing Methodology\n\nbalance\nformulas\ntuning\ndesign/gdd/**, assets/data/**, src/gameplay/**\nCore Loops\n\n# Core Loops\n\nloops\npacing\nprogression\ndesign/gdd/**, src/gameplay/**\nCreative Pillars\n\n# Creative Pillars\n\npillars\nvision\nscope\ndesign/**, production/**\nEconomy Design\n\n# Economy Design\n\neconomy\nrewards\nprogression\ndesign/gdd/**, assets/data/**\nFlow Design\n\n# Flow Design\n\nflow\nonboarding\nfeedback\ndesign/gdd/**, src/gameplay/**, src/ui/**\nJump Physics Engine — Parameter Model & Feel Techniques\n\n# Jump Physics Engine — Parameter Model & Feel Techniques\n\nLevel Pacing\n\n# Level Pacing\n\nlevels\npacing\nencounters\ndesign/gdd/**, design/levels/**, assets/data/level*\nLive Ops Cadence\n\n# Live Ops Cadence\n\ncadence\nseasons\nretention\ndesign/live-ops/**\nLive Ops\n\n# Live Ops\n\nlive-ops\nevents\nretention\ndesign/live-ops/**, assets/data/**\nMDA Framework\n\n# MDA Framework\n\nmda\naesthetics\nmechanics\ndesign/gdd/**, design/**/*.md\nSub Shooter — Game Design Spec\n\n# Sub Shooter — Game Design Spec\n\nspec\nsub-shooter\nmvp\nside-scroller\nunderwater\nsrc/scenes/game-scene.ts, src/gameplay/player.ts, src/gameplay/enemy.ts, assets/data/gameplay-config.json\nGenre\n5 chunks\nMinimal Pattern\n\n# Minimal Pattern\n\nminimal\nfallback\nscaffold\ndesign/gdd/**, src/gameplay/**\nPuzzle Pattern\n\n# Puzzle Pattern\n\npuzzle\ngrid\nmatching\ndesign/gdd/**, src/gameplay/**, assets/data/level*.json\nRunner Pattern\n\n# Runner Pattern\n\nrunner\nprocedural\nobstacles\ndesign/gdd/**, src/gameplay/**, assets/data/difficulty.json\nSHMUP Pattern\n\n# SHMUP Pattern\n\nshmup\nprojectiles\nwaves\ndesign/gdd/**, src/gameplay/**, assets/data/waves.json\nTop-Down Pattern\n\n# Top-Down Pattern\n\ntop-down\nmovement\ntiles\ndesign/gdd/**, src/gameplay/**, assets/data/level*.json\nNarrative\n2 chunks\nDialogue Standards\n\n# Dialogue Standards\n\ndialogue\nlocalization\nwriting\ndesign/narrative/**, locales/**\nWorldbuilding Consistency\n\n# Worldbuilding Consistency\n\nlore\ncanon\nconsistency\ndesign/narrative/**\nPixijs\n8 chunks\nAsset Loading\n\n# Asset Loading\n\nassets\nbundles\nmanifest\nsrc/assets/**, src/scenes/**, assets/**, public/**\nAudio Integration\n\n# Audio Integration\n\naudio\nhowler\nscenes\nsrc/audio/**, src/scenes/**, assets/audio/**\nInput Handling\n\n# Input Handling\n\ninput\nevents\nhitarea\nsrc/input/**, src/ui/**, src/scenes/**\nInstalled PixiJS v8 Skills\n\n# Installed PixiJS v8 Skills\n\nskills\nreference\npixijs-v8\nsrc/scenes/**, src/gameplay/renderer.ts, pixi.js\nRendering Pipeline\n\n# Rendering Pipeline\n\nrendering\nwebgl\nwebgpu\nsrc/core/**, src/rendering/**, src/main.ts\nScene Management\n\n# Scene Management\n\nscene-graph\ncontainers\nlifecycle\nsrc/scenes/**, src/core/**\nShader Code Standards\n\n# Shader Code Standards\n\nshaders\nfilters\nperformance\nassets/shaders/**, src/rendering/**\nUI Code Standards\n\n# UI Code Standards\n\nui\naccessibility\nlocalization\nsrc/ui/**\nQa-Testing\n10 chunks\nAccessibility\n\n# Accessibility\n\naccessibility\nwcag\ninput\nsrc/ui/**, src/input/**, production/qa/accessibility/**\nAnalytics Metrics\n\n# Analytics Metrics\n\nanalytics\ntelemetry\nmetrics\nsrc/analytics/**, design/analytics/**\nBrowser Smoke Tests\n\n# Browser Smoke Tests\n\nbrowser\nsmoke\nplaywright\ntests/browser/**, tests/smoke/**, src/main.ts\nBug Diagnosis Loop\n\n# Bug Diagnosis Loop\n\ndebugging\nregression\ninstrumentation\nsrc/**, tests/**, production/events.md\nEvidence Gates\n\n# Evidence Gates\n\nevidence\ngates\ndone\nproduction/qa/**, tests/**, design/gdd/**\nPerformance Budgets\n\n# Performance Budgets\n\nperformance\nbudgets\nprofiling\nsrc/**, tests/performance/**, production/qa/**\nTDD Tracer Bullets\n\n# TDD Tracer Bullets\n\ntdd\ntracer-bullets\npublic-interfaces\ntests/**, src/**\nTest Doubles\n\n# Test Doubles\n\nmocks\ndoubles\ndeterministic\ntests/helpers/**, tests/**\nTest Standards\n\n# Test Standards\n\nstandards\nregression\nvitest\ntests/**\nTesting Pyramid\n\n# Testing Pyramid\n\ntesting\nvitest\nplaywright\ntests/**, src/**\nWorkflow\n14 chunks\nAvailable Skills\n\n# Available Skills\n\nskills\nreference\ntools\n.agents/skills/**\nCollaboration Protocol\n\n# Collaboration Protocol\n\ncollaboration\ndecisions\napproval\nproduction/**, design/**, src/**\nCommunity Communication\n\n# Community Communication\n\ncommunity\npatch-notes\nfeedback\nproduction/community/**, production/releases/**\nDecision Records\n\n# Decision Records\n\nadr\ndecisions\ngovernance\ndocs/architecture/adr/**, design/**, production/**\nDesign Doc Standards\n\n# Design Doc Standards\n\ndesign-docs\ngdd\nspecifications\ndesign/gdd/**\nHandoff Standards\n\n# Handoff Standards\n\nhandoff\ncontext\ncontinuity\nproduction/**, docs/**, .agents/skills/handoff/**\nLocalization\n\n# Localization\n\nlocalization\ni18n\nstrings\nsrc/ui/**, locales/**, assets/ui/fonts/**\nPrototype Standards\n\n# Prototype Standards\n\nprototype\nspike\nlearning\nprototypes/**\nRelease Pipeline\n\n# Release Pipeline\n\nrelease\nversioning\nhotfix\nproduction/release/**, package.json, vite.config.ts\nScope Management\n\n# Scope Management\n\nscope\nplanning\nrisk\nproduction/**, design/**\nSkill Authoring Standards\n\n# Skill Authoring Standards\n\nskills\nauthoring\nmaintainability\n.agents/skills/**, .opencode/skills/**\nTooling Standards\n\n# Tooling Standards\n\ntools\nautomation\npipeline\ntools/**, scripts/**\nVerification Gate\n\n# Verification Gate\n\nverification\ntypescript\ntests\nsrc/**, tests/**, assets/**\nWeb Runtime Standards\n\n# Web Runtime Standards\n\nweb\nruntime\nperformance\nsrc/**, vite.config.ts, public/**"
+  },
+  "consoleErrors": []
+}

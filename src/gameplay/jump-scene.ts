@@ -1,4 +1,4 @@
-import { Application, Container, Graphics, Text, TextStyle } from "pixi.js"
+import { Application, Container, Graphics, Text, TextStyle, Sprite, Texture, TilingSprite } from "pixi.js"
 import { PlayerState, Platform, Particle, InputState, MovementConfig } from "./physics/types"
 import { applyPhysics } from "./physics/movement"
 import { PRESETS, PRESET_NAMES } from "./presets"
@@ -24,14 +24,16 @@ export class JumpScene {
   private app: Application
   private input: InputManager
   private gameContainer: Container
+  private bgSprite: Sprite
   private player!: PlayerState
   private config!: MovementConfig
   private inputState!: InputState
   private platforms: Platform[] = []
   private particles: Particle[] = []
 
-  private playerGfx: Graphics
-  private platformGfx: Graphics
+  private playerSprite: Sprite
+  private playerContainer: Container
+  private platformSprites: Container
   private particleGfx: Graphics
   private trailGfx: Graphics
   private hudText: Text
@@ -44,6 +46,10 @@ export class JumpScene {
   private worldH: number
   private tuningPanel: { elem: HTMLDivElement; destroy: () => void; updateLabel: () => void } | null = null
   private panelVisible = false
+  private texGround: Texture
+  private texHazard: Texture
+  private animTimer = 0
+  private walkFrame = 0
 
   constructor(app: Application, input: InputManager, w: number, h: number) {
     this.app = app
@@ -51,23 +57,34 @@ export class JumpScene {
     this.worldW = w
     this.worldH = h
     this.gameContainer = new Container()
+    this.bgSprite = new Sprite(Texture.from("/assets/jumper/bg_sky.png"))
+    this.bgSprite.width = w
+    this.bgSprite.height = h
+    this.gameContainer.addChild(this.bgSprite)
     app.stage.addChild(this.gameContainer)
+
+    this.texGround = Texture.from("/assets/jumper/ground.png")
+    this.texHazard = Texture.from("/assets/jumper/hazard.png")
 
     this.config = PRESETS[PRESET_NAMES[this.presetIdx]]
     this.inputState = {
       left: false, right: false, up: false, down: false,
       jump: false, jumpPressedThisFrame: false,
     }
-    this.initScene()
+
+    this.playerContainer = new Container()
+    this.playerSprite = new Sprite(Texture.from("/assets/jumper/player_stand.png"))
+    this.playerSprite.anchor.set(0.5)
+    this.playerContainer.addChild(this.playerSprite)
+    this.gameContainer.addChild(this.playerContainer)
+
+    this.platformSprites = new Container()
+    this.gameContainer.addChild(this.platformSprites)
 
     this.trailGfx = new Graphics()
-    this.platformGfx = new Graphics()
     this.particleGfx = new Graphics()
-    this.playerGfx = new Graphics()
     this.gameContainer.addChild(this.trailGfx)
-    this.gameContainer.addChild(this.platformGfx)
     this.gameContainer.addChild(this.particleGfx)
-    this.gameContainer.addChild(this.playerGfx)
 
     const style = new TextStyle({ fontFamily: "monospace", fontSize: 14, fill: "#888" })
     this.hudText = new Text({ text: "", style })
@@ -81,6 +98,7 @@ export class JumpScene {
     this.presetText.y = this.worldH - 30
     this.gameContainer.addChild(this.presetText)
 
+    this.initScene()
     this.setupGamepad()
     this.setupTuningPanel()
     window.addEventListener("keydown", (e) => { if (e.code === "Tab") e.preventDefault() })
@@ -90,6 +108,22 @@ export class JumpScene {
     this.player = this.createPlayer()
     this.platforms = buildPlatforms(this.worldW, this.worldH)
     this.particles = []
+    this.rebuildPlatformSprites()
+  }
+
+  private rebuildPlatformSprites() {
+    this.platformSprites.removeChildren()
+    for (const p of this.platforms) {
+      const spr = p.isHazard
+        ? new Sprite(this.texHazard)
+        : new TilingSprite({ texture: this.texGround, width: p.width, height: p.height })
+      spr.x = p.x
+      spr.y = p.y
+      spr.width = p.width
+      spr.height = p.height
+      spr.alpha = p.isHazard ? 0.7 : 1
+      this.platformSprites.addChild(spr)
+    }
   }
 
   private createPlayer(): PlayerState {
@@ -111,6 +145,8 @@ export class JumpScene {
   resize(w: number, h: number) {
     this.worldW = w
     this.worldH = h
+    this.bgSprite.width = w
+    this.bgSprite.height = h
     this.initScene()
     this.presetText.y = h - 30
   }
@@ -129,21 +165,18 @@ export class JumpScene {
     if (this.gamepadIndex === null) return { axis: 0, jump: false, jumpJustPressed: false }
     const gp = navigator.getGamepads()[this.gamepadIndex]
     if (!gp) return { axis: 0, jump: false, jumpJustPressed: false }
-
     let axis = gp.axes[0] ?? 0
     if (Math.abs(axis) < 0.3) axis = 0
     if (axis === 0) {
       const dx = gp.buttons[14]?.pressed ? -1 : gp.buttons[15]?.pressed ? 1 : 0
       if (dx) axis = dx
     }
-
     const jumpBtn = gp.buttons[0]?.pressed ?? false
     const dpadUp = gp.buttons[12]?.pressed ?? false
     const jump = jumpBtn || dpadUp
     if (this.prevGamepadButtons.length === 0) this.prevGamepadButtons = gp.buttons.map(() => false)
     const jumpJustPressed = (jump && !this.prevGamepadButtons[0]) || (dpadUp && !this.prevGamepadButtons[12])
     this.prevGamepadButtons = gp.buttons.map(b => b.pressed)
-
     return { axis, jump, jumpJustPressed }
   }
 
@@ -174,28 +207,45 @@ export class JumpScene {
       if (this.tuningPanel) this.tuningPanel.elem.style.display = this.panelVisible ? "block" : "none"
     }
 
-    this.render()
+    this.render(dt)
   }
 
-  private render() {
+  private render(dt: number) {
     const s = this.player
 
-    this.playerGfx.clear()
     const cx = s.x + s.width / 2
     const cy = s.y + s.height / 2
-    const sw = s.width * s.squashX
-    const sh = s.height * s.squashY
-    if (s.isDead) {
-      this.playerGfx.rect(cx - sw / 2, cy - sh / 2, sw, sh)
-      this.playerGfx.fill({ color: 0xf43f5e, alpha: 0.6 })
-    } else if (s.isWallSliding) {
-      this.playerGfx.rect(cx - sw / 2, cy - sh / 2, sw, sh)
-      this.playerGfx.fill({ color: 0xf59e0b })
-      this.playerGfx.rect(s.wallDir > 0 ? cx + sw / 2 - 4 : cx - sw / 2, cy - sh / 2, 4, sh)
-      this.playerGfx.fill({ color: 0xf59e0b, alpha: 0.4 })
+    this.playerContainer.x = cx
+    this.playerContainer.y = cy
+    this.playerContainer.scale.x = s.squashX * (s.vx < 0 ? -1 : 1)
+    this.playerContainer.scale.y = s.squashY
+
+    if (s.isWallSliding) {
+      this.playerContainer.alpha = 0.7
+      this.playerSprite.tint = 0xf59e0b
+    } else if (s.isDead) {
+      this.playerContainer.alpha = 0.6
+      this.playerSprite.tint = 0xf43f5e
+    } else if (s.isGrounded) {
+      this.playerContainer.alpha = 1
+      this.playerSprite.tint = 0xffffff
     } else {
-      this.playerGfx.rect(cx - sw / 2, cy - sh / 2, sw, sh)
-      this.playerGfx.fill({ color: s.isGrounded ? 0x4ade80 : 0x6a5acd })
+      this.playerContainer.alpha = 1
+      this.playerSprite.tint = 0xddddff
+    }
+
+    this.animTimer += dt
+    const walking = s.isGrounded && Math.abs(s.vx) > 10
+    if (walking && this.animTimer > 0.12) {
+      this.animTimer = 0
+      this.walkFrame = 1 - this.walkFrame
+      this.playerSprite.texture = Texture.from(this.walkFrame === 0 ? "/assets/jumper/player_walk1.png" : "/assets/jumper/player_walk2.png")
+    } else if (s.isDead) {
+      this.playerSprite.texture = Texture.from("/assets/jumper/player_hurt.png")
+    } else if (!s.isGrounded) {
+      this.playerSprite.texture = Texture.from("/assets/jumper/player_jump.png")
+    } else if (!walking) {
+      this.playerSprite.texture = Texture.from("/assets/jumper/player_stand.png")
     }
 
     this.trailGfx.clear()
@@ -204,12 +254,6 @@ export class JumpScene {
       const alpha = 0.1 + 0.3 * (i / s.trail.length)
       this.trailGfx.circle(t.x, t.y, 3)
       this.trailGfx.fill({ color: 0x6a5acd, alpha })
-    }
-
-    this.platformGfx.clear()
-    for (const p of this.platforms) {
-      this.platformGfx.rect(p.x, p.y, p.width, p.height)
-      this.platformGfx.fill({ color: p.isHazard ? 0xef4444 : 0x2a2a3e, alpha: p.isHazard ? 0.5 : 1 })
     }
 
     this.particleGfx.clear()
