@@ -72,6 +72,8 @@ OpenCode (the builder)                  Codex (the critic)
 
 > *OpenCode builds. Codex sharpens. You decide.*
 
+> **Want to try OpenCode?** [Start with OpenCode Go](https://opencode.ai/go?ref=H0NH2RZJS1) *(referral link)*.
+
 ---
 
 ## Try the workflow yourself
