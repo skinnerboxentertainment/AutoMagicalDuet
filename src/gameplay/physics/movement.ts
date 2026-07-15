@@ -40,6 +40,7 @@ export function applyPhysics(
   if (player.isGrounded) {
     player.coyoteTimer = config.coyoteTime;
     player.airJumpsUsed = 0;
+    player.wallDir = 0;
   } else {
     player.coyoteTimer -= dt;
   }
@@ -65,19 +66,34 @@ export function applyPhysics(
     else if (player.vx < 0) player.vx = Math.min(0, player.vx + decel * dt);
   }
 
+  const isPressingIntoWall = !player.isGrounded && player.wallDir !== 0 && dir === player.wallDir
+  player.isWallSliding = isPressingIntoWall && player.vy >= 0
+
+  if (player.isWallSliding) {
+    player.airJumpsUsed = 0
+  }
+
   const canGroundJump = player.jumpBufferTimer > 0 && player.coyoteTimer > 0 && !player.isJumping
   const canAirJump = config.maxAirJumps > 0 && player.airJumpsUsed < config.maxAirJumps && input.jumpPressedThisFrame
+  const canWallJump = player.isWallSliding && input.jumpPressedThisFrame && config.wallJumpForce > 0
 
-  if (canGroundJump || canAirJump) {
+  if (canGroundJump || canAirJump || canWallJump) {
     player.vy = -config.jumpForce;
     player.jumpBufferTimer = 0;
     player.coyoteTimer = 0;
-    if (!canAirJump) {
+
+    if (canWallJump) {
+      player.vx = -player.wallDir * config.wallJumpHorizontal;
+      player.vy = -config.wallJumpForce;
+      player.airJumpsUsed = 0;
+      player.wallDir = 0;
+    } else if (!canAirJump) {
       player.isJumping = true;
     } else {
       player.airJumpsUsed++;
       player.isJumping = true;
     }
+
     player.isGrounded = false;
     player.currentJumpTime = 0;
     player.jumpState = "Rising_Controlled";
@@ -105,8 +121,11 @@ export function applyPhysics(
   }
 
   let gravity = config.gravity;
-  if (player.vy > 0) gravity *= config.fallGravityMultiplier;
-  else if (player.jumpState === "Rising_Uncontrolled") {
+  if (player.isWallSliding) {
+    gravity *= config.wallSlideGravity;
+  } else if (player.vy > 0) {
+    gravity *= config.fallGravityMultiplier;
+  } else if (player.jumpState === "Rising_Uncontrolled") {
     if (config.jumpCancelMode === "partial") gravity *= config.earlyReleaseGravityMultiplier;
     else if (config.jumpCancelMode === "full") player.vy = 0;
   }
@@ -115,6 +134,7 @@ export function applyPhysics(
   player.vy += gravity * dt;
   if (player.vy > config.terminalVelocity) player.vy = config.terminalVelocity;
 
+  player.wallDir = 0;
   player.x += player.vx * dt;
   resolveCollisions(player, platforms, particles, "x");
 
@@ -124,7 +144,12 @@ export function applyPhysics(
 
   if (player.isGrounded && !wasGrounded) {
     player.isJumping = false;
+    player.wallDir = 0;
     applyLandingJuice(player, config, oldVy, particles);
+  }
+
+  if (!player.isWallSliding && !player.isGrounded && player.wallDir === 0) {
+    player.isWallSliding = false;
   }
 
   player.trail.push({ x: player.x + player.width / 2, y: player.y + player.height / 2 });

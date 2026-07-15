@@ -104,6 +104,7 @@ export class JumpScene {
       currentJumpTime: 0, jumpState: "Ground",
       trail: [],
       jumpStartHeight: 0, jumpStartX: 0, jumpStartTime: 0, peakHeight: 0, airJumpsUsed: 0,
+      isWallSliding: false, wallDir: 0,
     }
   }
 
@@ -213,7 +214,8 @@ export class JumpScene {
       this.particleGfx.fill({ color: 0xd4d4d8, alpha })
     }
 
-    this.hudText.text = `vx: ${Math.round(s.vx)}  vy: ${Math.round(s.vy)}  ground: ${s.isGrounded}  air: ${this.config.maxAirJumps - s.airJumpsUsed}/${this.config.maxAirJumps}  state: ${s.jumpState}  [Tab] Tuning  [P] Presets`
+    const wallInfo = s.isWallSliding ? ` wall:${s.wallDir}` : ""
+    this.hudText.text = `vx: ${Math.round(s.vx)}  vy: ${Math.round(s.vy)}  ground: ${s.isGrounded}  air: ${this.config.maxAirJumps - s.airJumpsUsed}/${this.config.maxAirJumps}${wallInfo}  state: ${s.jumpState}  [Tab] Tuning  [P] Presets`
     this.presetText.text = `[P] Preset: ${PRESET_NAMES[this.presetIdx]}  [Tab] Tune`
   }
 

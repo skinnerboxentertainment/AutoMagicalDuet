@@ -18,6 +18,9 @@ export interface MovementConfig {
   coyoteTime: number;
   jumpBuffer: number;
   maxAirJumps: number;
+  wallSlideGravity: number;
+  wallJumpForce: number;
+  wallJumpHorizontal: number;
 }
 
 export interface Particle {
@@ -47,6 +50,8 @@ export interface PlayerState {
   jumpStartTime: number;
   peakHeight: number;
   airJumpsUsed: number;
+  isWallSliding: boolean;
+  wallDir: number;
 }
 
 export interface Platform {

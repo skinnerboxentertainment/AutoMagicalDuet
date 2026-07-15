@@ -24,8 +24,13 @@ export function resolveCollisions(
       }
 
       if (axis === "x") {
-        if (player.vx > 0) player.x = p.x - player.width;
-        else if (player.vx < 0) player.x = p.x + p.width;
+        if (player.vx > 0) {
+          player.x = p.x - player.width;
+          player.wallDir = 1;
+        } else if (player.vx < 0) {
+          player.x = p.x + p.width;
+          player.wallDir = -1;
+        }
         player.vx = 0;
       } else if (axis === "y") {
         if (player.vy > 0) {

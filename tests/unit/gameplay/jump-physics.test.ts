@@ -9,6 +9,7 @@ const BALANCED: MovementConfig = {
   airControl: 0.8, airFriction: 400,
   jumpCancelMode: "partial", minJumpHold: 0.05, maxJumpHold: 0.35, earlyReleaseGravityMultiplier: 2.5,
   elasticity: 1.0, squashRecoveryRate: 15, coyoteTime: 0.1, jumpBuffer: 0.1, maxAirJumps: 0,
+  wallSlideGravity: 0.3, wallJumpForce: 0, wallJumpHorizontal: 0,
 }
 
 function createPlayer(overrides?: Partial<PlayerState>): PlayerState {
@@ -20,6 +21,7 @@ function createPlayer(overrides?: Partial<PlayerState>): PlayerState {
     currentJumpTime: 0, jumpState: "Ground" as const,
     trail: [],
     jumpStartHeight: 0, jumpStartX: 0, jumpStartTime: 0, peakHeight: 0, airJumpsUsed: 0,
+    isWallSliding: false, wallDir: 0,
     ...overrides,
   }
 }

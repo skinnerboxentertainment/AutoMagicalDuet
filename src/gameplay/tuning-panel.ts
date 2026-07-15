@@ -31,6 +31,9 @@ const SLIDER_PARAMS: ParamDef[] = [
   { key: "maxAirJumps", label: "Max Air Jumps", min: 0, max: 10, step: 1 },
   { key: "coyoteTime", label: "Coyote Time (s)", min: 0, max: 0.3, step: 0.005 },
   { key: "jumpBuffer", label: "Jump Buffer (s)", min: 0, max: 0.3, step: 0.005 },
+  { key: "wallSlideGravity", label: "Wall Slide Gravity", min: 0.05, max: 1, step: 0.05 },
+  { key: "wallJumpForce", label: "Wall Jump Force", min: 0, max: 1200, step: 10 },
+  { key: "wallJumpHorizontal", label: "Wall Jump Horiz", min: 0, max: 800, step: 10 },
 ]
 
 export function detectPreset(config: MovementConfig): string {
@@ -94,6 +97,7 @@ export function createTuningPanel(
     { name: "Air Movement", keys: ["airControl", "airFriction"] },
     { name: "Variable Height", keys: ["jumpCancelMode", "minJumpHold", "maxJumpHold", "earlyReleaseGravityMultiplier"] },
     { name: "Feel & Assists", keys: ["elasticity", "squashRecoveryRate", "maxAirJumps", "coyoteTime", "jumpBuffer"] },
+    { name: "Wall Slide", keys: ["wallSlideGravity", "wallJumpForce", "wallJumpHorizontal"] },
   ]
 
   const sliders: { key: string; val: HTMLSpanElement; slider: HTMLInputElement; select?: HTMLSelectElement }[] = []
