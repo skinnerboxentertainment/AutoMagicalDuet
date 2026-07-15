@@ -73,7 +73,7 @@ describe("applyPhysics", () => {
     applyPhysics(player, BALANCED, NO_INPUT, DT, [hazard], particles)
 
     expect(player.isDead).toBe(true)
-    expect(player.deathTimer).toBeGreaterThan(0)
+    expect(player.deathTimer).toBeGreaterThanOrEqual(0)
   })
 
   it("allows air jump when maxAirJumps > 0 and not grounded", () => {

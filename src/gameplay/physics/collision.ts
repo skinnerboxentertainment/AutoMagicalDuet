@@ -18,7 +18,7 @@ export function resolveCollisions(
     ) {
       if (p.isHazard) {
         player.isDead = true;
-        player.deathTimer = 0.5;
+        player.deathTimer = 0;
         popDeathBurst(player, particles);
         return;
       }
