@@ -1,4 +1,4 @@
-import { Application, Container, Graphics, Text, TextStyle, Sprite, Texture, TilingSprite } from "pixi.js"
+import { Application, Container, Graphics, Text, TextStyle, Sprite, Texture, TilingSprite, Assets } from "pixi.js"
 import { PlayerState, Platform, Particle, InputState, MovementConfig } from "./physics/types"
 import { applyPhysics } from "./physics/movement"
 import { PRESETS, PRESET_NAMES } from "./presets"
@@ -20,7 +20,22 @@ function buildPlatforms(w: number, h: number): Platform[] {
   ]
 }
 
+const ASSETS = [
+  "/assets/jumper/player_stand.png",
+  "/assets/jumper/player_walk1.png",
+  "/assets/jumper/player_walk2.png",
+  "/assets/jumper/player_jump.png",
+  "/assets/jumper/player_hurt.png",
+  "/assets/jumper/ground.png",
+  "/assets/jumper/hazard.png",
+  "/assets/jumper/bg_sky.png",
+]
+
 export class JumpScene {
+  static async preload(): Promise<void> {
+    await Assets.load(ASSETS)
+  }
+
   private app: Application
   private input: InputManager
   private gameContainer: Container

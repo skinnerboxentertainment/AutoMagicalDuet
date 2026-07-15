@@ -17,6 +17,8 @@ export async function launchGame(): Promise<void> {
 
   if (app) return
 
+  await JumpScene.preload()
+
   const w = window.innerWidth
   const h = window.innerHeight
 
