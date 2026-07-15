@@ -3,6 +3,7 @@ import { PlayerState, Platform, Particle, InputState, MovementConfig } from "./p
 import { applyPhysics } from "./physics/movement"
 import { PRESETS, PRESET_NAMES } from "./presets"
 import { InputManager } from "../core/input-manager"
+import { createTuningPanel } from "./tuning-panel"
 
 const PLAYER_SIZE = 32
 
@@ -40,6 +41,8 @@ export class JumpScene {
   private gamepadIndex: number | null = null
   private worldW: number
   private worldH: number
+  private tuningPanel: { elem: HTMLDivElement; destroy: () => void; updateLabel: () => void } | null = null
+  private panelVisible = false
 
   constructor(app: Application, input: InputManager, w: number, h: number) {
     this.app = app
@@ -78,6 +81,8 @@ export class JumpScene {
     this.gameContainer.addChild(this.presetText)
 
     this.setupGamepad()
+    this.setupTuningPanel()
+    window.addEventListener("keydown", (e) => { if (e.code === "Tab") e.preventDefault() })
   }
 
   private initScene() {
@@ -141,8 +146,14 @@ export class JumpScene {
 
     if (justPressed.has("KeyP") || justPressed.has("NumpadAdd")) {
       this.presetIdx = (this.presetIdx + 1) % PRESET_NAMES.length
-      this.config = PRESETS[PRESET_NAMES[this.presetIdx]]
+      this.config = { ...PRESETS[PRESET_NAMES[this.presetIdx]] }
       this.player = this.createPlayer()
+      if (this.tuningPanel) this.tuningPanel.updateLabel()
+    }
+
+    if (justPressed.has("Tab")) {
+      this.panelVisible = !this.panelVisible
+      if (this.tuningPanel) this.tuningPanel.elem.style.display = this.panelVisible ? "block" : "none"
     }
 
     this.render()
@@ -185,11 +196,22 @@ export class JumpScene {
       this.particleGfx.fill({ color: 0xd4d4d8, alpha })
     }
 
-    this.hudText.text = `vx: ${Math.round(s.vx)}  vy: ${Math.round(s.vy)}  ground: ${s.isGrounded}  state: ${s.jumpState}`
-    this.presetText.text = `[P] Preset: ${PRESET_NAMES[this.presetIdx]}`
+    this.hudText.text = `vx: ${Math.round(s.vx)}  vy: ${Math.round(s.vy)}  ground: ${s.isGrounded}  state: ${s.jumpState}  [Tab] Tuning  [P] Presets`
+    this.presetText.text = `[P] Preset: ${PRESET_NAMES[this.presetIdx]}  [Tab] Tune`
+  }
+
+  private setupTuningPanel() {
+    const wrapper = document.getElementById("game-container")
+    if (!wrapper) return
+    this.tuningPanel = createTuningPanel(
+      wrapper,
+      () => this.config,
+      (c) => { this.config = c },
+    )
   }
 
   destroy() {
+    if (this.tuningPanel) this.tuningPanel.destroy()
     this.app.stage.removeChild(this.gameContainer)
     this.gameContainer.destroy({ children: true })
   }
