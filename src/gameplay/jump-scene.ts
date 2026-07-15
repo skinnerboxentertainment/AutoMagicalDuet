@@ -89,7 +89,9 @@ export class JumpScene {
 
     this.playerContainer = new Container()
     this.playerSprite = new Sprite(Texture.from("/assets/jumper/player_stand.png"))
-    this.playerSprite.anchor.set(0.5)
+    this.playerSprite.anchor.set(0.5, 1)
+    this.playerSprite.height = PLAYER_SIZE
+    this.playerSprite.scale.x = this.playerSprite.scale.y
     this.playerContainer.addChild(this.playerSprite)
     this.gameContainer.addChild(this.playerContainer)
 
@@ -231,7 +233,7 @@ export class JumpScene {
     const cx = s.x + s.width / 2
     const cy = s.y + s.height / 2
     this.playerContainer.x = cx
-    this.playerContainer.y = cy
+    this.playerContainer.y = s.y + s.height
     this.playerContainer.scale.x = s.squashX * (s.vx < 0 ? -1 : 1)
     this.playerContainer.scale.y = s.squashY
 
@@ -251,16 +253,22 @@ export class JumpScene {
 
     this.animTimer += dt
     const walking = s.isGrounded && Math.abs(s.vx) > 10
+    let nextTex: string | null = null
     if (walking && this.animTimer > 0.12) {
       this.animTimer = 0
       this.walkFrame = 1 - this.walkFrame
-      this.playerSprite.texture = Texture.from(this.walkFrame === 0 ? "/assets/jumper/player_walk1.png" : "/assets/jumper/player_walk2.png")
+      nextTex = this.walkFrame === 0 ? "/assets/jumper/player_walk1.png" : "/assets/jumper/player_walk2.png"
     } else if (s.isDead) {
-      this.playerSprite.texture = Texture.from("/assets/jumper/player_hurt.png")
+      nextTex = "/assets/jumper/player_hurt.png"
     } else if (!s.isGrounded) {
-      this.playerSprite.texture = Texture.from("/assets/jumper/player_jump.png")
+      nextTex = "/assets/jumper/player_jump.png"
     } else if (!walking) {
-      this.playerSprite.texture = Texture.from("/assets/jumper/player_stand.png")
+      nextTex = "/assets/jumper/player_stand.png"
+    }
+    if (nextTex) {
+      this.playerSprite.texture = Texture.from(nextTex)
+      this.playerSprite.height = PLAYER_SIZE
+      this.playerSprite.scale.x = this.playerSprite.scale.y
     }
 
     this.trailGfx.clear()
