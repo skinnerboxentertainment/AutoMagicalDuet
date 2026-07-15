@@ -28,6 +28,7 @@ const SLIDER_PARAMS: ParamDef[] = [
   { key: "earlyReleaseGravityMultiplier", label: "Early Release Grav", min: 1, max: 6, step: 0.1 },
   { key: "elasticity", label: "Elasticity", min: 0, max: 2.5, step: 0.1 },
   { key: "squashRecoveryRate", label: "Squash Recovery", min: 1, max: 40, step: 1 },
+  { key: "maxAirJumps", label: "Max Air Jumps", min: 0, max: 10, step: 1 },
   { key: "coyoteTime", label: "Coyote Time (s)", min: 0, max: 0.3, step: 0.005 },
   { key: "jumpBuffer", label: "Jump Buffer (s)", min: 0, max: 0.3, step: 0.005 },
 ]
@@ -92,7 +93,7 @@ export function createTuningPanel(
     { name: "Jump Core", keys: ["jumpForce", "gravity", "fallGravityMultiplier", "terminalVelocity"] },
     { name: "Air Movement", keys: ["airControl", "airFriction"] },
     { name: "Variable Height", keys: ["jumpCancelMode", "minJumpHold", "maxJumpHold", "earlyReleaseGravityMultiplier"] },
-    { name: "Feel & Assists", keys: ["elasticity", "squashRecoveryRate", "coyoteTime", "jumpBuffer"] },
+    { name: "Feel & Assists", keys: ["elasticity", "squashRecoveryRate", "maxAirJumps", "coyoteTime", "jumpBuffer"] },
   ]
 
   const sliders: { key: string; val: HTMLSpanElement; slider: HTMLInputElement; select?: HTMLSelectElement }[] = []

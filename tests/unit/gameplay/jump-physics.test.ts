@@ -8,7 +8,7 @@ const BALANCED: MovementConfig = {
   jumpForce: 750, gravity: 1500, fallGravityMultiplier: 1.5, terminalVelocity: 1200,
   airControl: 0.8, airFriction: 400,
   jumpCancelMode: "partial", minJumpHold: 0.05, maxJumpHold: 0.35, earlyReleaseGravityMultiplier: 2.5,
-  elasticity: 1.0, squashRecoveryRate: 15, coyoteTime: 0.1, jumpBuffer: 0.1,
+  elasticity: 1.0, squashRecoveryRate: 15, coyoteTime: 0.1, jumpBuffer: 0.1, maxAirJumps: 0,
 }
 
 function createPlayer(overrides?: Partial<PlayerState>): PlayerState {
@@ -19,7 +19,7 @@ function createPlayer(overrides?: Partial<PlayerState>): PlayerState {
     squashX: 1, squashY: 1, isDead: false, deathTimer: 0,
     currentJumpTime: 0, jumpState: "Ground" as const,
     trail: [],
-    jumpStartHeight: 0, jumpStartX: 0, jumpStartTime: 0, peakHeight: 0,
+    jumpStartHeight: 0, jumpStartX: 0, jumpStartTime: 0, peakHeight: 0, airJumpsUsed: 0,
     ...overrides,
   }
 }
@@ -72,6 +72,18 @@ describe("applyPhysics", () => {
 
     expect(player.isDead).toBe(true)
     expect(player.deathTimer).toBeGreaterThan(0)
+  })
+
+  it("allows air jump when maxAirJumps > 0 and not grounded", () => {
+    const airCfg = { ...BALANCED, maxAirJumps: 2 }
+    const player = createPlayer({ x: 200, y: 400, isGrounded: false, isJumping: false, vy: 100 })
+    const input: InputState = { ...NO_INPUT, jump: true, jumpPressedThisFrame: true }
+    const particles: Particle[] = []
+
+    applyPhysics(player, airCfg, input, DT, [], particles)
+
+    expect(player.vy).toBeLessThan(0)
+    expect(player.airJumpsUsed).toBe(1)
   })
 
   it("jump produces upward velocity with buffer and coyote time", () => {

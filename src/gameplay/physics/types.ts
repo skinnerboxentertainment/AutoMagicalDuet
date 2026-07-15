@@ -17,6 +17,7 @@ export interface MovementConfig {
   squashRecoveryRate: number;
   coyoteTime: number;
   jumpBuffer: number;
+  maxAirJumps: number;
 }
 
 export interface Particle {
@@ -45,6 +46,7 @@ export interface PlayerState {
   jumpStartX: number;
   jumpStartTime: number;
   peakHeight: number;
+  airJumpsUsed: number;
 }
 
 export interface Platform {

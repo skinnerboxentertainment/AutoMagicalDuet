@@ -37,8 +37,12 @@ export function applyPhysics(
 
   applySquashRecovery(player, config, dt);
 
-  if (player.isGrounded) player.coyoteTimer = config.coyoteTime;
-  else player.coyoteTimer -= dt;
+  if (player.isGrounded) {
+    player.coyoteTimer = config.coyoteTime;
+    player.airJumpsUsed = 0;
+  } else {
+    player.coyoteTimer -= dt;
+  }
 
   if (input.jumpPressedThisFrame) player.jumpBufferTimer = config.jumpBuffer;
   else player.jumpBufferTimer -= dt;
@@ -61,11 +65,19 @@ export function applyPhysics(
     else if (player.vx < 0) player.vx = Math.min(0, player.vx + decel * dt);
   }
 
-  if (player.jumpBufferTimer > 0 && player.coyoteTimer > 0 && !player.isJumping) {
+  const canGroundJump = player.jumpBufferTimer > 0 && player.coyoteTimer > 0 && !player.isJumping
+  const canAirJump = config.maxAirJumps > 0 && player.airJumpsUsed < config.maxAirJumps && input.jumpPressedThisFrame
+
+  if (canGroundJump || canAirJump) {
     player.vy = -config.jumpForce;
     player.jumpBufferTimer = 0;
     player.coyoteTimer = 0;
-    player.isJumping = true;
+    if (!canAirJump) {
+      player.isJumping = true;
+    } else {
+      player.airJumpsUsed++;
+      player.isJumping = true;
+    }
     player.isGrounded = false;
     player.currentJumpTime = 0;
     player.jumpState = "Rising_Controlled";
