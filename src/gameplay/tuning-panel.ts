@@ -7,33 +7,34 @@ interface ParamDef {
   min: number
   max: number
   step: number
+  tip: string
 }
 
 const CANCEL_MODES = ["none", "partial", "full"] as const
 
 const SLIDER_PARAMS: ParamDef[] = [
-  { key: "maxSpeed", label: "Max Speed", min: 100, max: 1000, step: 10 },
-  { key: "acceleration", label: "Acceleration", min: 500, max: 6000, step: 100 },
-  { key: "deceleration", label: "Deceleration", min: 500, max: 6000, step: 100 },
-  { key: "turnMultiplier", label: "Turn Multiplier", min: 0.5, max: 5, step: 0.1 },
-  { key: "jumpForce", label: "Jump Force", min: 300, max: 1500, step: 10 },
-  { key: "gravity", label: "Gravity", min: 500, max: 4000, step: 50 },
-  { key: "fallGravityMultiplier", label: "Fall Grav Mult", min: 1, max: 4, step: 0.1 },
-  { key: "terminalVelocity", label: "Terminal Vel", min: 500, max: 3000, step: 50 },
-  { key: "airControl", label: "Air Control", min: 0, max: 1, step: 0.05 },
-  { key: "airFriction", label: "Air Friction", min: 0, max: 1500, step: 50 },
-  { key: "jumpCancelMode", label: "Cancel Mode", min: 0, max: 2, step: 1 },
-  { key: "minJumpHold", label: "Min Hold (s)", min: 0, max: 0.2, step: 0.005 },
-  { key: "maxJumpHold", label: "Max Hold (s)", min: 0, max: 0.6, step: 0.01 },
-  { key: "earlyReleaseGravityMultiplier", label: "Early Release Grav", min: 1, max: 6, step: 0.1 },
-  { key: "elasticity", label: "Elasticity", min: 0, max: 2.5, step: 0.1 },
-  { key: "squashRecoveryRate", label: "Squash Recovery", min: 1, max: 40, step: 1 },
-  { key: "maxAirJumps", label: "Max Air Jumps", min: 0, max: 10, step: 1 },
-  { key: "coyoteTime", label: "Coyote Time (s)", min: 0, max: 0.3, step: 0.005 },
-  { key: "jumpBuffer", label: "Jump Buffer (s)", min: 0, max: 0.3, step: 0.005 },
-  { key: "wallSlideGravity", label: "Wall Slide Gravity", min: 0.05, max: 1, step: 0.05 },
-  { key: "wallJumpForce", label: "Wall Jump Force", min: 0, max: 1200, step: 10 },
-  { key: "wallJumpHorizontal", label: "Wall Jump Horiz", min: 0, max: 800, step: 10 },
+  { key: "maxSpeed", label: "Max Speed", min: 100, max: 1000, step: 10, tip: "Horizontal speed cap (px/s). Higher = faster run." },
+  { key: "acceleration", label: "Acceleration", min: 500, max: 6000, step: 100, tip: "How fast the player reaches max speed on the ground." },
+  { key: "deceleration", label: "Deceleration", min: 500, max: 6000, step: 100, tip: "How fast the player stops when releasing the key." },
+  { key: "turnMultiplier", label: "Turn Multiplier", min: 0.5, max: 5, step: 0.1, tip: "Extra acceleration when reversing direction. Higher = snappier turns." },
+  { key: "jumpForce", label: "Jump Force", min: 300, max: 1500, step: 10, tip: "Initial upward velocity. Higher = higher jumps." },
+  { key: "gravity", label: "Gravity", min: 500, max: 4000, step: 50, tip: "Downward acceleration (px/s²). Higher = shorter, snappier jumps." },
+  { key: "fallGravityMultiplier", label: "Fall Grav Mult", min: 1, max: 4, step: 0.1, tip: "Extra gravity while falling. >1 makes descents feel snappier." },
+  { key: "terminalVelocity", label: "Terminal Vel", min: 500, max: 3000, step: 50, tip: "Max fall speed cap. Higher = faster max fall." },
+  { key: "airControl", label: "Air Control", min: 0, max: 1, step: 0.05, tip: "Fraction of ground acceleration available in the air. 0 = no air steering, 1 = full control." },
+  { key: "airFriction", label: "Air Friction", min: 0, max: 1500, step: 50, tip: "Horizontal deceleration while airborne with no input." },
+  { key: "jumpCancelMode", label: "Cancel Mode", min: 0, max: 2, step: 1, tip: "none = fixed arc. partial = gravity spike on release. full = kill upward velocity instantly." },
+  { key: "minJumpHold", label: "Min Hold (s)", min: 0, max: 0.2, step: 0.005, tip: "Minimum time jump is force-held. Prevents accidental short hops from light taps." },
+  { key: "maxJumpHold", label: "Max Hold (s)", min: 0, max: 0.6, step: 0.01, tip: "Max time jump can be held. Longer = more variable height range." },
+  { key: "earlyReleaseGravityMultiplier", label: "Early Release Grav", min: 1, max: 6, step: 0.1, tip: "Gravity spike when releasing jump early in partial mode. Higher = shorter hops." },
+  { key: "elasticity", label: "Elasticity", min: 0, max: 2.5, step: 0.1, tip: "Intensity of squash & stretch on skid, takeoff, and landing. 0 = no deformation." },
+  { key: "squashRecoveryRate", label: "Squash Recovery", min: 1, max: 40, step: 1, tip: "How fast the player snaps back to normal shape after squashing. Higher = snappier." },
+  { key: "maxAirJumps", label: "Max Air Jumps", min: 0, max: 10, step: 1, tip: "Number of extra jumps allowed in the air. Wall slides reset this counter." },
+  { key: "coyoteTime", label: "Coyote Time (s)", min: 0, max: 0.3, step: 0.005, tip: "Grace period after walking off a ledge where jump still works. Prevents 'I pressed jump!' frustration." },
+  { key: "jumpBuffer", label: "Jump Buffer (s)", min: 0, max: 0.3, step: 0.005, tip: "Grace period before landing where jump input is queued. Makes tight jumps feel responsive." },
+  { key: "wallSlideGravity", label: "Wall Slide Gravity", min: 0.05, max: 1, step: 0.05, tip: "Gravity multiplier while wall sliding. 0.3 = slow slide, 1 = normal fall." },
+  { key: "wallJumpForce", label: "Wall Jump Force", min: 0, max: 1200, step: 10, tip: "Vertical launch when jumping off a wall. 0 = no wall jump." },
+  { key: "wallJumpHorizontal", label: "Wall Jump Horiz", min: 0, max: 800, step: 10, tip: "Horizontal push away from the wall on wall jump." },
 ]
 
 export function detectPreset(config: MovementConfig): string {
@@ -117,10 +118,16 @@ export function createTuningPanel(
       const row = document.createElement("div")
       row.style.cssText = "margin-bottom:8px;"
 
+      const tipIcon = document.createElement("span")
+      tipIcon.textContent = " ⓘ"
+      tipIcon.style.cssText = "cursor:help;color:#555;font-size:11px;margin-left:4px;"
+      tipIcon.title = def.tip
+
       if (key === "jumpCancelMode") {
         const label = document.createElement("div")
-        label.style.cssText = "color:#888;font-size:12px;margin-bottom:2px;"
-        label.textContent = def.label
+        label.style.cssText = "color:#888;font-size:12px;margin-bottom:2px;display:flex;align-items:center;"
+        label.appendChild(document.createTextNode(def.label))
+        label.appendChild(tipIcon)
         const select = document.createElement("select")
         Object.assign(select.style, {
           width: "100%", background: "#0d0d1a", color: "#e0e0e0",
@@ -143,12 +150,16 @@ export function createTuningPanel(
         sliders.push({ key, val: null!, slider: null!, select })
       } else {
         const labelRow = document.createElement("div")
-        labelRow.style.cssText = "display:flex;justify-content:space-between;color:#888;font-size:12px;"
+        labelRow.style.cssText = "display:flex;justify-content:space-between;color:#888;font-size:12px;align-items:center;"
+        const labelWrap = document.createElement("span")
+        labelWrap.style.cssText = "display:flex;align-items:center;"
         const label = document.createElement("span")
         label.textContent = def.label
+        labelWrap.appendChild(label)
+        labelWrap.appendChild(tipIcon.cloneNode(true))
         const val = document.createElement("span")
         val.textContent = String(getConfig()[key as keyof MovementConfig] ?? 0)
-        labelRow.appendChild(label)
+        labelRow.appendChild(labelWrap)
         labelRow.appendChild(val)
 
         const slider = document.createElement("input")
