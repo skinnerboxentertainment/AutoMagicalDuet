@@ -31,8 +31,9 @@ export function applyPhysics(
       player.currentJumpTime = 0;
       player.jumpState = "Ground";
       player.trail = [];
+    } else {
+      return;
     }
-    return;
   }
 
   applySquashRecovery(player, config, dt);
