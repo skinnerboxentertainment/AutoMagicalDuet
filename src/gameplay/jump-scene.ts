@@ -39,6 +39,7 @@ export class JumpScene {
   private presetIdx = 1
 
   private gamepadIndex: number | null = null
+  private prevGamepadButtons: boolean[] = []
   private worldW: number
   private worldH: number
   private tuningPanel: { elem: HTMLDivElement; destroy: () => void; updateLabel: () => void } | null = null
@@ -114,19 +115,35 @@ export class JumpScene {
   }
 
   private setupGamepad() {
-    const onConnected = (e: GamepadEvent) => { this.gamepadIndex = e.gamepad.index }
+    const onConnected = (e: GamepadEvent) => {
+      this.gamepadIndex = e.gamepad.index
+      this.prevGamepadButtons = []
+    }
     const onDisconnected = () => { this.gamepadIndex = null }
     window.addEventListener("gamepadconnected", onConnected)
     window.addEventListener("gamepaddisconnected", onDisconnected)
   }
 
-  private pollGamepad(): { axis: number; jump: boolean } {
-    if (this.gamepadIndex === null) return { axis: 0, jump: false }
+  private pollGamepad(): { axis: number; jump: boolean; jumpJustPressed: boolean } {
+    if (this.gamepadIndex === null) return { axis: 0, jump: false, jumpJustPressed: false }
     const gp = navigator.getGamepads()[this.gamepadIndex]
-    if (!gp) return { axis: 0, jump: false }
+    if (!gp) return { axis: 0, jump: false, jumpJustPressed: false }
+
     let axis = gp.axes[0] ?? 0
     if (Math.abs(axis) < 0.3) axis = 0
-    return { axis, jump: gp.buttons[0]?.pressed ?? false }
+    if (axis === 0) {
+      const dx = gp.buttons[14]?.pressed ? -1 : gp.buttons[15]?.pressed ? 1 : 0
+      if (dx) axis = dx
+    }
+
+    const jumpBtn = gp.buttons[0]?.pressed ?? false
+    const dpadUp = gp.buttons[12]?.pressed ?? false
+    const jump = jumpBtn || dpadUp
+    if (this.prevGamepadButtons.length === 0) this.prevGamepadButtons = gp.buttons.map(() => false)
+    const jumpJustPressed = (jump && !this.prevGamepadButtons[0]) || (dpadUp && !this.prevGamepadButtons[12])
+    this.prevGamepadButtons = gp.buttons.map(b => b.pressed)
+
+    return { axis, jump, jumpJustPressed }
   }
 
   update(dt: number) {
@@ -137,7 +154,7 @@ export class JumpScene {
     this.inputState.left = keys.has("ArrowLeft") || keys.has("KeyA") || gp.axis < -0.3
     this.inputState.right = keys.has("ArrowRight") || keys.has("KeyD") || gp.axis > 0.3
     this.inputState.jump = keys.has("Space") || keys.has("ArrowUp") || keys.has("KeyW") || gp.jump
-    this.inputState.jumpPressedThisFrame = justPressed.has("Space") || justPressed.has("ArrowUp") || justPressed.has("KeyW")
+    this.inputState.jumpPressedThisFrame = justPressed.has("Space") || justPressed.has("ArrowUp") || justPressed.has("KeyW") || gp.jumpJustPressed
 
     for (let i = 0; i < 4; i++) {
       applyPhysics(this.player, this.config, this.inputState, dt / 4, this.platforms, this.particles)
