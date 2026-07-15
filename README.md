@@ -6,108 +6,48 @@
 <p align="center">
   <strong>You + two AI agents = your own browser games.</strong>
   <br />
-  <em>No experience needed. Just an idea and five minutes.</em>
+  <em>No experience needed. Just an idea.</em>
   <br />
   <br />
-  <a href="#-your-first-magic-trick"><img src="https://img.shields.io/badge/try%20it%20now-5%20minutes-6a5acd" alt="Try it now"></a>
+  <a href="#-quick-start"><img src="https://img.shields.io/badge/try%20it%20now-5%20minutes-6a5acd" alt="Try it now"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT"></a>
-  <img src="https://img.shields.io/badge/games%20built-5-success" alt="5 games built">
-  <img src="https://img.shields.io/badge/knowledge-63%20chunks-ff69b4" alt="63 knowledge chunks">
+  <img src="https://img.shields.io/badge/workflow-proven-success" alt="Workflow proven">
 </p>
 
-## ✨ What is this?
+## What is this?
 
-**AutoMagicalDuet** is a workshop where you and two AI helpers build browser games together. You describe what you want. One AI builds it. The other AI looks at it and says "hey, this could be better." You play the game in your browser. You change things. Repeat.
+**AutoMagicalDuet** is a proven, human-directed, multi-agent workflow for building browser games. You describe what you want. OpenCode builds it. Codex critiques it. You play it, change things, and repeat.
 
-It's like having two game developers as friends who never get tired of your ideas.
+This is not a game studio. This is the *system* that runs a game studio — and it has already produced multiple working browser games across several genres.
 
----
-
-## 🎮 Games you can make
-
-Real games that were built with this system:
-
-<p align="center">
-  <img src="public/assets/screenshot-platformer.png" width="600" alt="Platformer game" />
-  <br />
-  <em>A platformer — collect gems, dodge enemies, reach the exit.</em>
-</p>
-
-| | | |
-|---|---|---|
-| **Twin-stick shooter** | **Breakout / Arkanoid** | **Submarine explorer** |
-| Survive waves of enemies | Smash bricks, catch power-ups | Dive for treasure, dodge sharks |
-| | | |
-| **Puzzle game** | **Tic-tac-toe** | **Your idea goes here** |
-| Match colors, clear the board | Play against a Cold War AI | **→ You build this one** |
+You are the game director. OpenCode builds and implements. Codex critiques, researches, generates visual assets where appropriate, and verifies in-browser.
 
 ---
 
-## 🪄 Your first magic trick
+## Games built with this workflow
 
-You have the game running. Let's break it.
+The following games were built start-to-finish using the AutoMagical workflow. Each was generated from a text spec, implemented by OpenCode, reviewed by Codex, and validated with automated tests.
 
-Open **`assets/data/gameplay-config.json`** and find this line:
+| Game | Genre | Tests | Evidence |
+|---|---|---|---|
+| **Guess the Number** | Number-guessing game | 32 passing | Source in sibling project |
+| **WarGames Tic Tac Toe** | Tic-tac-toe w/ minimax AI | 35 passing | Source + screenshots in sibling project |
+| **Twin-stick Shooter** | Arcade twin-stick shooter | 44 passing | Source in sibling project |
+| **Krakout Clone** | Breakout / Arkanoid | 19 passing | Source in sibling project |
+| **Gold Diver** | Submarine treasure diver | 53 passing | Source + sprites in sibling project |
+| **OutRun Clone** | Driving / road chase | 14 passing | Source + screenshots in sibling project |
+| **Sub Shooter** | Side-scrolling submarine arcade | 35 passing | Git history (replaced by current work) |
+| **Platformer** | 2D platformer (gems, enemies, exit) | 20 passing | Git history (replaced by current work) |
 
-```json
-"player_jump_velocity": -500
-```
+Each game has its own project directory with full source code, tests, and assets, following the same template. All use PixiJS v8, TypeScript strict, Vite, and Vitest.
 
-Change the `-500` to `-1200`:
-
-```json
-"player_jump_velocity": -1200
-```
-
-Save the file. Refresh the game in your browser. Now your character launches into the sky like a rocket.
-
-You just modded a game. In 10 seconds.
-
-> The player config has about 20 knobs you can tweak: speed, health, gravity, jump height, how many gems you need, whether enemies move faster or slower. Try changing them. See what happens. Break things. That's how you learn to make games.
+> **Gallery status:** A polished gallery linking these games is planned. For now, a detailed verified inventory is maintained in `production/readme-audit.md`.
 
 ---
 
-## 🗺️ Three paths
-
-Depending on how deep you want to go:
-
-### 🔰 5 minutes — "Change the game"
-
-Tweak numbers in `assets/data/gameplay-config.json`. Make the player faster, the enemy dumber, the gems worth more. You don't need to know code. You just need to change numbers and see what happens.
-
-**What you learn:** Game balance, tuning, cause and effect.
-
-### ⏰ 1 hour — "Make your own level"
-
-Open `assets/data/level-01.json`. This is a list of platforms, gems, enemies, and the exit. You can move things around, add new platforms, put gems in harder places, make the level longer.
-
-Try adding a new enemy:
-
-```json
-{ "x": 200, "y": 250, "width": 30, "height": 30, "minX": 150, "maxX": 350, "speed": 80 }
-```
-
-**What you learn:** Level design, difficulty curves, placement.
-
-### 🏕️ A weekend — "Invent your own game"
-
-Come up with a game idea and work through it with the AI helpers:
-
-1. **Explore** — "I want to make a fishing game where you catch weird sea creatures"
-2. **Frame** — define what the player does, how they win, what's fun about it
-3. **Attack** — the critic AI pokes holes in your idea ("what happens if the player does nothing?")
-4. **Build** — the builder AI writes the code, you play it, you change it
-5. **Prove** — the critic AI checks it in a browser, finds visual bugs, you fix them
-
-**What you learn:** Full game development loop. This is how real games are made — just faster.
-
----
-
-## 🤖 How the two AI helpers work
+## How the two AI helpers work
 
 Think of them as two friends on your team with clear jobs:
-
-### Who does what
 
 ```
 OpenCode (the builder)                  Codex (the critic)
@@ -124,7 +64,7 @@ OpenCode (the builder)                  Codex (the critic)
 | **"Build this feature"** | OpenCode writes the code |
 | **"Does this design work?"** | Codex stress-tests it before coding starts |
 | **"The jump feels wrong"** | OpenCode tweaks numbers, Codex checks the screenshot |
-| **"Make a gem sprite"** | Codex generates via gpt-image-2, OpenCode integrates |
+| **"Make a sprite"** | Codex generates via gpt-image-2, OpenCode integrates |
 | **"Is the game broken?"** | Codex runs Playwright, inspects the canvas |
 | **"Who decides?"** | OpenCode decides on implementation. You decide on the game. |
 
@@ -134,25 +74,31 @@ OpenCode (the builder)                  Codex (the critic)
 
 ---
 
-## 🧠 The project brain
+## Try the workflow yourself
 
-Every game you build adds knowledge to a shared brain. The brain knows:
+### Bring a game idea
 
-- How to design game levels that feel good
-- What makes a fun enemy AI
-- How to balance difficulty
-- PixiJS rendering tricks
-- Testing patterns
-- Art direction
-- Audio design
+Come up with a concept and work through it with the AI helpers:
 
-There are **63 knowledge chunks** across 9 topics. You can browse them at any time.
+1. **Explore** — "I want to make a fishing game where you catch weird sea creatures"
+2. **Frame** — define what the player does, how they win, what's fun about it
+3. **Attack** — the critic AI pokes holes in your idea ("what happens if the player does nothing?")
+4. **Build** — the builder AI writes the code, you play it, you change it
+5. **Prove** — the critic AI checks it in a browser, finds visual bugs, you fix them
 
-When you run the game, the landing page is a **knowledge encyclopedia** — a searchable, readable collection of everything the system has learned. Click any topic, read the patterns, steal the ideas.
+**What you learn:** Full game development loop. This is how real games are made — just faster.
+
+### Fork and run an existing game
+
+Each sibling project in the workspace is a standalone fork. Clone one, run `npm install && npm run dev`, and you have a playable game. Then modify it.
+
+### Dig into the knowledge base
+
+This repo contains a searchable knowledge encyclopedia of patterns, standards, and techniques accumulated across every game built so far. Run `npm run dev` and the landing page is the encyclopedia — browse it, steal the ideas, apply them to your next project.
 
 ---
 
-## 🚀 Quick start
+## Quick start
 
 ```bash
 git clone https://github.com/skinnerboxentertainment/AutoMagicalDuet.git
@@ -163,44 +109,44 @@ npm run dev
 
 Open `http://localhost:5173` in your browser.
 
-> The landing page is the encyclopedia. Click **"Launch Game"** to play the platformer. Click any knowledge chunk to read it.
+> The landing page is the knowledge encyclopedia. Browse 64 knowledge chunks across 9 domains.
+>
+> **Note on "Launch Game":** The current prototype (ASPECT) is a work-in-progress and may not boot correctly. The strength of this project is the workflow, not any single in-progress prototype. For playable games, see the sibling project directories described above.
 
 ---
 
-## 🧰 What's under the hood
+## What's under the hood
 
 | Layer | What it uses |
 |---|---|
 | **Game engine** | PixiJS v8 (WebGL / WebGPU / Canvas) |
-| **Language** | TypeScript (strict mode — cleaner code) |
+| **Language** | TypeScript (strict mode) |
 | **Build tool** | Vite (instant dev server, fast builds) |
 | **Tests** | Vitest (automated testing) |
 | **Audio** | Howler.js + jsfxr (retro sound effects) |
 | **Skills** | 34 installed AI skills (PixiJS, debugging, Playwright, TDD...) |
-| **Knowledge** | 63 chunks across 9 domains, browsable in the encyclopedia |
+| **Knowledge** | 64 chunks across 9 domains, browsable in the encyclopedia |
 
 ---
 
-## 📁 Project layout
+## Project layout
 
 ```
 src/                    # Game code
-  main.ts               # Entry point
+  main.ts               # Entry point (boots current prototype)
   core/                 # Engine (scenes, input, game loop)
-  scenes/               # Game screens (boot, game)
-  gameplay/             # Game logic (player, enemies, gems)
-  audio/                # Sound system
-knowledge/              # The brain (63 chunks, browsable)
+  aspect/               # Current prototype (ASPECT — work in progress)
+knowledge/              # The brain (64 chunks, browsable)
 production/             # What's happening now and what happened
 public/assets/          # Game sprites, banner, screenshots
 docs/                   # Architecture decisions and guides
-design/                 # Game design documents
-tests/                  # Automated tests
+design/                 # Game design documents (historical)
+tests/                  # Automated tests (39 passing)
 ```
 
 ---
 
-## 📜 License
+## License
 
 MIT — do whatever you want with it. Go make games.
 
