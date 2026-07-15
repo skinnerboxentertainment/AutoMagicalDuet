@@ -208,7 +208,7 @@ export class JumpScene {
     this.inputState.jumpPressedThisFrame = justPressed.has("Space") || justPressed.has("ArrowUp") || justPressed.has("KeyW") || gp.jumpJustPressed
 
     for (let i = 0; i < 4; i++) {
-      applyPhysics(this.player, this.config, this.inputState, dt / 4, this.platforms, this.particles)
+      applyPhysics(this.player, this.config, this.inputState, dt / 4, this.platforms, this.particles, this.worldH - 40 - this.player.height)
       this.inputState.jumpPressedThisFrame = false
     }
 

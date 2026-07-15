@@ -6,7 +6,6 @@ import {
 } from "./juice";
 
 const RESPAWN_X = 100;
-const RESPAWN_Y = 980;
 
 export function applyPhysics(
   player: PlayerState,
@@ -15,6 +14,7 @@ export function applyPhysics(
   dt: number,
   platforms: Platform[],
   particles: Particle[],
+  respawnY = 608,
 ) {
   updateParticles(particles, dt);
 
@@ -23,7 +23,7 @@ export function applyPhysics(
     if (player.deathTimer <= 0) {
       player.isDead = false;
       player.x = RESPAWN_X;
-      player.y = RESPAWN_Y;
+      player.y = respawnY;
       player.vx = 0;
       player.vy = 0;
       player.squashX = 1;
