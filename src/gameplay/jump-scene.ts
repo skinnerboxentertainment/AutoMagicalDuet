@@ -188,6 +188,11 @@ export class JumpScene {
     if (s.isDead) {
       this.playerGfx.rect(cx - sw / 2, cy - sh / 2, sw, sh)
       this.playerGfx.fill({ color: 0xf43f5e, alpha: 0.6 })
+    } else if (s.isWallSliding) {
+      this.playerGfx.rect(cx - sw / 2, cy - sh / 2, sw, sh)
+      this.playerGfx.fill({ color: 0xf59e0b })
+      this.playerGfx.rect(s.wallDir > 0 ? cx + sw / 2 - 4 : cx - sw / 2, cy - sh / 2, 4, sh)
+      this.playerGfx.fill({ color: 0xf59e0b, alpha: 0.4 })
     } else {
       this.playerGfx.rect(cx - sw / 2, cy - sh / 2, sw, sh)
       this.playerGfx.fill({ color: s.isGrounded ? 0x4ade80 : 0x6a5acd })
