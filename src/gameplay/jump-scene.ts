@@ -4,20 +4,20 @@ import { applyPhysics } from "./physics/movement"
 import { PRESETS, PRESET_NAMES } from "./presets"
 import { InputManager } from "../core/input-manager"
 
-const WORLD_W = 1280
-const WORLD_H = 1024
 const PLAYER_SIZE = 32
 
-const DEFAULT_PLATFORMS: Platform[] = [
-  { x: 0, y: WORLD_H - 40, width: WORLD_W, height: 40 },
-  { x: -40, y: 0, width: 40, height: WORLD_H },
-  { x: WORLD_W, y: 0, width: 40, height: WORLD_H },
-  { x: 200, y: WORLD_H - 140, width: 180, height: 20 },
-  { x: 500, y: WORLD_H - 260, width: 140, height: 20 },
-  { x: 750, y: WORLD_H - 380, width: 120, height: 20 },
-  { x: 400, y: WORLD_H - 200, width: 40, height: 40 },
-  { x: 500, y: WORLD_H - 58, width: 400, height: 10, isHazard: true },
-]
+function buildPlatforms(w: number, h: number): Platform[] {
+  return [
+    { x: 0, y: h - 40, width: w, height: 40 },
+    { x: -40, y: 0, width: 40, height: h },
+    { x: w, y: 0, width: 40, height: h },
+    { x: Math.floor(w * 0.15), y: h - 140, width: 180, height: 20 },
+    { x: Math.floor(w * 0.4), y: h - 260, width: 140, height: 20 },
+    { x: Math.floor(w * 0.6), y: h - 380, width: 120, height: 20 },
+    { x: Math.floor(w * 0.3), y: h - 200, width: 40, height: 40 },
+    { x: Math.floor(w * 0.4), y: h - 58, width: Math.floor(w * 0.3), height: 10, isHazard: true },
+  ]
+}
 
 export class JumpScene {
   private app: Application
@@ -26,7 +26,7 @@ export class JumpScene {
   private player!: PlayerState
   private config!: MovementConfig
   private inputState!: InputState
-  private platforms: Platform[] = DEFAULT_PLATFORMS
+  private platforms: Platform[] = []
   private particles: Particle[] = []
 
   private playerGfx: Graphics
@@ -38,10 +38,14 @@ export class JumpScene {
   private presetIdx = 1
 
   private gamepadIndex: number | null = null
+  private worldW: number
+  private worldH: number
 
-  constructor(app: Application, input: InputManager) {
+  constructor(app: Application, input: InputManager, w: number, h: number) {
     this.app = app
     this.input = input
+    this.worldW = w
+    this.worldH = h
     this.gameContainer = new Container()
     app.stage.addChild(this.gameContainer)
 
@@ -50,8 +54,7 @@ export class JumpScene {
       left: false, right: false, up: false, down: false,
       jump: false, jumpPressedThisFrame: false,
     }
-    this.player = this.createPlayer()
-    this.platforms = DEFAULT_PLATFORMS.map(p => ({ ...p }))
+    this.initScene()
 
     this.trailGfx = new Graphics()
     this.platformGfx = new Graphics()
@@ -71,15 +74,21 @@ export class JumpScene {
     const presetStyle = new TextStyle({ fontFamily: "monospace", fontSize: 16, fill: "#6a5acd", fontWeight: "bold" })
     this.presetText = new Text({ text: "", style: presetStyle })
     this.presetText.x = 10
-    this.presetText.y = WORLD_H - 30
+    this.presetText.y = this.worldH - 30
     this.gameContainer.addChild(this.presetText)
 
     this.setupGamepad()
   }
 
+  private initScene() {
+    this.player = this.createPlayer()
+    this.platforms = buildPlatforms(this.worldW, this.worldH)
+    this.particles = []
+  }
+
   private createPlayer(): PlayerState {
     return {
-      x: 100, y: WORLD_H - 100,
+      x: 100, y: this.worldH - 100,
       vx: 0, vy: 0,
       width: PLAYER_SIZE, height: PLAYER_SIZE,
       isGrounded: false, isJumping: false, wasJumping: false,
@@ -92,6 +101,13 @@ export class JumpScene {
     }
   }
 
+  resize(w: number, h: number) {
+    this.worldW = w
+    this.worldH = h
+    this.initScene()
+    this.presetText.y = h - 30
+  }
+
   private setupGamepad() {
     const onConnected = (e: GamepadEvent) => { this.gamepadIndex = e.gamepad.index }
     const onDisconnected = () => { this.gamepadIndex = null }
@@ -99,29 +115,24 @@ export class JumpScene {
     window.addEventListener("gamepaddisconnected", onDisconnected)
   }
 
-  private pollGamepad(): { axis: number; jump: boolean; jumpJustPressed: boolean } {
-    if (this.gamepadIndex === null) return { axis: 0, jump: false, jumpJustPressed: false }
+  private pollGamepad(): { axis: number; jump: boolean } {
+    if (this.gamepadIndex === null) return { axis: 0, jump: false }
     const gp = navigator.getGamepads()[this.gamepadIndex]
-    if (!gp) return { axis: 0, jump: false, jumpJustPressed: false }
-
+    if (!gp) return { axis: 0, jump: false }
     let axis = gp.axes[0] ?? 0
     if (Math.abs(axis) < 0.3) axis = 0
-    const jump = gp.buttons[0]?.pressed ?? false
-
-    return { axis, jump, jumpJustPressed: false }
+    return { axis, jump: gp.buttons[0]?.pressed ?? false }
   }
 
   update(dt: number) {
     const keys = this.input.keys
     const justPressed = this.input.keysJustPressed
-
     const gp = this.pollGamepad()
-    const gpAxis = gp.axis
 
-    this.inputState.left = keys.has("ArrowLeft") || keys.has("KeyA") || gpAxis < -0.3
-    this.inputState.right = keys.has("ArrowRight") || keys.has("KeyD") || gpAxis > 0.3
+    this.inputState.left = keys.has("ArrowLeft") || keys.has("KeyA") || gp.axis < -0.3
+    this.inputState.right = keys.has("ArrowRight") || keys.has("KeyD") || gp.axis > 0.3
     this.inputState.jump = keys.has("Space") || keys.has("ArrowUp") || keys.has("KeyW") || gp.jump
-    this.inputState.jumpPressedThisFrame = justPressed.has("Space") || justPressed.has("ArrowUp") || justPressed.has("KeyW") || gp.jumpJustPressed
+    this.inputState.jumpPressedThisFrame = justPressed.has("Space") || justPressed.has("ArrowUp") || justPressed.has("KeyW")
 
     for (let i = 0; i < 4; i++) {
       applyPhysics(this.player, this.config, this.inputState, dt / 4, this.platforms, this.particles)
@@ -138,23 +149,19 @@ export class JumpScene {
   }
 
   private render() {
-    const g = this.playerGfx
-    g.clear()
-
     const s = this.player
-    const sx = s.squashX
-    const sy = s.squashY
+
+    this.playerGfx.clear()
     const cx = s.x + s.width / 2
     const cy = s.y + s.height / 2
-    const w = s.width * sx
-    const h = s.height * sy
-
+    const sw = s.width * s.squashX
+    const sh = s.height * s.squashY
     if (s.isDead) {
-      g.rect(cx - w / 2, cy - h / 2, w, h)
-      g.fill({ color: 0xf43f5e, alpha: 0.6 })
+      this.playerGfx.rect(cx - sw / 2, cy - sh / 2, sw, sh)
+      this.playerGfx.fill({ color: 0xf43f5e, alpha: 0.6 })
     } else {
-      g.rect(cx - w / 2, cy - h / 2, w, h)
-      g.fill({ color: s.isGrounded ? 0x4ade80 : 0x6a5acd })
+      this.playerGfx.rect(cx - sw / 2, cy - sh / 2, sw, sh)
+      this.playerGfx.fill({ color: s.isGrounded ? 0x4ade80 : 0x6a5acd })
     }
 
     this.trailGfx.clear()
@@ -167,13 +174,8 @@ export class JumpScene {
 
     this.platformGfx.clear()
     for (const p of this.platforms) {
-      if (p.isHazard) {
-        this.platformGfx.rect(p.x, p.y, p.width, p.height)
-        this.platformGfx.fill({ color: 0xef4444, alpha: 0.5 })
-      } else {
-        this.platformGfx.rect(p.x, p.y, p.width, p.height)
-        this.platformGfx.fill({ color: 0x2a2a3e })
-      }
+      this.platformGfx.rect(p.x, p.y, p.width, p.height)
+      this.platformGfx.fill({ color: p.isHazard ? 0xef4444 : 0x2a2a3e, alpha: p.isHazard ? 0.5 : 1 })
     }
 
     this.particleGfx.clear()
@@ -183,9 +185,7 @@ export class JumpScene {
       this.particleGfx.fill({ color: 0xd4d4d8, alpha })
     }
 
-    const velInfo = `vx: ${Math.round(s.vx)}  vy: ${Math.round(s.vy)}  ground: ${s.isGrounded}  state: ${s.jumpState}`
-    this.hudText.text = velInfo
-
+    this.hudText.text = `vx: ${Math.round(s.vx)}  vy: ${Math.round(s.vy)}  ground: ${s.isGrounded}  state: ${s.jumpState}`
     this.presetText.text = `[P] Preset: ${PRESET_NAMES[this.presetIdx]}`
   }
 

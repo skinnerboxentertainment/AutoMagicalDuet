@@ -17,10 +17,13 @@ export async function launchGame(): Promise<void> {
 
   if (app) return
 
+  const w = window.innerWidth
+  const h = window.innerHeight
+
   app = new Application()
   await app.init({
-    width: 1280,
-    height: 1024,
+    width: w,
+    height: h,
     background: 0x0d0d1a,
     antialias: true,
     autoDensity: true,
@@ -28,6 +31,14 @@ export async function launchGame(): Promise<void> {
   })
   target.innerHTML = ""
   target.appendChild(app.canvas)
+
+  const onResize = () => {
+    const nw = window.innerWidth
+    const nh = window.innerHeight
+    app!.renderer.resize(nw, nh)
+    if (scene) scene.resize(nw, nh)
+  }
+  window.addEventListener("resize", onResize)
 
   input = new InputManager()
 
@@ -40,7 +51,7 @@ export async function launchGame(): Promise<void> {
     }
   })
 
-  scene = new JumpScene(app, input)
+  scene = new JumpScene(app, input, w, h)
 }
 
 function closeGame() {
